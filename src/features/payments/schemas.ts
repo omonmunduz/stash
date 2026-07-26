@@ -1,0 +1,53 @@
+/**
+ * PAYMENT VALIDATION SCHEMAS
+ */
+
+import { z } from 'zod';
+
+export const paymentMethodSchema = z.enum([
+  'cash',
+  'card',
+  'bank_transfer',
+  'check',
+  'other',
+]);
+
+/**
+ * Schema for recording a new payment.
+ * amount must be positive — a reversal/void is a separate operation (soft delete).
+ */
+export const createPaymentSchema = z.object({
+  customer_id: z.string().uuid('Invalid customer ID'),
+  sale_id: z.string().uuid('Invalid sale ID').optional(),
+  payment_date: z.coerce.date().default(() => new Date()),
+  amount: z
+    .number()
+    .positive('Payment amount must be greater than zero')
+    .refine(
+      (val) => Number(val.toFixed(2)) === val || Number.isInteger(val * 100),
+      'Amount can have at most 2 decimal places'
+    ),
+  payment_method: paymentMethodSchema,
+  reference_number: z.string().max(100).trim().optional(),
+  notes: z.string().max(500).trim().optional(),
+});
+
+/** Schema for correcting a payment record */
+export const updatePaymentSchema = z.object({
+  payment_date: z.coerce.date().optional(),
+  amount: z
+    .number()
+    .positive()
+    .refine(
+      (val) => Number(val.toFixed(2)) === val || Number.isInteger(val * 100),
+      'Amount can have at most 2 decimal places'
+    )
+    .optional(),
+  payment_method: paymentMethodSchema.optional(),
+  reference_number: z.string().max(100).trim().nullable().optional(),
+  notes: z.string().max(500).trim().nullable().optional(),
+  sale_id: z.string().uuid().nullable().optional(),
+});
+
+export type CreatePaymentSchema = z.infer<typeof createPaymentSchema>;
+export type UpdatePaymentSchema = z.infer<typeof updatePaymentSchema>;

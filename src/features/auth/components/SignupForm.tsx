@@ -6,7 +6,14 @@
  * Design decisions:
  * - Full name is collected here because it's needed in Step 2 (org creation)
  * - Password requirements shown inline (min 8 chars, 1 number)
- * - After successful signup, user is redirected to onboarding
+ * - Two possible outcomes, because the action has two:
+ *     email confirmation ON  → no session, so the action returns
+ *                              needsVerification and the form is replaced with
+ *                              a "check your inbox" panel
+ *     email confirmation OFF → session exists, so the action redirects to
+ *                              onboarding and this component unmounts
+ *   Ignoring the first case leaves the page visually unchanged after a
+ *   successful submit, which reads as a silent failure.
  */
 
 'use client';
@@ -25,6 +32,7 @@ export function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,10 +44,42 @@ export function SignupForm() {
 
       if (!result.success) {
         setError(result.error);
+        return;
       }
-      // Success case: action redirects to onboarding
+
+      // Reached only when confirmation is required. Otherwise the action has
+      // already redirected and this callback never resumes.
+      if (result.data.needsVerification) {
+        setAwaitingVerification(true);
+      }
     });
   };
+
+  if (awaitingVerification) {
+    return (
+      <div className="space-y-4">
+        {/* role="status" so screen readers announce the change — the visual
+            swap alone is what the sighted user notices. */}
+        <Alert variant="success" role="status">
+          <AlertDescription className="space-y-2">
+            <span className="block font-medium">Confirm your email to continue</span>
+            <span className="block">
+              We sent a confirmation link to <strong>{email}</strong>. Open it and
+              you&apos;ll be signed in and taken to setup.
+            </span>
+            <span className="block text-xs">
+              Nothing yet? Check your spam folder — the link can take a minute to
+              arrive.
+            </span>
+          </AlertDescription>
+        </Alert>
+
+        <Button asChild variant="outline" className="w-full">
+          <Link href={ROUTES.auth.login}>Go to sign in</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

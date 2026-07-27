@@ -8,12 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "db:generate-types": "supabase gen types typescript --local > src/types/database.types.ts"
+    "db:generate-types": "supabase gen types typescript --linked > src/lib/database.types.ts"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
-    "@supabase/ssr": "^0.5.2",
+    "@supabase/ssr": "0.12.3",
     "@supabase/supabase-js": "^2.45.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

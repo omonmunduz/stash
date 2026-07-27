@@ -2,7 +2,11 @@
  * Signup page.
  *
  * Public route — allows new users to create an account.
- * After successful signup, user is redirected to /onboarding/setup.
+ *
+ * After a successful signup the user either lands on /onboarding/setup directly
+ * (email confirmation disabled) or sees a confirm-your-email panel in place of
+ * the form (confirmation enabled, which is the Supabase default). SignupForm
+ * decides which, based on whether signUpAction returned a session.
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

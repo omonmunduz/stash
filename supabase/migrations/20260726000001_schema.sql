@@ -16,7 +16,11 @@
 -- and each arrives as its own additive migration.
 -- ============================================================================
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- No UUID extension needed. gen_random_uuid() is in the Postgres core since 13,
+-- so it resolves without a search_path qualifier. uuid-ossp's gen_random_uuid()
+-- does not: Supabase pre-installs that extension into the `extensions` schema,
+-- which makes CREATE EXTENSION IF NOT EXISTS a silent no-op and leaves the
+-- function unreachable from the search_path migrations run under.
 
 -- ============================================================================
 -- ENUMS
@@ -34,7 +38,7 @@ CREATE TYPE payment_status AS ENUM ('unpaid', 'partial', 'paid');
 -- timer with no code reading it — the day enforcement is added, every existing
 -- business locks out retroactively.
 CREATE TABLE organizations (
-    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name       TEXT NOT NULL,
     slug       TEXT UNIQUE NOT NULL,
     settings   JSONB DEFAULT '{}'::jsonb,
@@ -86,7 +90,7 @@ COMMENT ON COLUMN user_profiles.is_active IS
 -- CUSTOMERS
 -- ============================================================================
 CREATE TABLE customers (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     customer_code   TEXT NOT NULL,
     name            TEXT NOT NULL,
@@ -122,7 +126,7 @@ COMMENT ON COLUMN customers.credit_limit IS
 -- PRODUCTS
 -- ============================================================================
 CREATE TABLE products (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     sku             TEXT NOT NULL,
     name            TEXT NOT NULL,
@@ -158,7 +162,7 @@ COMMENT ON COLUMN products.cost_price IS 'What the business paid. Profit = sale_
 -- plain JOIN instead of a LEFT JOIN with a COALESCE, and means a sale can never
 -- silently skip stock deduction because a row was missing.
 CREATE TABLE inventory (
-    id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id  UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     product_id       UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     quantity_on_hand DECIMAL(15, 3) DEFAULT 0 CHECK (quantity_on_hand >= 0),
@@ -192,7 +196,7 @@ COMMENT ON COLUMN inventory.quantity_on_hand IS
 -- separate draft_number column whose own comment said sale_number was null
 -- until completion. Those cannot both be true.
 CREATE TABLE sales (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     sale_number     TEXT,
     customer_id     UUID NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
@@ -250,7 +254,7 @@ COMMENT ON COLUMN sales.amount_due IS
 -- Products get renamed and repriced; an invoice printed a year later must still
 -- show what was actually sold and what it actually cost.
 CREATE TABLE sale_items (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     sale_id         UUID NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
     product_id      UUID NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
@@ -278,7 +282,7 @@ COMMENT ON COLUMN sale_items.subtotal IS 'Calculated by the app: (quantity * uni
 -- PAYMENTS
 -- ============================================================================
 CREATE TABLE payments (
-    id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id  UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     payment_number   TEXT NOT NULL,
     customer_id      UUID NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
@@ -317,7 +321,7 @@ COMMENT ON COLUMN payments.sale_id IS
 -- EXPENSES
 -- ============================================================================
 CREATE TABLE expenses (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     expense_number  TEXT NOT NULL,
     expense_date    DATE NOT NULL DEFAULT CURRENT_DATE,

@@ -17,14 +17,14 @@ import type { UserRole } from '@/features/users/types';
 import type { Result } from '@/lib/types/common';
 import { ROUTES } from '@/lib/constants/routes';
 import { getAuthState } from './session';
+import { ROLE_LEVEL, hasRole, isOwner } from './roles';
 
-/** Numeric weight per role — higher number = more permissions */
-const ROLE_LEVEL: Record<UserRole, number> = {
-  owner: 4,
-  admin: 3,
-  manager: 2,
-  employee: 1,
-};
+/**
+ * Re-exported from ./roles so server-side callers keep a single import, while
+ * Client Components can import from ./roles directly without pulling in
+ * next/headers via the session module below.
+ */
+export { hasRole, isOwner };
 
 // ── Hard Guards (throw / redirect) ────────────────────────────────────────────
 
@@ -85,23 +85,6 @@ export function requireExactRole(user: AuthUser, role: UserRole): Result<void> {
     };
   }
   return { success: true, data: undefined };
-}
-
-// ── Boolean Helpers ────────────────────────────────────────────────────────────
-
-/**
- * True if the user has at least the specified role level.
- * Preferred for conditional UI rendering.
- */
-export function hasRole(user: AuthUser, minimumRole: UserRole): boolean {
-  return ROLE_LEVEL[user.role] >= ROLE_LEVEL[minimumRole];
-}
-
-/**
- * True if the user is the organization owner.
- */
-export function isOwner(user: AuthUser): boolean {
-  return user.role === 'owner';
 }
 
 // ── Session-Fetching Guards (async: load state, then redirect or return) ──────

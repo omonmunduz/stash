@@ -38,8 +38,6 @@ export const createProductSchema = z
     unit_of_measure: z.string().max(20).trim().default('unit'),
     cost_price: priceSchema,
     sale_price: priceSchema,
-    barcode: z.string().max(50).trim().optional(),
-    reorder_level: z.number().int().min(0).optional(),
     initial_quantity: z.number().min(0).default(0),
   })
   .refine(
@@ -60,8 +58,6 @@ export const updateProductSchema = z
     unit_of_measure: z.string().max(20).trim().optional(),
     cost_price: priceSchema.optional(),
     sale_price: priceSchema.optional(),
-    barcode: z.string().max(50).trim().nullable().optional(),
-    reorder_level: z.number().int().min(0).nullable().optional(),
     is_active: z.boolean().optional(),
   })
   .refine(

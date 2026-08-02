@@ -9,8 +9,12 @@
  * - Both cost_price and sale_price are required — profit tracking is a core feature
  * - category is free text — we do not know what industry the user is in
  * - unit_of_measure is free text — "box", "kg", "pallet", "unit" etc.
- * - barcode and reorder_level are present but unused in MVP (Phase 2 features)
  * - sku is required and unique per org — the business's own product identifier
+ *
+ * No barcode or reorder_level fields. Earlier drafts declared both, but the
+ * products table has neither column, so a mapper could only ever have written
+ * null into them — a field that always reads null is worse than an absent one,
+ * because calling code branches on it. They arrive in Phase 2 with the columns.
  */
 
 import type {
@@ -56,12 +60,6 @@ export interface Product extends Timestamps, Auditable {
   /** What customers are charged for this product */
   sale_price: Money;
 
-  /** Phase 2: for barcode scanning feature. Nullable until then. */
-  barcode: string | null;
-
-  /** Phase 2: trigger low-stock alert when quantity falls to this level */
-  reorder_level: number | null;
-
   is_active: boolean;
 }
 
@@ -74,9 +72,10 @@ export interface CreateProductInput {
   unit_of_measure?: string; // defaults to "unit"
   cost_price: Money;
   sale_price: Money;
-  barcode?: string;
-  reorder_level?: number;
-  /** Initial stock quantity — creates an inventory record */
+  /**
+   * Opening stock. A trigger creates the inventory row at 0 on insert; the
+   * repository writes this over it when supplied.
+   */
   initial_quantity?: Quantity;
 }
 
@@ -89,8 +88,6 @@ export interface UpdateProductInput {
   unit_of_measure?: string;
   cost_price?: Money;
   sale_price?: Money;
-  barcode?: string | null;
-  reorder_level?: number | null;
   is_active?: boolean;
 }
 
@@ -99,14 +96,11 @@ export interface ProductFilter {
   organization_id: OrganizationId;
   is_active?: boolean;
   category?: string;
-  /** Full-text search across name, sku, barcode */
+  /** Substring search across name and sku */
   search?: string;
-  /** Only return products that are low on stock */
-  low_stock?: boolean;
 }
 
 /** Product joined with its current inventory level */
 export interface ProductWithInventory extends Product {
   quantity_on_hand: Quantity;
-  is_low_stock: boolean;
 }

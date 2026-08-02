@@ -27,6 +27,7 @@ export type InventoryId = Brand<string, 'InventoryId'>;
 export type SaleId = Brand<string, 'SaleId'>;
 export type SaleItemId = Brand<string, 'SaleItemId'>;
 export type PaymentId = Brand<string, 'PaymentId'>;
+export type PaymentAllocationId = Brand<string, 'PaymentAllocationId'>;
 export type ExpenseId = Brand<string, 'ExpenseId'>;
 
 /**

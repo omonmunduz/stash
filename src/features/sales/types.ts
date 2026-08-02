@@ -29,12 +29,12 @@ import type {
   CustomerId,
   ProductId,
   OrganizationId,
-  UserId,
   Timestamps,
   Auditable,
   Money,
   Quantity,
 } from '@/lib/types/common';
+import type { PaymentMethod } from '@/features/payments/types';
 
 /** Lifecycle status of a sale */
 export type SaleStatus = 'draft' | 'completed' | 'cancelled';
@@ -50,8 +50,14 @@ export interface Sale extends Timestamps, Auditable {
   id: SaleId;
   organization_id: OrganizationId;
 
-  /** Human-readable invoice number. Format: INV-YYYY-NNNN */
-  sale_number: string;
+  /**
+   * Human-readable invoice number. Format: INV-YYYY-NNNN
+   *
+   * Null while the sale is a draft. The number is assigned by
+   * trg_set_sale_number when the sale moves to 'completed', so that abandoned
+   * drafts do not burn invoice numbers and leave gaps in the sequence.
+   */
+  sale_number: string | null;
 
   customer_id: CustomerId;
 
@@ -106,6 +112,13 @@ export interface SaleItem {
   /** Snapshot of product name at sale time */
   product_name: string;
 
+  /**
+   * Snapshot of the product SKU at sale time. Empty string when the product had
+   * no SKU — the column is nullable, but every read site wants a string to
+   * render, so the mapper collapses null rather than pushing the check outward.
+   */
+  product_sku: string;
+
   quantity: Quantity;
 
   /** Snapshot of selling price at sale time */
@@ -130,17 +143,36 @@ export interface SaleItem {
 
 // ── Input Types ───────────────────────────────────────────────────────────────
 
-/** Input for creating a new sale (header only — items added via addItem) */
-export interface CreateSaleInput {
-  customer_id: CustomerId;
-  sale_date?: Date;        // defaults to today
-  due_date?: Date;
-  tax?: Money;             // defaults to 0
-  discount?: Money;        // defaults to 0
-  notes?: string;
+/** One line on a new sale, as submitted by the sale form. */
+export interface CreateSaleItemInput {
+  product_id: ProductId;
+  quantity: Quantity;
+  /** Defaults to the product's current sale_price when the form leaves it alone. */
+  unit_price: Money;
+  discount?: Money;
 }
 
-/** Input for adding a line item to a sale */
+/**
+ * Input for creating a whole sale at once: header, lines, and whatever the
+ * customer handed over at the counter.
+ *
+ * `amount_paid` is what was paid upfront, which may be zero (pure credit), part
+ * of the total (partial), or the full amount (cash sale). Anything above the
+ * total is kept as account credit against the customer's next purchase rather
+ * than rejected — customers round up, and refusing the payment is worse than
+ * carrying the difference forward.
+ */
+export interface CreateSaleWithItemsInput {
+  customer_id: CustomerId;
+  items: CreateSaleItemInput[];
+  sale_date?: Date;
+  due_date?: Date | null;
+  notes?: string | null;
+  amount_paid?: Money;
+  payment_method?: PaymentMethod;
+}
+
+/** Input for adding a line item to an existing draft sale. */
 export interface AddSaleItemInput {
   product_id: ProductId;
   quantity: Quantity;
@@ -148,12 +180,16 @@ export interface AddSaleItemInput {
   discount?: Money;        // defaults to 0
 }
 
-/** Input for updating sale-level fields */
+/**
+ * Input for updating sale-level fields.
+ *
+ * tax and discount are absent deliberately: they feed subtotal/total, which
+ * triggers recalculate from the line items. Letting a caller patch them here
+ * would put the header out of step with its own lines until the next item change.
+ */
 export interface UpdateSaleInput {
   sale_date?: Date;
   due_date?: Date | null;
-  tax?: Money;
-  discount?: Money;
   notes?: string | null;
 }
 
@@ -188,9 +224,15 @@ export interface SaleWithDetails extends SaleWithItems {
   };
   payments: Array<{
     id: string;
+    payment_number: string;
+    /**
+     * The portion of that payment applied to THIS sale, read from the allocation
+     * row — not the payment's face value. A single payment settling three
+     * invoices appears on each of them with a different amount here.
+     */
     amount: Money;
     payment_date: Date;
-    payment_method: string;
+    payment_method: PaymentMethod;
     reference_number: string | null;
   }>;
 }

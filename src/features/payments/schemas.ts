@@ -32,21 +32,19 @@ export const createPaymentSchema = z.object({
   notes: z.string().max(500).trim().optional(),
 });
 
-/** Schema for correcting a payment record */
+/**
+ * Schema for correcting a payment record.
+ *
+ * `amount` is absent on purpose. Changing it after the fact would leave the
+ * allocations describing a split of money that no longer exists — the trigger
+ * would re-derive the invoices, but the extra would sit unallocated with no
+ * record of why. Void the payment and record the right one instead.
+ */
 export const updatePaymentSchema = z.object({
   payment_date: z.coerce.date().optional(),
-  amount: z
-    .number()
-    .positive()
-    .refine(
-      (val) => Number(val.toFixed(2)) === val || Number.isInteger(val * 100),
-      'Amount can have at most 2 decimal places'
-    )
-    .optional(),
   payment_method: paymentMethodSchema.optional(),
   reference_number: z.string().max(100).trim().nullable().optional(),
   notes: z.string().max(500).trim().nullable().optional(),
-  sale_id: z.string().uuid().nullable().optional(),
 });
 
 export type CreatePaymentSchema = z.infer<typeof createPaymentSchema>;

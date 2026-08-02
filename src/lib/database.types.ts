@@ -241,7 +241,6 @@ export type Database = {
           payment_method: Database["public"]["Enums"]["payment_method"]
           payment_number: string
           reference_number: string | null
-          sale_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -257,7 +256,6 @@ export type Database = {
           payment_method: Database["public"]["Enums"]["payment_method"]
           payment_number: string
           reference_number?: string | null
-          sale_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -273,7 +271,6 @@ export type Database = {
           payment_method?: Database["public"]["Enums"]["payment_method"]
           payment_number?: string
           reference_number?: string | null
-          sale_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -298,8 +295,50 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      payment_allocations: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          organization_id: string
+          payment_id: string
+          sale_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          payment_id: string
+          sale_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          payment_id?: string
+          sale_id?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "payments_sale_id_fkey"
+            foreignKeyName: "payment_allocations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_sale_id_fkey"
             columns: ["sale_id"]
             isOneToOne: false
             referencedRelation: "sales"
@@ -593,6 +632,34 @@ export type Database = {
         Args: { required_role: Database["public"]["Enums"]["user_role"] }
         Returns: boolean
       }
+      record_customer_payment: {
+        Args: {
+          p_organization_id: string
+          p_customer_id: string
+          p_amount: number
+          p_payment_method: Database["public"]["Enums"]["payment_method"]
+          p_payment_date?: string
+          p_reference_number?: string | null
+          p_notes?: string | null
+          p_sale_id?: string | null
+        }
+        Returns: string
+      }
+      create_sale_with_items: {
+        Args: {
+          p_organization_id: string
+          p_customer_id: string
+          p_items: Json
+          p_sale_date?: string
+          p_due_date?: string | null
+          p_notes?: string | null
+          p_amount_paid?: number
+          p_payment_method?: Database["public"]["Enums"]["payment_method"]
+        }
+        Returns: string
+      }
+      fn_recalc_customer_balance: { Args: { p_customer_id: string }; Returns: undefined }
+      fn_recalc_sale_payment: { Args: { p_sale_id: string }; Returns: undefined }
     }
     Enums: {
       payment_method: "cash" | "card" | "bank_transfer" | "check" | "other"

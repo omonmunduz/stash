@@ -17,8 +17,12 @@ import type { Money, Result } from '@/lib/types/common';
  * Rules:
  * 1. Amount must be positive.
  * 2. Customer must be active.
- * 3. If linked to a sale, the sale must belong to the same customer.
- * 4. Warn (soft) if amount exceeds what is owed on the sale.
+ * 3. If aimed at a specific sale, that sale must belong to the same customer.
+ * 4. Warn (soft) if the amount exceeds the whole tab — the excess becomes credit.
+ *
+ * Paying more than one invoice's balance is NOT a warning: the surplus rolls onto
+ * the customer's other open invoices, which is the normal case for someone
+ * clearing several weeks of small purchases with one note.
  */
 export function canRecordPayment(
   input: Pick<CreatePaymentInput, 'amount'>,
@@ -63,26 +67,49 @@ export function canRecordPayment(
       };
     }
 
-    if (input.amount > sale.amount_due) {
-      return {
-        success: false,
-        error: {
-          message: `Payment (${input.amount.toFixed(2)}) exceeds the amount due (${sale.amount_due.toFixed(2)}). The excess will create an overpayment credit.`,
-          isSoftWarning: true, // Manager may allow
-        },
-      };
-    }
+  }
+
+  // Compared against the customer's whole balance, not one invoice. Overshooting
+  // a single invoice is routine; overshooting everything they owe means the shop
+  // is now holding money it will have to remember, so it is worth a confirmation.
+  if (customer.current_balance > 0 && input.amount > customer.current_balance) {
+    return {
+      success: false,
+      error: {
+        message: `Payment (${input.amount.toFixed(2)}) is more than the ${customer.current_balance.toFixed(2)} owed. The extra ${(input.amount - customer.current_balance).toFixed(2)} will be kept as credit on their account.`,
+        isSoftWarning: true,
+      },
+    };
   }
 
   return { success: true, data: undefined };
 }
 
 /**
- * True when the payment is not linked to any specific sale.
- * Unallocated payments represent advance payments or account credits.
+ * How much of a payment is sitting as account credit rather than against an
+ * invoice.
+ *
+ * Non-zero in two ordinary situations: the customer paid more than they owed, or
+ * they paid in advance of buying anything. Both mean the shop is holding their
+ * money, so it shows on the tab as credit instead of vanishing into a settled
+ * invoice.
  */
-export function isUnallocatedPayment(payment: Payment): boolean {
-  return payment.sale_id === null;
+export function getUnallocatedAmount(
+  payment: Pick<Payment, 'amount'>,
+  allocations: Array<{ amount: Money }>
+): Money {
+  const applied = allocations.reduce((sum, allocation) => sum + allocation.amount, 0);
+  // Guarded against a negative: allocations can never exceed the payment (the
+  // RPC slices from a shrinking remainder), but a rounding artefact should read
+  // as zero credit rather than as the shop owing the customer money.
+  return Math.max(0, payment.amount - applied);
+}
+
+/**
+ * True when none of the payment landed on an invoice — a pure advance payment.
+ */
+export function isFullyUnallocated(allocations: Array<{ amount: Money }>): boolean {
+  return allocations.length === 0;
 }
 
 /**

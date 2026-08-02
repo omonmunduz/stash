@@ -9,6 +9,7 @@ import type { Product } from './types';
 import type { Inventory } from '@/features/inventory/types';
 import type { Money, Quantity, Result } from '@/lib/types/common';
 
+
 // ── Pricing & Margin ──────────────────────────────────────────────────────────
 
 /**
@@ -57,12 +58,15 @@ export function isPricingHealthy(product: Product): Result<void> {
 // ── Inventory Integration ─────────────────────────────────────────────────────
 
 /**
- * True if the product's stock is at or below its reorder level.
- * Returns false if no reorder_level is set (Phase 2 feature).
+ * True if stock has run out entirely.
+ *
+ * Per-product reorder thresholds need a reorder_level column the MVP schema
+ * does not have, so "low" is not yet a question this codebase can answer.
+ * inventory/business-rules.ts has isLowStock(inventory, threshold) for callers
+ * that can supply a threshold themselves.
  */
-export function isLowStock(product: Product, inventory: Inventory): boolean {
-  if (product.reorder_level === null) return false;
-  return inventory.quantity_on_hand <= product.reorder_level;
+export function isOutOfStock(inventory: Inventory): boolean {
+  return inventory.quantity_on_hand <= 0;
 }
 
 /**

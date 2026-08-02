@@ -47,15 +47,23 @@ export class InventoryService {
     return this.repo.findAll({ ...filter, organization_id: this.orgId });
   }
 
-  /** Get products that are at or below their reorder level. */
-  async getLowStockProducts(): Promise<InventoryWithProduct[]> {
+  /**
+   * Get products at or below a stock threshold.
+   *
+   * The threshold is a parameter, not a per-product column: `products` has no
+   * reorder_level, and adding one is a Phase 2 decision about how a shop wants to
+   * be warned. Until then the caller says what "low" means, and the default of 0
+   * degrades to "actually out of stock" — which is the alert that matters even
+   * without configuration.
+   */
+  async getLowStockProducts(threshold: number = 0): Promise<InventoryWithProduct[]> {
     const all = await this.repo.findAll({ organization_id: this.orgId });
-    return all.filter((item) => isLowStock(item, item.product.reorder_level));
+    return all.filter((item) => isLowStock(item, threshold));
   }
 
   /** Get the count of low-stock products (for dashboard badge). */
-  async getLowStockCount(): Promise<number> {
-    const items = await this.getLowStockProducts();
+  async getLowStockCount(threshold: number = 0): Promise<number> {
+    const items = await this.getLowStockProducts(threshold);
     return items.length;
   }
 

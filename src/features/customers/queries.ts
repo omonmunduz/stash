@@ -75,25 +75,57 @@ export function applyCustomerSearch<T extends { or: (filter: string) => T }>(
 }
 
 /**
- * Aggregates for the customer detail page, in one round trip per relation.
+ * Reads for the customer detail page, one round trip per relation.
  *
- * Kept as separate queries rather than a single nested select because the
- * detail page renders them in independent sections, and a nested select would
- * make one slow relation block the whole page.
+ * Kept as separate queries rather than a single nested select because the detail
+ * page renders them in independent sections, and a nested select would make one
+ * slow relation block the whole page.
  */
-export function customerOpenSalesQuery(
+
+/**
+ * The customer's transactions, newest first.
+ *
+ * Drafts are included. A draft is a basket being filled right now; leaving it off
+ * the customer's own page is how someone walks out with goods nobody recorded.
+ * Cancelled sales are excluded — nothing was taken and nothing is owed.
+ */
+export function customerSalesQuery(
   supabase: SupabaseServerClient,
   orgId: string,
   customerId: string
 ) {
   return supabase
     .from('sales')
-    .select('id, sale_number, sale_date, due_date, total, amount_paid, amount_due, payment_status, status')
+    .select(
+      'id, sale_number, sale_date, due_date, total, amount_paid, amount_due, payment_status, status'
+    )
     .eq('organization_id', orgId)
     .eq('customer_id', customerId)
-    .eq('status', 'completed')
+    .in('status', ['draft', 'completed'])
     .is('deleted_at', null)
-    .order('sale_date', { ascending: false });
+    .order('sale_date', { ascending: false })
+    .order('created_at', { ascending: false });
+}
+
+/**
+ * Line items for a set of sales, in one query rather than one per sale.
+ *
+ * This is the answer to "what did they actually take?" — the question the lump
+ * balance on the list page cannot answer. Fetched for every visible sale up front
+ * instead of on expand, because the rows are small and a request per chevron
+ * click makes the page feel slow for no gain.
+ */
+export function saleItemsForSalesQuery(
+  supabase: SupabaseServerClient,
+  orgId: string,
+  saleIds: string[]
+) {
+  return supabase
+    .from('sale_items')
+    .select('id, sale_id, product_id, product_name, product_sku, quantity, unit_price, subtotal')
+    .eq('organization_id', orgId)
+    .in('sale_id', saleIds)
+    .order('created_at', { ascending: true });
 }
 
 export function customerPaymentsQuery(
@@ -103,9 +135,30 @@ export function customerPaymentsQuery(
 ) {
   return supabase
     .from('payments')
-    .select('id, payment_number, payment_date, amount, payment_method, reference_number, sale_id')
+    .select('id, payment_number, payment_date, amount, payment_method, reference_number')
     .eq('organization_id', orgId)
     .eq('customer_id', customerId)
     .is('deleted_at', null)
-    .order('payment_date', { ascending: false });
+    .order('payment_date', { ascending: false })
+    .order('created_at', { ascending: false });
+}
+
+/**
+ * Which invoices each of those payments was applied to.
+ *
+ * A payment no longer points at a single sale, so this is how the page can say
+ * "the 50 they paid on Tuesday cleared INV-0007 and part of INV-0008" instead of
+ * just showing an unexplained credit.
+ */
+export function allocationsForPaymentsQuery(
+  supabase: SupabaseServerClient,
+  orgId: string,
+  paymentIds: string[]
+) {
+  return supabase
+    .from('payment_allocations')
+    .select('payment_id, sale_id, amount, sale:sales ( sale_number )')
+    .eq('organization_id', orgId)
+    .in('payment_id', paymentIds)
+    .order('created_at', { ascending: true });
 }

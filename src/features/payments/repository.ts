@@ -70,8 +70,16 @@ export interface PaymentRepository {
     input: CreatePaymentInput
   ): Promise<PaymentWithAllocations>;
 
-  /** Correct a payment's metadata. Cannot change the amount — void instead. */
-  update(id: PaymentId, input: UpdatePaymentInput): Promise<Payment>;
+  /**
+   * Correct a payment. Metadata is a plain patch; `amount` goes through
+   * update_payment_amount, which rebuilds the customer's allocations oldest-first
+   * so the invoices this payment was covering end up matching the new figure.
+   */
+  update(
+    organizationId: OrganizationId,
+    id: PaymentId,
+    input: UpdatePaymentInput
+  ): Promise<Payment>;
 
   /**
    * Void a payment. Triggers un-pay the invoices it was covering and the
@@ -219,9 +227,12 @@ export class SupabasePaymentRepository implements PaymentRepository {
       p_amount: input.amount,
       p_payment_method: input.payment_method,
       p_payment_date: toDateOnly(input.payment_date ?? new Date()),
-      p_reference_number: input.reference_number ?? null,
-      p_notes: input.notes ?? null,
-      p_sale_id: input.sale_id ?? null,
+      // All three are DEFAULT NULL in the function. Omitting is equivalent, and a
+      // missing p_sale_id is what makes the payment go against the whole tab
+      // oldest-first rather than one named invoice.
+      p_reference_number: input.reference_number ?? undefined,
+      p_notes: input.notes ?? undefined,
+      p_sale_id: input.sale_id ?? undefined,
     });
 
     if (error) throw new Error(`Failed to record payment: ${error.message}`);
@@ -253,7 +264,25 @@ export class SupabasePaymentRepository implements PaymentRepository {
     };
   }
 
-  async update(id: PaymentId, input: UpdatePaymentInput): Promise<Payment> {
+  async update(
+    organizationId: OrganizationId,
+    id: PaymentId,
+    input: UpdatePaymentInput
+  ): Promise<Payment> {
+    // The amount goes through its own RPC, which rewrites the allocation split
+    // oldest-first inside one transaction. A plain UPDATE on the column would
+    // leave the old allocations in place: lower the amount from 50 to 30 and the
+    // invoices it was covering would still read as having received 50.
+    if (input.amount !== undefined) {
+      const { error } = await this.supabase.rpc('update_payment_amount', {
+        p_organization_id: organizationId,
+        p_payment_id: id,
+        p_amount: input.amount,
+      });
+
+      if (error) throw new Error(`Failed to change the payment amount: ${error.message}`);
+    }
+
     const patch: PaymentUpdate = {};
     if (input.payment_date !== undefined) patch.payment_date = toDateOnly(input.payment_date);
     if (input.payment_method !== undefined) patch.payment_method = input.payment_method;

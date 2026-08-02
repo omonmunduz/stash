@@ -42,11 +42,17 @@ export function mapSale(row: SaleRow): Sale {
     updated_at: new Date(row.updated_at!),
     deleted_at: row.deleted_at ? new Date(row.deleted_at) : null,
     created_by: row.created_by ? brandId(row.created_by) : null,
+    updated_by: row.updated_by ? brandId(row.updated_by) : null,
   };
 }
 
 /**
  * Map a sale_items row to the domain SaleItem type.
+ *
+ * updated_at falls back to created_at rather than to null. The column was added
+ * after the table existed, so rows written before that migration hold NULL, and
+ * "never edited" is better expressed as "last touched when it was created" than
+ * as a date the UI has to special-case.
  */
 export function mapSaleItem(row: SaleItemRow): SaleItem {
   return {
@@ -62,5 +68,7 @@ export function mapSaleItem(row: SaleItemRow): SaleItem {
     discount: row.discount ?? 0,
     subtotal: row.subtotal,
     created_at: new Date(row.created_at!),
+    updated_at: new Date(row.updated_at ?? row.created_at!),
+    updated_by: row.updated_by ? brandId(row.updated_by) : null,
   };
 }

@@ -28,6 +28,7 @@ import type {
   SaleId,
   CustomerId,
   OrganizationId,
+  UserId,
   Timestamps,
   Auditable,
   Money,
@@ -60,6 +61,9 @@ export interface Payment extends Timestamps, Auditable {
   reference_number: string | null;
 
   notes: string | null;
+
+  /** Who last corrected this record. Null for a payment never edited. */
+  updated_by: UserId | null;
 }
 
 /**
@@ -97,11 +101,15 @@ export interface CreatePaymentInput {
 /**
  * Input for correcting a payment record.
  *
- * Changing `amount` re-derives the affected invoices through a trigger, but it
- * does not re-run allocation — a correction that increases the amount leaves the
- * extra unallocated. Void and re-record for anything beyond a typo fix.
+ * `amount` is editable: she wrote 50 and it was really 30, and that is a typo to
+ * fix rather than a reason to void a receipt the customer already has. Correcting
+ * it goes through update_payment_amount, which discards this payment's
+ * allocations and re-runs oldest-debt-first for the whole customer, so the
+ * invoices it was covering end up where the corrected money actually reaches.
+ * Metadata-only edits take the plain UPDATE path instead.
  */
 export interface UpdatePaymentInput {
+  amount?: Money;
   payment_date?: Date;
   payment_method?: PaymentMethod;
   reference_number?: string | null;

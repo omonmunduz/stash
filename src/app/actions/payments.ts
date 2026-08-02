@@ -13,7 +13,7 @@ import { getPaymentService } from '@/features/payments/server';
 import { requireRole } from '@/features/auth/guards';
 import { ROUTES } from '@/lib/constants/routes';
 import type { RecordPaymentResult } from '@/features/payments/service';
-import type { PaymentMethod } from '@/features/payments/types';
+import type { Payment, PaymentMethod } from '@/features/payments/types';
 import type { Result } from '@/lib/types/common';
 import { brandId } from '@/lib/types/common';
 
@@ -77,6 +77,84 @@ export async function recordPaymentAction(
   for (const allocation of result.data.payment.allocations) {
     revalidatePath(ROUTES.sales.detail(allocation.sale_id));
   }
+
+  return result;
+}
+
+/** Fields the payment edit form submits. */
+export interface PaymentEditFormValues {
+  /** Blank leaves the amount alone; a value re-runs oldest-debt-first. */
+  amount?: string;
+  /** ISO date (yyyy-mm-dd). Blank leaves the date alone. */
+  payment_date?: string;
+  payment_method?: PaymentMethod;
+  reference_number?: string;
+  notes?: string;
+}
+
+/**
+ * Correct a payment.
+ *
+ * Manager or above, matching voidPaymentAction: changing what a customer is
+ * recorded as having handed over moves their balance, so it sits with the other
+ * corrections rather than with routine entry.
+ *
+ * customerId is a parameter rather than read back from the payment because it is
+ * only needed to revalidate the tab the user is looking at. The service still
+ * loads the payment itself and checks tenancy, so a wrong value here changes
+ * which page refreshes, not which record is written.
+ */
+export async function updatePaymentAction(
+  id: string,
+  customerId: string,
+  values: PaymentEditFormValues
+): Promise<Result<Payment>> {
+  const { service, user } = await getPaymentService();
+
+  const permission = requireRole(user, 'manager');
+  if (!permission.success) return permission;
+
+  // Blank fields are omitted rather than sent as undefined-ish values, so an edit
+  // that only touches the notes does not re-run the allocation rebuild.
+  const patch: Record<string, unknown> = {};
+
+  if (values.amount?.trim()) {
+    const amount = Number(values.amount.trim());
+
+    if (Number.isNaN(amount)) {
+      return { success: false, error: 'Enter a valid amount.' };
+    }
+
+    patch.amount = amount;
+  }
+
+  if (values.payment_date?.trim()) {
+    patch.payment_date = parseDateInput(values.payment_date);
+  }
+
+  if (values.payment_method) patch.payment_method = values.payment_method;
+
+  // Cleared text fields are meant to erase the stored value, so an empty string
+  // becomes null rather than being dropped from the patch.
+  if (values.reference_number !== undefined) {
+    patch.reference_number = values.reference_number.trim() || null;
+  }
+
+  if (values.notes !== undefined) {
+    patch.notes = values.notes.trim() || null;
+  }
+
+  const result = await service.update(brandId<'PaymentId'>(id), patch);
+  if (!result.success) return result;
+
+  // An amount change rebuilds this customer's allocations oldest-first, so every
+  // one of their invoices can have moved — the whole sales list is revalidated
+  // rather than the specific invoices this payment used to touch.
+  revalidatePath(ROUTES.customers.list);
+  revalidatePath(ROUTES.customers.detail(customerId));
+  revalidatePath(ROUTES.payments.list);
+  revalidatePath(ROUTES.sales.list);
+  revalidatePath(ROUTES.dashboard.home);
 
   return result;
 }

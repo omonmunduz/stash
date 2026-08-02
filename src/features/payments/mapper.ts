@@ -26,6 +26,7 @@ export function mapPayment(row: PaymentRow): Payment {
     updated_at: new Date(row.updated_at!),
     deleted_at: row.deleted_at ? new Date(row.deleted_at) : null,
     created_by: row.created_by ? brandId(row.created_by) : null,
+    updated_by: row.updated_by ? brandId(row.updated_by) : null,
   };
 }
 

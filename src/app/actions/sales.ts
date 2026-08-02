@@ -16,7 +16,7 @@ import { redirect } from 'next/navigation';
 import { getSaleService } from '@/features/sales/server';
 import { requireRole } from '@/features/auth/guards';
 import { ROUTES } from '@/lib/constants/routes';
-import type { Sale } from '@/features/sales/types';
+import type { Sale, SaleWithItems } from '@/features/sales/types';
 import type { PaymentMethod } from '@/features/payments/types';
 import type { Result } from '@/lib/types/common';
 import { brandId } from '@/lib/types/common';
@@ -133,7 +133,131 @@ export async function updateSaleAction(
   return result;
 }
 
+/** One line as the inline editor submits it. */
+export interface SaleItemFormValues {
+  /** Blank or absent adds a new line; set edits that line. */
+  item_id?: string;
+  product_id: string;
+  quantity: string;
+  unit_price?: string;
+  discount?: string;
+}
+
+/**
+ * Add a line to a sale, or correct an existing one.
+ *
+ * Manager or above, same as the other post-hoc corrections: changing what a
+ * customer owes days later is a supervised act, and it is what
+ * sales_update_scoped_by_role allows for anyone who did not create the sale.
+ */
+export async function upsertSaleItemAction(
+  saleId: string,
+  values: SaleItemFormValues
+): Promise<Result<SaleWithItems>> {
+  const { service, user } = await getSaleService();
+
+  const permission = requireRole(user, 'manager');
+  if (!permission.success) return permission;
+
+  if (!values.product_id?.trim()) {
+    return { success: false, error: 'Pick a product for this line.' };
+  }
+
+  const quantity = toNumber(values.quantity);
+  if (quantity === undefined || Number.isNaN(quantity)) {
+    return { success: false, error: 'Enter a quantity.' };
+  }
+
+  const unitPrice = toNumber(values.unit_price);
+  if (unitPrice !== undefined && Number.isNaN(unitPrice)) {
+    return { success: false, error: 'Price must be a number.' };
+  }
+
+  const discount = toNumber(values.discount);
+  if (discount !== undefined && Number.isNaN(discount)) {
+    return { success: false, error: 'Discount must be a number.' };
+  }
+
+  const result = await service.upsertItem(brandId<'SaleId'>(saleId), {
+    item_id: values.item_id?.trim() || undefined,
+    product_id: values.product_id.trim(),
+    quantity,
+    unit_price: unitPrice,
+    discount,
+  });
+
+  if (!result.success) return result;
+
+  revalidateSaleEdit(saleId, result.data.customer_id);
+  return result;
+}
+
+/** Remove a line from a sale. Manager or above. */
+export async function removeSaleItemAction(
+  saleId: string,
+  itemId: string
+): Promise<Result<SaleWithItems>> {
+  const { service, user } = await getSaleService();
+
+  const permission = requireRole(user, 'manager');
+  if (!permission.success) return permission;
+
+  const result = await service.removeItem(
+    brandId<'SaleId'>(saleId),
+    brandId<'SaleItemId'>(itemId)
+  );
+
+  if (!result.success) return result;
+
+  revalidateSaleEdit(saleId, result.data.customer_id);
+  return result;
+}
+
+/**
+ * Void a sale: cancelled, then hidden from every list.
+ *
+ * Admin or above. Cancelling leaves a visible record that something was
+ * reversed, which is usually what a correction wants. Voiding also removes it
+ * from view, so it sits a level higher — the same place customer deletion sits.
+ *
+ * Returns rather than redirecting: this is called from the customer's tab, where
+ * the user's next move is to look at the corrected balance in place.
+ */
+export async function voidSaleAction(
+  id: string,
+  customerId: string
+): Promise<Result<void>> {
+  const { service, user } = await getSaleService();
+
+  const permission = requireRole(user, 'admin');
+  if (!permission.success) return permission;
+
+  const result = await service.void(brandId<'SaleId'>(id));
+  if (!result.success) return result;
+
+  revalidateSaleEdit(id, customerId);
+  return result;
+}
+
 // ── Internals ─────────────────────────────────────────────────────────────────
+
+/**
+ * Revalidate everything one sale edit invalidates.
+ *
+ * Editing a line moves four things at once: the sale's own total, the stock of
+ * the product on that line, the customer's balance, and — because payments are
+ * re-applied oldest-first — the payment status of that customer's other
+ * invoices. The sales list is the cheapest way to cover the last of those.
+ */
+function revalidateSaleEdit(saleId: string, customerId: string): void {
+  revalidatePath(ROUTES.sales.list);
+  revalidatePath(ROUTES.sales.detail(saleId));
+  revalidatePath(ROUTES.customers.list);
+  revalidatePath(ROUTES.customers.detail(customerId));
+  revalidatePath(ROUTES.products.list);
+  revalidatePath(ROUTES.inventory.list);
+  revalidatePath(ROUTES.dashboard.home);
+}
 
 /**
  * Turn the form's strings into the shape the service schema expects.

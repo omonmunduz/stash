@@ -21,9 +21,16 @@ import type {
   SaleWithDetails,
   CreateSaleWithItemsInput,
   UpdateSaleInput,
+  UpsertSaleItemInput,
   SaleFilter,
 } from './types';
-import type { SaleId, OrganizationId, CustomerId, Money } from '@/lib/types/common';
+import type {
+  SaleId,
+  SaleItemId,
+  OrganizationId,
+  CustomerId,
+  Money,
+} from '@/lib/types/common';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/database.types';
 import { mapSale, mapSaleItem } from './mapper';
@@ -74,10 +81,35 @@ export interface SaleRepository {
   update(id: SaleId, input: UpdateSaleInput): Promise<Sale>;
 
   /**
+   * Add a line to a sale, or correct an existing one. Stock moves by the
+   * difference, the sale total is recalculated, and the customer's payments are
+   * re-applied oldest-first — all in one transaction.
+   */
+  upsertItem(
+    organizationId: OrganizationId,
+    saleId: SaleId,
+    input: UpsertSaleItemInput
+  ): Promise<SaleWithItems>;
+
+  /** Remove a line from a sale, returning its stock and recalculating the total. */
+  removeItem(
+    organizationId: OrganizationId,
+    saleId: SaleId,
+    itemId: SaleItemId
+  ): Promise<SaleWithItems>;
+
+  /**
    * Mark a sale as cancelled. If it was completed, a DB trigger restores the
    * stock and the customer's balance drops by the amount that was outstanding.
    */
   cancel(id: SaleId): Promise<Sale>;
+
+  /**
+   * Void a sale: cancel it and soft-delete it in one step, so it leaves every
+   * list while staying on record. Payments that were covering it become account
+   * credit rather than vanishing.
+   */
+  void(organizationId: OrganizationId, id: SaleId): Promise<void>;
 
   /** Sum the total of completed sales in a period. For reports. */
   sumRevenueForPeriod(organizationId: OrganizationId, from: Date, to: Date): Promise<Money>;
@@ -270,8 +302,11 @@ export class SupabaseSaleRepository implements SaleRepository {
         discount: item.discount ?? 0,
       })),
       p_sale_date: toDateOnly(input.sale_date ?? new Date()),
-      p_due_date: input.due_date ? toDateOnly(input.due_date) : null,
-      p_notes: input.notes ?? null,
+      // p_due_date and p_notes are DEFAULT NULL in the function, so leaving them
+      // out is the same as passing null — and the generated types only allow the
+      // omission.
+      p_due_date: input.due_date ? toDateOnly(input.due_date) : undefined,
+      p_notes: input.notes ?? undefined,
       p_amount_paid: input.amount_paid ?? 0,
       p_payment_method: input.payment_method ?? 'cash',
     });
@@ -312,6 +347,48 @@ export class SupabaseSaleRepository implements SaleRepository {
     return mapSale(data);
   }
 
+  async upsertItem(
+    organizationId: OrganizationId,
+    saleId: SaleId,
+    input: UpsertSaleItemInput
+  ): Promise<SaleWithItems> {
+    const { error } = await this.supabase.rpc('upsert_sale_item', {
+      p_organization_id: organizationId,
+      p_sale_id: saleId,
+      // Omitted rather than null for a new line: p_item_id IS NULL is what tells
+      // upsert_sale_item to insert, and an absent argument takes the same default.
+      p_item_id: input.id ?? undefined,
+      p_product_id: input.product_id,
+      p_quantity: input.quantity,
+      p_unit_price: input.unit_price,
+      p_discount: input.discount ?? 0,
+    });
+
+    if (error) throw new Error(`Failed to save the line: ${error.message}`);
+
+    const sale = await this.findWithItems(saleId);
+    if (!sale) throw new Error('Line saved but the sale could not be read back.');
+    return sale;
+  }
+
+  async removeItem(
+    organizationId: OrganizationId,
+    saleId: SaleId,
+    itemId: SaleItemId
+  ): Promise<SaleWithItems> {
+    const { error } = await this.supabase.rpc('remove_sale_item', {
+      p_organization_id: organizationId,
+      p_sale_id: saleId,
+      p_item_id: itemId,
+    });
+
+    if (error) throw new Error(`Failed to remove the line: ${error.message}`);
+
+    const sale = await this.findWithItems(saleId);
+    if (!sale) throw new Error('Line removed but the sale could not be read back.');
+    return sale;
+  }
+
   async cancel(id: SaleId): Promise<Sale> {
     const { data, error } = await this.supabase
       .from('sales')
@@ -323,6 +400,18 @@ export class SupabaseSaleRepository implements SaleRepository {
 
     if (error) throw new Error(`Failed to cancel sale: ${error.message}`);
     return mapSale(data);
+  }
+
+  async void(organizationId: OrganizationId, id: SaleId): Promise<void> {
+    // One RPC rather than an update to status followed by one to deleted_at: the
+    // cancel path restores stock and releases payments, and a client that died
+    // between the two writes would leave a cancelled-but-visible sale.
+    const { error } = await this.supabase.rpc('void_sale', {
+      p_organization_id: organizationId,
+      p_sale_id: id,
+    });
+
+    if (error) throw new Error(`Failed to void sale: ${error.message}`);
   }
 
   async sumRevenueForPeriod(

@@ -161,8 +161,26 @@ export class PaymentService {
     const existing = await this.getById(id);
     if (!existing.success) return existing;
 
+    // Correcting an amount downward can leave the customer in credit, which is
+    // fine, but correcting it to something they never handed over is not
+    // recoverable from the ledger. The customer is only loaded when the amount
+    // actually changed, so an ordinary note edit stays a single write.
+    if (
+      parsed.data.amount !== undefined &&
+      parsed.data.amount !== existing.data.amount
+    ) {
+      const customer = await this.customerRepo.findById(existing.data.customer_id);
+
+      if (!customer || customer.organization_id !== this.orgId) {
+        return { success: false, error: 'Customer not found.' };
+      }
+    }
+
     try {
-      return { success: true, data: await this.repo.update(id, parsed.data) };
+      return {
+        success: true,
+        data: await this.repo.update(this.orgId, id, parsed.data),
+      };
     } catch (error) {
       return { success: false, error: toMessage(error, 'Could not update the payment.') };
     }
@@ -213,6 +231,16 @@ function toMessage(error: unknown, fallback: string): string {
   // a person.
   if (error.message.includes('Payment amount must be greater than zero')) {
     return 'Payment amount must be greater than zero.';
+  }
+
+  // update_payment_amount refuses to touch a voided row rather than silently
+  // reviving it.
+  if (error.message.includes('Payment not found')) {
+    return 'That payment no longer exists, or it has already been voided.';
+  }
+
+  if (error.message.includes('Not authorized for this organization')) {
+    return 'That record belongs to another organization.';
   }
 
   if (error.message.includes('does not belong to')) {

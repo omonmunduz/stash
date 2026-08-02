@@ -29,6 +29,7 @@ import type {
   CustomerId,
   ProductId,
   OrganizationId,
+  UserId,
   Timestamps,
   Auditable,
   Money,
@@ -89,6 +90,16 @@ export interface Sale extends Timestamps, Auditable {
 
   payment_status: SalePaymentStatus;
   notes: string | null;
+
+  /**
+   * Who last changed this sale, if anyone has. Null on a sale that has never
+   * been edited since it was recorded.
+   *
+   * Paired with `updated_at` from Timestamps, this is the audit trail for
+   * after-the-fact corrections: the shop owner fixing a quantity three days
+   * later leaves a mark, which is the whole point of allowing the edit.
+   */
+  updated_by: UserId | null;
 }
 
 /**
@@ -100,8 +111,9 @@ export interface Sale extends Timestamps, Auditable {
  *   must reflect what was true at the time of the transaction.
  * - cost_price enables historical gross profit calculation per sale even after
  *   product.cost_price changes in the future.
- * - No updated_at: line items are either added or removed, never partially updated
- *   in a way that would need audit. The sale's updated_at covers the parent.
+ * - updated_at / updated_by are on the line, not just the parent sale. A
+ *   quantity corrected days later is the exact thing the shop owner needs to be
+ *   able to point at, and "the sale changed at 4pm" does not say which line.
  */
 export interface SaleItem {
   id: SaleItemId;
@@ -139,6 +151,12 @@ export interface SaleItem {
   subtotal: Money;
 
   created_at: Date;
+
+  /** Last time this line was corrected. Equals created_at for untouched lines. */
+  updated_at: Date;
+
+  /** Who last corrected this line. Null for lines never edited since creation. */
+  updated_by: UserId | null;
 }
 
 // ── Input Types ───────────────────────────────────────────────────────────────
@@ -172,13 +190,34 @@ export interface CreateSaleWithItemsInput {
   payment_method?: PaymentMethod;
 }
 
-/** Input for adding a line item to an existing draft sale. */
-export interface AddSaleItemInput {
+/**
+ * Input for adding a line item to a sale, or editing one already on it.
+ *
+ * `id` is what distinguishes the two: absent means add a line, present means
+ * correct the line with that id. Both go through the same RPC because both have
+ * the same consequences — the sale total moves, stock moves, and the customer's
+ * tab moves — and splitting them into two paths would mean maintaining that
+ * cascade twice.
+ *
+ * Editing is deliberately not restricted to drafts. The shop records a sale when
+ * the goods leave the shelf, so by the time anyone notices a wrong quantity the
+ * sale is long completed. Refusing to edit it would mean the only correction
+ * available is voiding a real transaction and re-typing it.
+ */
+export interface UpsertSaleItemInput {
+  /** Omit to add a new line; supply to edit an existing one. */
+  id?: SaleItemId;
   product_id: ProductId;
   quantity: Quantity;
   unit_price?: Money;      // defaults to product.sale_price
   discount?: Money;        // defaults to 0
 }
+
+/**
+ * Kept as an alias so existing callers and the addSaleItemSchema name still
+ * read naturally: adding is the no-id case of an upsert.
+ */
+export type AddSaleItemInput = Omit<UpsertSaleItemInput, 'id'>;
 
 /**
  * Input for updating sale-level fields.

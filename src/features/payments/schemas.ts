@@ -35,12 +35,22 @@ export const createPaymentSchema = z.object({
 /**
  * Schema for correcting a payment record.
  *
- * `amount` is absent on purpose. Changing it after the fact would leave the
- * allocations describing a split of money that no longer exists — the trigger
- * would re-derive the invoices, but the extra would sit unallocated with no
- * record of why. Void the payment and record the right one instead.
+ * `amount` is editable. Recording 50 when the customer handed over 30 is the
+ * single most likely data-entry mistake in a cash business, and voiding a receipt
+ * the customer is holding is a worse answer than correcting the figure. The
+ * service routes an amount change through update_payment_amount, which re-runs
+ * oldest-debt-first allocation so no invoice is left claiming money that no
+ * longer exists.
  */
 export const updatePaymentSchema = z.object({
+  amount: z
+    .number()
+    .positive('Payment amount must be greater than zero')
+    .refine(
+      (val) => Number(val.toFixed(2)) === val || Number.isInteger(val * 100),
+      'Amount can have at most 2 decimal places'
+    )
+    .optional(),
   payment_date: z.coerce.date().optional(),
   payment_method: paymentMethodSchema.optional(),
   reference_number: z.string().max(100).trim().nullable().optional(),

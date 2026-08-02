@@ -27,7 +27,10 @@ import {
   CustomerPaymentsHistory,
   CustomerSalesHistory,
 } from '@/features/customers/components/CustomerHistory';
+import { RecordPaymentForm } from '@/features/payments/components/RecordPaymentForm';
+import { toPickerProducts } from '@/features/sales/picker-products';
 import { getCustomerService } from '@/features/customers/server';
+import { getProductService } from '@/features/products/server';
 import { getCustomerHistory } from '@/features/customers/history';
 import { getCustomerDisplayName } from '@/features/customers/business-rules';
 import { hasRole } from '@/features/auth/guards';
@@ -61,10 +64,22 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
   if (!result.success) notFound();
 
   const customer = result.data;
-  const history = await getCustomerHistory(user.organizationId, customer.id);
 
   const canEdit = hasRole(user, 'manager');
   const canDelete = hasRole(user, 'admin');
+
+  // The catalog is only needed for the product picker inside the line editor, so
+  // managers and above are the only ones who pay for the query. Loaded alongside
+  // the history rather than after it — they are independent reads, and the page
+  // cannot render until both are in.
+  const [history, productsResult] = await Promise.all([
+    getCustomerHistory(user.organizationId, customer.id),
+    canEdit ? getProductService().then(({ service }) => service.list()) : null,
+  ]);
+
+  const products =
+    productsResult?.success === true ? toPickerProducts(productsResult.data) : [];
+
   const standing = getCreditStanding(customer);
 
   return (
@@ -204,13 +219,40 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
         </Card>
       </div>
 
+      {/* Recording money received sits above the history: it is the action, and
+          the tables below it are the evidence. */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Sales</CardTitle>
-          <CardDescription>Completed invoices, newest first.</CardDescription>
+          <CardTitle className="text-base">Take a payment</CardTitle>
+          <CardDescription>
+            Applied to their oldest unpaid invoice first.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RecordPaymentForm
+            customerId={customer.id}
+            currentBalance={customer.current_balance}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">What they took</CardTitle>
+          <CardDescription>
+            Newest first. Open a row to see the products on it
+            {canEdit ? ' and correct anything that was written down wrong.' : '.'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0 sm:px-0">
-          <CustomerSalesHistory sales={history.sales} />
+          <CustomerSalesHistory
+            sales={history.sales}
+            customerId={customer.id}
+            products={products}
+            canEdit={canEdit}
+            canDelete={canDelete}
+            itemsUnavailable={history.itemsUnavailable}
+          />
         </CardContent>
       </Card>
 
@@ -220,7 +262,11 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
           <CardDescription>Money received from this customer.</CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0 sm:px-0">
-          <CustomerPaymentsHistory payments={history.payments} />
+          <CustomerPaymentsHistory
+            payments={history.payments}
+            customerId={customer.id}
+            canEdit={canEdit}
+          />
         </CardContent>
       </Card>
     </div>

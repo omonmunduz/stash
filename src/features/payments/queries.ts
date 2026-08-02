@@ -10,7 +10,7 @@ import type { SupabaseServerClient } from '@/lib/supabase/server';
 export const PAYMENT_COLUMNS = `
   id, organization_id, payment_number, customer_id, payment_date, amount,
   payment_method, reference_number, notes, created_by, created_at, updated_at,
-  deleted_at
+  updated_by, deleted_at
 ` as const;
 
 /** Allocation row plus the invoice number of the sale it landed on. */

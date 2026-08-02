@@ -19,13 +19,14 @@ import type { SupabaseServerClient } from '@/lib/supabase/server';
 export const SALE_COLUMNS = `
   id, organization_id, sale_number, customer_id, sale_date, due_date,
   status, subtotal, tax, discount, total, amount_paid, amount_due,
-  payment_status, notes, created_by, created_at, updated_at, deleted_at
+  payment_status, notes, created_by, created_at, updated_at, updated_by, deleted_at
 ` as const;
 
 /** Line items belonging to a sale. */
 export const SALE_ITEM_COLUMNS = `
   id, organization_id, sale_id, product_id, product_name, product_sku,
-  quantity, unit_price, cost_price, discount, subtotal, created_at
+  quantity, unit_price, cost_price, discount, subtotal, created_at,
+  updated_at, updated_by
 ` as const;
 
 /** Lightweight sale for list views, with enough customer detail to render a row. */

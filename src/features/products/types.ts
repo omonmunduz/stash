@@ -11,10 +11,13 @@
  * - unit_of_measure is free text — "box", "kg", "pallet", "unit" etc.
  * - sku is required and unique per org — the business's own product identifier
  *
- * No barcode or reorder_level fields. Earlier drafts declared both, but the
- * products table has neither column, so a mapper could only ever have written
- * null into them — a field that always reads null is worse than an absent one,
- * because calling code branches on it. They arrive in Phase 2 with the columns.
+ * No barcode field. An earlier draft declared one, but the products table has no
+ * such column, so a mapper could only ever have written null into it — a field
+ * that always reads null is worse than an absent one, because calling code
+ * branches on it. It arrives in Phase 2 with the column, alongside scanning.
+ *
+ * reorder_level was in that same category until 20260803000001 added the column.
+ * It is real now.
  */
 
 import type {
@@ -59,6 +62,21 @@ export interface Product extends Timestamps, Auditable {
 
   /** What customers are charged for this product */
   sale_price: Money;
+
+  /**
+   * Path to the object in the private product-images bucket, shaped
+   * `<organization_id>/<product_id>.<ext>`. Not a URL: display goes through a
+   * server-created signed URL, and storing an absolute one would mean storing
+   * something that expires.
+   */
+  image_url: string | null;
+
+  /**
+   * Warn when stock falls to or below this. Null and 0 are different answers:
+   * null means nobody has configured a warning for this product, 0 means "tell me
+   * only when it has actually run out".
+   */
+  reorder_level: Quantity | null;
 
   is_active: boolean;
 }

@@ -12,9 +12,15 @@ import { escapeSearchTerm } from '@/features/customers/queries';
 
 /** Full product row, matching the columns the MVP schema actually has. */
 export const PRODUCT_COLUMNS =
-  'id,organization_id,sku,name,description,category,unit_of_measure,cost_price,sale_price,is_active,created_at,updated_at,deleted_at,created_by' as const;
+  'id,organization_id,sku,name,description,category,unit_of_measure,cost_price,sale_price,image_url,reorder_level,is_active,created_at,updated_at,deleted_at,created_by' as const;
 
-/** Reduced projection for the line-item picker on the sale form. */
+/**
+ * Reduced projection for the line-item picker on the sale form.
+ *
+ * Deliberately without image_url: the picker is a text select, and a signed URL
+ * per option would be one Storage round trip per product for something never
+ * rendered.
+ */
 export const PRODUCT_LOOKUP_COLUMNS = 'id,sku,name,sale_price,unit_of_measure' as const;
 
 export function productsBaseQuery(supabase: SupabaseServerClient, orgId: string) {

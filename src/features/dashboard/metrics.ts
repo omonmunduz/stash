@@ -108,10 +108,16 @@ export async function getDashboardMetrics(
       .gte('sale_date', monthStart),
 
     // head:true — only the count matters, so don't ship the rows over the wire.
+    //
+    // Scoped to rows that count a product. Since 20260803000001 the inventory
+    // table also holds non-sellable items (bags, packaging), and this figure is
+    // labelled as products out of stock on the home screen — counting an empty box
+    // of carrier bags among them would make the number mean nothing.
     supabase
       .from('inventory')
       .select('id', { count: 'exact', head: true })
       .eq('organization_id', organizationId)
+      .not('product_id', 'is', null)
       .eq('quantity_on_hand', 0),
 
     supabase

@@ -159,28 +159,38 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          item_id: string | null
           organization_id: string
-          product_id: string
+          product_id: string | null
           quantity_on_hand: number | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
+          item_id?: string | null
           organization_id: string
-          product_id: string
+          product_id?: string | null
           quantity_on_hand?: number | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          item_id?: string | null
           organization_id?: string
-          product_id?: string
+          product_id?: string | null
           quantity_on_hand?: number | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "inventory_organization_id_fkey"
             columns: ["organization_id"]
@@ -193,6 +203,75 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_items: {
+        Row: {
+          category: string | null
+          cost_price: number
+          created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          item_code: string
+          name: string
+          organization_id: string
+          reorder_level: number | null
+          unit_of_measure: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          cost_price?: number
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          item_code: string
+          name: string
+          organization_id: string
+          reorder_level?: number | null
+          unit_of_measure?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          cost_price?: number
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          item_code?: string
+          name?: string
+          organization_id?: string
+          reorder_level?: number | null
+          unit_of_measure?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_items_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -365,9 +444,11 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          image_url: string | null
           is_active: boolean | null
           name: string
           organization_id: string
+          reorder_level: number | null
           sale_price: number
           sku: string
           unit_of_measure: string | null
@@ -381,9 +462,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name: string
           organization_id: string
+          reorder_level?: number | null
           sale_price?: number
           sku: string
           unit_of_measure?: string | null
@@ -397,9 +480,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name?: string
           organization_id?: string
+          reorder_level?: number | null
           sale_price?: number
           sku?: string
           unit_of_measure?: string | null
@@ -716,6 +801,10 @@ export type Database = {
       fn_sale_holds_stock: { Args: { p_sale_id: string }; Returns: boolean }
       generate_customer_code: { Args: { org_id: string }; Returns: string }
       generate_expense_number: { Args: { org_id: string }; Returns: string }
+      generate_inventory_item_code: {
+        Args: { org_id: string }
+        Returns: string
+      }
       generate_payment_number: { Args: { org_id: string }; Returns: string }
       generate_sale_number: { Args: { org_id: string }; Returns: string }
       has_role_or_above: {

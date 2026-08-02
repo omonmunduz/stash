@@ -150,6 +150,11 @@ export class SupabaseProductRepository implements ProductRepository {
 
     const quantityByProduct = new Map<string, number>();
     for (const row of data ?? []) {
+      // product_id is nullable since 20260803000001 — an inventory row counts
+      // either a product or a non-sellable item. The .in() filter above already
+      // restricts this to product rows, so a null here cannot happen; the guard is
+      // what makes that legible to the type system rather than an assertion.
+      if (row.product_id === null) continue;
       quantityByProduct.set(row.product_id, row.quantity_on_hand ?? 0);
     }
 

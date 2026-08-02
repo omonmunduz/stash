@@ -26,6 +26,12 @@ export function mapProduct(row: ProductRow): Product {
     unit_of_measure: row.unit_of_measure ?? 'unit',
     cost_price: row.cost_price ?? 0,
     sale_price: row.sale_price ?? 0,
+    // A Storage object path, not a URL — the bucket is private, so the display
+    // layer turns this into a signed URL. Left null when no picture was uploaded.
+    image_url: row.image_url,
+    // Null and 0 mean different things here: null is "no warning configured",
+    // 0 is "warn me only once it is actually gone". Not coalesced for that reason.
+    reorder_level: row.reorder_level,
     is_active: row.is_active ?? true,
     created_at: new Date(row.created_at!),
     updated_at: new Date(row.updated_at!),

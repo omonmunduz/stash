@@ -207,6 +207,74 @@ export type Database = {
           },
         ]
       }
+      inventory_adjustments: {
+        Row: {
+          adjusted_at: string
+          adjusted_by: string | null
+          id: string
+          item_id: string | null
+          notes: string | null
+          organization_id: string
+          product_id: string | null
+          quantity_after: number
+          quantity_delta: number
+          reason: string
+        }
+        Insert: {
+          adjusted_at?: string
+          adjusted_by?: string | null
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          organization_id: string
+          product_id?: string | null
+          quantity_after: number
+          quantity_delta: number
+          reason: string
+        }
+        Update: {
+          adjusted_at?: string
+          adjusted_by?: string | null
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          organization_id?: string
+          product_id?: string | null
+          quantity_after?: number
+          quantity_delta?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_adjustments_adjusted_by_fkey"
+            columns: ["adjusted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           category: string | null
@@ -737,6 +805,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_inventory: {
+        Args: {
+          p_delta: number
+          p_item_id: string
+          p_notes?: string
+          p_organization_id: string
+          p_product_id: string
+          p_reason: string
+        }
+        Returns: string
+      }
       create_sale_with_items: {
         Args: {
           p_amount_paid?: number
@@ -831,6 +910,16 @@ export type Database = {
           p_sale_id: string
         }
         Returns: undefined
+      }
+      set_inventory_count: {
+        Args: {
+          p_counted: number
+          p_item_id: string
+          p_notes?: string
+          p_organization_id: string
+          p_product_id: string
+        }
+        Returns: string
       }
       update_payment_amount: {
         Args: {

@@ -1,105 +1,98 @@
 /**
  * INVENTORY QUERY BUILDERS
  *
- * Supabase-specific query builders for inventory operations.
- * These are the only files that know about Supabase query syntax.
- * All other layers use the repository interface.
+ * The only inventory file that knows Supabase syntax. Same conventions as
+ * products/queries.ts: explicit column lists so a new column cannot silently
+ * reach the mapper, and an explicit organization_id filter alongside RLS so a
+ * broken policy fails closed.
+ *
+ * A stock row embeds either a product or an item, never both. Both embeds are
+ * requested on every read and one always comes back null — cheaper than two
+ * queries, and the mapper turns the pair into a discriminated union immediately so
+ * nothing above this layer handles the nullable shape.
+ *
+ * Low stock is filtered in application code rather than SQL. PostgREST cannot
+ * compare two columns to each other (quantity_on_hand <= reorder_level), and the
+ * comparison lives on the embedded side besides. The previous version of this file
+ * tried `.gt('product.reorder_level', 0)`, which filtered on a column that did not
+ * exist and would have failed on every call.
  */
 
 import type { SupabaseServerClient } from '@/lib/supabase/server';
-import type { Database } from '@/lib/database.types';
+import { escapeSearchTerm } from '@/features/customers/queries';
 
-// Column selections
-export const INVENTORY_WITH_PRODUCT_COLUMNS = `
+/** A stock row plus whichever thing it counts. */
+export const INVENTORY_COLUMNS = `
   id,
   organization_id,
   product_id,
+  item_id,
   quantity_on_hand,
   updated_at,
   product:products (
-    id,
-    sku,
-    name,
-    category,
-    unit_of_measure,
-    cost_price,
-    sale_price,
-    reorder_level,
-    is_active
+    id, sku, name, category, unit_of_measure,
+    cost_price, sale_price, image_url, reorder_level, is_active
+  ),
+  item:inventory_items (
+    id, item_code, name, category, unit_of_measure,
+    cost_price, image_url, reorder_level, is_active
   )
 ` as const;
 
-export const INVENTORY_SUMMARY_COLUMNS = `
+/** Full item row, for the item catalogue. */
+export const INVENTORY_ITEM_COLUMNS =
+  'id,organization_id,item_code,name,description,category,unit_of_measure,cost_price,image_url,reorder_level,is_active,created_at,updated_at,deleted_at,created_by' as const;
+
+/** One logged adjustment, with the name of what it moved. */
+export const INVENTORY_ADJUSTMENT_COLUMNS = `
+  id,
+  organization_id,
   product_id,
-  quantity_on_hand,
-  updated_at,
-  product:products ( name, sku, unit_of_measure, cost_price, reorder_level )
+  item_id,
+  quantity_delta,
+  quantity_after,
+  reason,
+  notes,
+  adjusted_by,
+  adjusted_at,
+  product:products ( id, sku, name ),
+  item:inventory_items ( id, item_code, name )
 ` as const;
 
-/**
- * Base query for inventory within an organization.
- */
-export function inventoryBaseQuery(
-  supabase: SupabaseServerClient,
-  orgId: string
-) {
+export function inventoryBaseQuery(supabase: SupabaseServerClient, orgId: string) {
   return supabase
     .from('inventory')
-    .select(INVENTORY_WITH_PRODUCT_COLUMNS)
+    .select(INVENTORY_COLUMNS)
+    .eq('organization_id', orgId);
+}
+
+export function inventoryItemsBaseQuery(supabase: SupabaseServerClient, orgId: string) {
+  return supabase
+    .from('inventory_items')
+    .select(INVENTORY_ITEM_COLUMNS)
+    .eq('organization_id', orgId)
+    .is('deleted_at', null);
+}
+
+export function adjustmentsBaseQuery(supabase: SupabaseServerClient, orgId: string) {
+  return supabase
+    .from('inventory_adjustments')
+    .select(INVENTORY_ADJUSTMENT_COLUMNS)
     .eq('organization_id', orgId);
 }
 
 /**
- * Query for all low-stock products.
- * A product is "low stock" when quantity_on_hand <= reorder_level.
+ * Substring search over an item's name and code.
  *
- * Note: reorder_level comparison must happen in application code since
- * Supabase doesn't support cross-column comparisons in .lte() filters.
- * Use this query and filter in the service layer.
+ * Reuses the customer escaper for the same reason products does: the injection
+ * surface is the same PostgREST `or()` grammar, and two copies of an escaping rule
+ * is how one of them ends up missing a metacharacter.
  */
-export function lowStockQuery(supabase: SupabaseServerClient, orgId: string) {
-  return supabase
-    .from('inventory')
-    .select(INVENTORY_WITH_PRODUCT_COLUMNS)
-    .eq('organization_id', orgId)
-    .gt('product.reorder_level', 0); // Only products with a threshold set
-}
-
-/**
- * Query for a single product's inventory.
- */
-export function inventoryByProductQuery(
-  supabase: SupabaseServerClient,
-  orgId: string,
-  productId: string
-) {
-  return supabase
-    .from('inventory')
-    .select(INVENTORY_WITH_PRODUCT_COLUMNS)
-    .eq('organization_id', orgId)
-    .eq('product_id', productId)
-    .single();
-}
-
-/**
- * Query to verify a sale can be completed — checks all items have sufficient stock.
- * Returns the list of items with their current inventory levels.
- */
-export function saleInventoryCheckQuery(
-  supabase: SupabaseServerClient,
-  orgId: string,
-  saleId: string
-) {
-  return supabase
-    .from('sale_items')
-    .select(`
-      product_id,
-      product_name,
-      quantity,
-      inventory:inventory!inner (
-        quantity_on_hand
-      )
-    `)
-    .eq('sale_id', saleId)
-    .eq('organization_id', orgId);
+export function applyItemSearch<T extends { or: (filter: string) => T }>(
+  query: T,
+  search: string
+): T {
+  const term = escapeSearchTerm(search);
+  if (!term) return query;
+  return query.or(`name.ilike.%${term}%,item_code.ilike.%${term}%`);
 }

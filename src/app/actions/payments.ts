@@ -68,9 +68,11 @@ export async function recordPaymentAction(
   if (!result.success) return result;
 
   // The payment moved the customer's balance and the payment_status of every
-  // invoice it touched, so both the tab and the sales views are now stale.
+  // invoice it touched, so both the tab and the sales views are now stale. The
+  // day book is stale too — this is the row that belongs at the top of it.
   revalidatePath(ROUTES.customers.list);
   revalidatePath(ROUTES.customers.detail(values.customer_id));
+  revalidatePath(ROUTES.payments.list);
   revalidatePath(ROUTES.sales.list);
   revalidatePath(ROUTES.dashboard.home);
 
@@ -180,6 +182,7 @@ export async function voidPaymentAction(
 
   revalidatePath(ROUTES.customers.list);
   revalidatePath(ROUTES.customers.detail(customerId));
+  revalidatePath(ROUTES.payments.list);
   revalidatePath(ROUTES.sales.list);
   revalidatePath(ROUTES.dashboard.home);
 

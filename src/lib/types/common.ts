@@ -24,6 +24,9 @@ export type UserId = Brand<string, 'UserId'>;
 export type CustomerId = Brand<string, 'CustomerId'>;
 export type ProductId = Brand<string, 'ProductId'>;
 export type InventoryId = Brand<string, 'InventoryId'>;
+/** A non-sellable stocked thing: bags, packaging, cleaning supplies. */
+export type InventoryItemId = Brand<string, 'InventoryItemId'>;
+export type InventoryAdjustmentId = Brand<string, 'InventoryAdjustmentId'>;
 export type SaleId = Brand<string, 'SaleId'>;
 export type SaleItemId = Brand<string, 'SaleItemId'>;
 export type PaymentId = Brand<string, 'PaymentId'>;

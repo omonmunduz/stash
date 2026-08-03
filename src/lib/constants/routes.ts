@@ -58,7 +58,25 @@ export const ROUTES = {
 
   inventory: {
     list: '/inventory',
-    adjust: (productId: string) => `/inventory/${productId}/adjust`,
+
+    /**
+     * Stock is counted for two kinds of thing — sellable products and
+     * non-sellable items (bags, packaging) — so the kind is part of the path.
+     * The previous signature took a bare productId, which left no way to reach
+     * an item's stock at all.
+     */
+    adjust: (kind: 'product' | 'item', id: string) =>
+      `/inventory/adjust/${kind}/${id}`,
+
+    /**
+     * The non-sellable item catalogue. Products have their own screens under
+     * /products; these are the things that get counted but never sold.
+     */
+    items: {
+      list: '/inventory/items',
+      new: '/inventory/items/new',
+      edit: (id: string) => `/inventory/items/${id}/edit`,
+    },
   },
 
   sales: {
@@ -70,7 +88,17 @@ export const ROUTES = {
 
   payments: {
     list: '/payments',
-    new: (saleId?: string) => saleId ? `/payments/new?sale=${saleId}` : '/payments/new',
+
+    /**
+     * Optionally preselects who paid, matching sales.new.
+     *
+     * Previously took a saleId, which had no screen behind it: a payment against
+     * one specific invoice is recorded from that invoice, where the amount owed
+     * is already on the page. Arriving at a blank form knowing only the sale
+     * would mean looking the customer up again.
+     */
+    new: (customerId?: string) =>
+      customerId ? `/payments/new?customer=${customerId}` : '/payments/new',
   },
 
   expenses: {

@@ -88,8 +88,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Expenses',
     href: ROUTES.expenses.list,
     icon: Receipt,
-    available: false,
-    hint: 'Not built yet',
+    available: true,
   },
   {
     label: 'Reports',

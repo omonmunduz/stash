@@ -105,6 +105,7 @@ export const ROUTES = {
     list: '/expenses',
     new: '/expenses/new',
     detail: (id: string) => `/expenses/${id}`,
+    edit: (id: string) => `/expenses/${id}/edit`,
   },
 
   reports: {

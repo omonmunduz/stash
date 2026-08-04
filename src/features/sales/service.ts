@@ -29,6 +29,7 @@ import type {
   SaleItemId,
   CustomerId,
   OrganizationId,
+  Money,
   Result,
 } from '@/lib/types/common';
 import {
@@ -388,6 +389,34 @@ export class SaleService {
       return { success: true, data: undefined };
     } catch (error) {
       return { success: false, error: toMessage(error, 'Could not delete the sale.') };
+    }
+  }
+
+  /**
+   * Revenue from completed sales in a period. For reports.
+   *
+   * Both bounds are optional so a caller asking about "everything" does not have
+   * to invent dates. `from` omitted reaches back to the epoch, which is before
+   * any organization existed; `to` omitted means today, because a sale is not
+   * dated in the future and an open upper bound would include one entered a
+   * minute ago.
+   *
+   * Revenue, not profit: this is what was invoiced, and it ignores what the stock
+   * cost. Gross profit needs sale_items.cost_price, which is a different query
+   * and a different report.
+   */
+  async revenueForPeriod(from?: Date, to?: Date): Promise<Result<Money>> {
+    try {
+      return {
+        success: true,
+        data: await this.repo.sumRevenueForPeriod(
+          this.orgId,
+          from ?? new Date(0),
+          to ?? new Date()
+        ),
+      };
+    } catch (error) {
+      return { success: false, error: toMessage(error, 'Could not total revenue.') };
     }
   }
 }

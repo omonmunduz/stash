@@ -24,9 +24,11 @@ import { mapCustomer, mapCustomerDebtSummary } from './mapper';
 import {
   CUSTOMER_COLUMNS,
   CUSTOMER_LOOKUP_COLUMNS,
+  CUSTOMER_NAME_COLUMNS,
   applyCustomerSearch,
   customersBaseQuery,
 } from './queries';
+import { CATALOGUE_LIST_LIMIT, NAME_LOOKUP_LIMIT } from '@/lib/constants/query-limits';
 
 type CustomerUpdate = Database['public']['Tables']['customers']['Update'];
 
@@ -39,6 +41,14 @@ export interface CustomerRepository {
 
   /** List all customers in an organization with optional filtering. */
   findAll(filter: CustomerFilter): Promise<Customer[]>;
+
+  /**
+   * Every customer id in the organization with the two fields needed to name it.
+   *
+   * For the sales and payments lists, which show a name per row and nothing else
+   * about the customer. Deliberately unfiltered — see the implementation.
+   */
+  findNames(organizationId: OrganizationId): Promise<CustomerNameRow[]>;
 
   /**
    * Find customers with outstanding balances — for accounts receivable report.
@@ -84,6 +94,9 @@ export type CustomerLookupResult = Pick<
   Customer,
   'id' | 'customer_code' | 'name' | 'business_name' | 'current_balance' | 'credit_limit'
 >;
+
+/** Just enough of a customer to render their name. Returned by findNames(). */
+export type CustomerNameRow = Pick<Customer, 'id' | 'name' | 'business_name'>;
 
 /**
  * Supabase-backed customer repository.
@@ -141,12 +154,45 @@ export class SupabaseCustomerRepository implements CustomerRepository {
     // Balance descending puts "who owes me the most" at the top, which is the
     // question this list exists to answer. Name is the tiebreaker so the order
     // is stable across reloads when many customers owe nothing.
+    //
+    // The limit is a bound on the worst case, not pagination. Because the sort is
+    // balance-descending, the rows it drops are the ones owing nothing — the least
+    // interesting end of this list.
     const { data, error } = await query
       .order('current_balance', { ascending: false })
-      .order('name', { ascending: true });
+      .order('name', { ascending: true })
+      .limit(CATALOGUE_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list customers: ${error.message}`);
     return (data ?? []).map(mapCustomer);
+  }
+
+  async findNames(organizationId: OrganizationId): Promise<CustomerNameRow[]> {
+    // Neither deleted_at nor is_active is filtered, and that is the point. This
+    // resolves ids that already appear on a sale or a payment, and those
+    // transactions outlive the customer record: a soft-deleted customer's
+    // invoices stay in the ledger, so filtering them out here would render a real
+    // invoice as "Unknown customer". findAll excludes them because that list is
+    // the customer roster; this is a name lookup, and every id a transaction can
+    // reference has to resolve.
+    //
+    // Ordered by id purely so the cap takes a deterministic slice. There is no
+    // meaningful order for a lookup, and sorting by name would cost a full sort
+    // of the table to decide which rows to drop in a case that should not occur.
+    const { data, error } = await this.supabase
+      .from('customers')
+      .select(CUSTOMER_NAME_COLUMNS)
+      .eq('organization_id', organizationId)
+      .order('id', { ascending: true })
+      .limit(NAME_LOOKUP_LIMIT);
+
+    if (error) throw new Error(`Failed to load customer names: ${error.message}`);
+
+    return (data ?? []).map((row) => ({
+      id: row.id as CustomerId,
+      name: row.name,
+      business_name: row.business_name,
+    }));
   }
 
   async findWithBalance(organizationId: OrganizationId): Promise<CustomerDebtSummary[]> {

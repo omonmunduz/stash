@@ -7,6 +7,7 @@
  * opens this screen — usually with the customer standing in front of them.
  */
 
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Mail, MapPin, Pencil, Phone } from 'lucide-react';
@@ -43,10 +44,22 @@ interface CustomerDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * One customer fetch shared by generateMetadata and the page body.
+ *
+ * Next runs generateMetadata alongside the page render for the same request, so
+ * without cache() the identical getById query went out twice — and the service
+ * factory resolved auth twice on top of it.
+ */
+const loadCustomer = cache(async (id: string) => {
+  const { service, user } = await getCustomerService();
+  const result = await service.getById(brandId<'CustomerId'>(id));
+  return { result, user };
+});
+
 export async function generateMetadata({ params }: CustomerDetailPageProps) {
   const { id } = await params;
-  const { service } = await getCustomerService();
-  const result = await service.getById(brandId<'CustomerId'>(id));
+  const { result } = await loadCustomer(id);
 
   return {
     title: result.success ? getCustomerDisplayName(result.data) : 'Customer',
@@ -55,9 +68,7 @@ export async function generateMetadata({ params }: CustomerDetailPageProps) {
 
 export default async function CustomerDetailPage({ params }: CustomerDetailPageProps) {
   const { id } = await params;
-  const { service, user } = await getCustomerService();
-
-  const result = await service.getById(brandId<'CustomerId'>(id));
+  const { result, user } = await loadCustomer(id);
 
   // getById already scopes to the caller's organization, so a cross-tenant or
   // deleted ID lands here rather than leaking that the record exists.

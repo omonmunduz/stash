@@ -5,9 +5,9 @@
  * only unpaid: this doubles as the day book, and "what went out today" is asked
  * as often as "who still owes".
  *
- * Customer names come from a second query keyed by the ids on this page rather
- * than a join, so the sale repository keeps returning plain Sale rows and the
- * list stays one round trip plus one lookup.
+ * Customer names come from a second query rather than a join, so the sale
+ * repository keeps returning plain Sale rows. The two reads are issued in
+ * parallel, so the name lookup costs no extra latency.
  */
 
 import Link from 'next/link';
@@ -19,7 +19,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SaleList, type CustomerNameMap } from '@/features/sales/components/SaleList';
 import { getSaleService } from '@/features/sales/server';
 import { getCustomerService } from '@/features/customers/server';
-import { getCustomerDisplayName } from '@/features/customers/business-rules';
 import { ROUTES } from '@/lib/constants/routes';
 import { formatMoney } from '@/lib/utils/format';
 
@@ -35,23 +34,29 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
   const params = await searchParams;
   const unpaidOnly = params.unpaid === '1';
 
-  const { service } = await getSaleService();
-  const result = await service.list(unpaidOnly ? { overdueOnly: true } : {});
+  // Both factories resolve the same request-memoized auth state, so these run
+  // concurrently instead of the second waiting on the first.
+  const [{ service }, { service: customerService }] = await Promise.all([
+    getSaleService(),
+    getCustomerService(),
+  ]);
 
-  // Names for the sales actually on the page. Listing active customers is one
-  // query either way, and it keeps the sale rows free of join shapes.
-  const customerNames: CustomerNameMap = new Map();
+  // Customers are now fetched unconditionally. Skipping them when there are no
+  // sales saved a round trip in the rare empty case, but it forced the common
+  // case to serialise: the customer query could not start until the sale list
+  // came back. Overlapping them is the better trade.
+  const [result, namesResult] = await Promise.all([
+    service.list(unpaidOnly ? { overdueOnly: true } : {}),
+    customerService.listNames(),
+  ]);
 
-  if (result.success && result.data.length > 0) {
-    const { service: customerService } = await getCustomerService();
-    const customersResult = await customerService.list({ status: 'all' });
-
-    if (customersResult.success) {
-      for (const customer of customersResult.data) {
-        customerNames.set(customer.id, getCustomerDisplayName(customer));
-      }
-    }
-  }
+  // Names for the sales actually on the page, keyed by id rather than joined, so
+  // the sale rows stay plain Sale shapes. listNames() reads three columns and
+  // builds the map in the service; this page previously pulled every customer
+  // column to use two of them.
+  const customerNames: CustomerNameMap = namesResult.success
+    ? namesResult.data
+    : new Map();
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">

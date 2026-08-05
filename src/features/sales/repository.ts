@@ -43,6 +43,7 @@ import {
   saleWithItemsQuery,
   saleWithDetailsQuery,
 } from './queries';
+import { TRANSACTION_LIST_LIMIT } from '@/lib/constants/query-limits';
 
 type SaleUpdate = Database['public']['Tables']['sales']['Update'];
 
@@ -237,9 +238,12 @@ export class SupabaseSaleRepository implements SaleRepository {
       query = query.ilike('sale_number', `%${filter.search.trim()}%`);
     }
 
+    // Bound on the worst case, not pagination. The sort is newest-first, so the
+    // rows this drops are the oldest. See lib/constants/query-limits.
     const { data, error } = await query
       .order('sale_date', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(TRANSACTION_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list sales: ${error.message}`);
     return (data ?? []).map(mapSale);

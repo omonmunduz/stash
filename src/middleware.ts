@@ -13,21 +13,26 @@
  * - /auth/* → always allowed, never redirected
  *
  * Design decisions:
- * - Reads JWT claims ONLY, never the database, so this stays cheap enough to run
- *   on every request.
+ * - Reads JWT claims ONLY, never the database. The signature is verified locally
+ *   with WebCrypto against a module-cached JWKS, so a warm isolate makes zero
+ *   network calls. getUser() was used here previously, which meant a round trip
+ *   to the Auth server on every request — including every RSC navigation, since
+ *   those match the matcher below too.
  * - Claims lag reality: they're written with auth.admin.updateUserById() and
  *   only reach the cookie on the next token refresh. So a just-onboarded user
  *   may still lack organization_id here. That costs one redirect, which the
  *   page's authoritative check corrects.
  * - This is NOT a security boundary. It's routing UX. Middleware can be skipped
- *   by matcher gaps and it trusts unverified claims, so every protected page
- *   independently calls requireActiveUser(), and RLS backs that up in the
- *   database. Removing this file should not expose a single row.
+ *   by matcher gaps, and while the signature is now verified, the claims inside
+ *   it still lag the database. Every protected page independently calls
+ *   requireActiveUser(), and RLS backs that up in the database. Removing this
+ *   file should not expose a single row.
  */
 
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/lib/database.types';
+import { getJwks } from '@/lib/supabase/jwks';
 import { ROUTES } from '@/lib/constants/routes';
 
 export async function middleware(request: NextRequest) {
@@ -54,10 +59,20 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session — MUST be called to keep auth state alive
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Verify the JWT locally instead of asking the Auth server who this is.
+  // This project signs with ES256, so getClaims() checks the signature with
+  // WebCrypto against the shared module-scope JWKS cache — no network call on a
+  // warm isolate, where getUser() was a full round trip on every request
+  // including every RSC navigation.
+  //
+  // Session refresh is preserved. With no jwt argument getClaims() resolves
+  // through getSession(), which refreshes a token inside its expiry margin and
+  // writes the new cookies through the setAll callback above.
+  const { data: claimsData } = await supabase.auth.getClaims(undefined, {
+    jwks: await getJwks(),
+  });
+
+  const claims = claimsData?.claims ?? null;
 
   const url = request.nextUrl.clone();
   const pathname = url.pathname;
@@ -77,7 +92,12 @@ export async function middleware(request: NextRequest) {
   // Claims only — no DB query, so middleware stays fast. Claims lag reality
   // (they land on token refresh), so this decides ROUTING only. Every protected
   // page re-checks against the database via requireActiveUser().
-  const hasOrgClaim = Boolean(user?.app_metadata?.organization_id);
+  const hasOrgClaim = Boolean(claims?.app_metadata?.organization_id);
+
+  // A verified signature is what "has a session" means here. The routing below
+  // only ever asked whether someone is signed in, never anything about the user
+  // record itself.
+  const isSignedIn = claims !== null;
 
   // Never redirect the auth mechanism routes, in either state.
   if (isAuthMechanismRoute) {
@@ -86,7 +106,7 @@ export async function middleware(request: NextRequest) {
 
   // Root has no page — send visitors somewhere real rather than a 404.
   if (pathname === '/') {
-    url.pathname = !user
+    url.pathname = !isSignedIn
       ? ROUTES.auth.login
       : hasOrgClaim
         ? ROUTES.dashboard.home
@@ -95,7 +115,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // --- No session ---
-  if (!user) {
+  if (!isSignedIn) {
     if (isPublicRoute) return supabaseResponse;
 
     url.pathname = ROUTES.auth.login;
@@ -131,7 +151,12 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on all paths except static assets and Next.js internals
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Run on all paths except static assets and Next.js internals.
+    //
+    // This does NOT exclude client-side navigations: an RSC request is a GET to
+    // the real pathname with an ?_rsc= query, so it matches and always will.
+    // Keeping this list tight is about not burning an edge invocation on a font
+    // or a robots.txt, not about navigation cost.
+    '/((?!_next/static|_next/image|_next/data|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|woff|woff2|ttf|otf)$).*)',
   ],
 };

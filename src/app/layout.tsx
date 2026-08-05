@@ -7,9 +7,8 @@
  *   falls back to a system font and looks inconsistent beside Latin text.
  * - display: 'swap' keeps text visible during font load rather than blocking.
  * - lang is hardcoded to 'en' for now; it becomes dynamic when i18n ships.
- * - No AuthProvider here. The provider needs the current session, which is
- *   only known inside the (dashboard) and (onboarding) groups. Wrapping the
- *   root would force a session lookup on public pages that do not need one.
+ * - No session lookup here. Public pages do not need one, and the authenticated
+ *   groups resolve it themselves in their own layouts.
  */
 
 import type { Metadata, Viewport } from 'next';

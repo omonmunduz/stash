@@ -26,6 +26,17 @@ export const CUSTOMER_COLUMNS = 'id,organization_id,customer_code,name,business_
 export const CUSTOMER_LOOKUP_COLUMNS = 'id,customer_code,name,business_name,current_balance,credit_limit' as const;
 
 /**
+ * The narrowest projection that can answer "whose invoice is this?".
+ *
+ * The sales and payments lists show a customer name per row but never a balance
+ * or a credit limit, and they were reading all seventeen columns to build a
+ * `Map<id, name>`. Three columns are the whole requirement: the id to key on,
+ * and both name fields because the display name prefers business_name and falls
+ * back to name.
+ */
+export const CUSTOMER_NAME_COLUMNS = 'id,name,business_name' as const;
+
+/**
  * Base query: all non-deleted customers in one organization.
  */
 export function customersBaseQuery(

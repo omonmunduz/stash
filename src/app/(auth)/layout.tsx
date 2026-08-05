@@ -4,8 +4,8 @@
  * Centered single-column shell, no sidebar or nav — nothing here should hint at
  * app chrome to someone who isn't signed in.
  *
- * No AuthProvider: these pages are reachable without a session, and mounting
- * the provider would force a session lookup on every visit to /login.
+ * No session lookup: these pages are reachable without one, and resolving a
+ * session here would add a round trip to every visit to /login.
  */
 
 export default function AuthLayout({

@@ -33,6 +33,7 @@ import {
   paymentsByCustomerQuery,
   allocationsForPaymentsQuery,
 } from './queries';
+import { TRANSACTION_LIST_LIMIT } from '@/lib/constants/query-limits';
 
 type PaymentUpdate = Database['public']['Tables']['payments']['Update'];
 
@@ -115,9 +116,12 @@ export class SupabasePaymentRepository implements PaymentRepository {
     if (filter.date_from) query = query.gte('payment_date', toDateOnly(filter.date_from));
     if (filter.date_to) query = query.lte('payment_date', toDateOnly(filter.date_to));
 
+    // Bound on the worst case, not pagination. The sort is newest-first, so the
+    // rows this drops are the oldest. See lib/constants/query-limits.
     const { data, error } = await query
       .order('payment_date', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(TRANSACTION_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list payments: ${error.message}`);
     return (data ?? []).map(mapPayment);

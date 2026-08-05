@@ -1,14 +1,11 @@
 /**
- * Shared query shape + row→AuthState mapping for both the server and client
- * auth paths.
+ * Shared query shape + row→AuthState mapping for auth resolution.
  *
- * Two places resolve auth state: session.ts (Server Components, via the SSR
- * client) and AuthProvider (browser, on token refresh or cross-tab events).
- * They cannot share a Supabase client, but they must agree on the select list
- * and the rules — otherwise a deactivated user is blocked on one side and
- * allowed on the other. Hence: clients differ, this logic does not.
+ * Kept separate from session.ts so the select list and the status rules stay in
+ * one place: any second consumer must agree with the server on both, or a
+ * deactivated user ends up blocked on one path and allowed on the other.
  *
- * No 'use client' / 'use server' directive: pure, importable from both.
+ * No 'use client' / 'use server' directive: pure, importable from either side.
  */
 
 import type { AuthState, AuthUser } from './types';

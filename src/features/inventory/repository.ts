@@ -37,6 +37,7 @@ import {
   applyItemSearch,
   INVENTORY_ITEM_COLUMNS,
 } from './queries';
+import { CATALOGUE_LIST_LIMIT } from '@/lib/constants/query-limits';
 import {
   mapInventoryLine,
   mapInventoryItem,
@@ -129,7 +130,20 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     if (filter.kind === 'products') query = query.not('product_id', 'is', null);
     if (filter.kind === 'items') query = query.not('item_id', 'is', null);
 
-    const { data, error } = await query;
+    // Ordered before the limit so the cap takes a deterministic slice rather than
+    // whatever Postgres happened to return. There is no natural business order on
+    // a stock row, so this sorts by the FK pair purely for stability — the real
+    // ordering (low stock first, then name) is applied in memory below, since it
+    // depends on comparing two columns across an embed.
+    //
+    // The cap interacts with the filters below it: low_stock_only and search run
+    // in application code, so they only see rows the limit let through. One stock
+    // row exists per product or item, so reaching 2,000 means a 2,000-line
+    // catalogue — at which point this screen needs pagination regardless.
+    const { data, error } = await query
+      .order('product_id', { ascending: true, nullsFirst: false })
+      .order('item_id', { ascending: true, nullsFirst: false })
+      .limit(CATALOGUE_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to load stock levels: ${error.message}`);
 
@@ -164,7 +178,9 @@ export class SupabaseInventoryRepository implements InventoryRepository {
     if (filter.category) query = query.eq('category', filter.category);
     if (filter.search) query = applyItemSearch(query, filter.search);
 
-    const { data, error } = await query.order('name');
+    // Bound on the worst case, not pagination. Sorted by name, so the rows this
+    // drops are the tail of the alphabet. See lib/constants/query-limits.
+    const { data, error } = await query.order('name').limit(CATALOGUE_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list items: ${error.message}`);
     return (data ?? []).map(mapInventoryItem);

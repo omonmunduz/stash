@@ -9,6 +9,7 @@
  * top, which is what gets read back to whoever is standing there.
  */
 
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, User } from 'lucide-react';
@@ -39,10 +40,22 @@ interface SaleDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * One sale fetch shared by generateMetadata and the page body.
+ *
+ * Next runs generateMetadata alongside the page render for the same request, so
+ * without cache() the identical getWithDetails query — the expensive one, with
+ * its embedded items and payments — went out twice.
+ */
+const loadSale = cache(async (id: string) => {
+  const { service, user } = await getSaleService();
+  const result = await service.getWithDetails(brandId<'SaleId'>(id));
+  return { result, user };
+});
+
 export async function generateMetadata({ params }: SaleDetailPageProps) {
   const { id } = await params;
-  const { service } = await getSaleService();
-  const result = await service.getWithDetails(brandId<'SaleId'>(id));
+  const { result } = await loadSale(id);
 
   return {
     title: result.success ? (result.data.sale_number ?? 'Draft sale') : 'Sale',
@@ -51,9 +64,7 @@ export async function generateMetadata({ params }: SaleDetailPageProps) {
 
 export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
   const { id } = await params;
-  const { service, user } = await getSaleService();
-
-  const result = await service.getWithDetails(brandId<'SaleId'>(id));
+  const { result, user } = await loadSale(id);
 
   // getWithDetails scopes to the caller's organization, so a cross-tenant or
   // deleted id lands here rather than leaking that the record exists.

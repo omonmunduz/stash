@@ -9,9 +9,9 @@
  * a customer list — one row per handover — and the question being asked is nearly
  * always about the recent past. "Everything" is one tap away.
  *
- * Customer names come from a second query keyed by the ids on the page rather than
- * a join, the same as the sales list, so the payment repository keeps returning
- * plain Payment rows.
+ * Customer names come from a second query rather than a join, the same as the
+ * sales list, so the payment repository keeps returning plain Payment rows. That
+ * query is issued in parallel with the payment list, not after it.
  */
 
 import Link from 'next/link';
@@ -33,7 +33,6 @@ import {
 } from '@/features/payments/periods';
 import { getPaymentService } from '@/features/payments/server';
 import { getCustomerService } from '@/features/customers/server';
-import { getCustomerDisplayName } from '@/features/customers/business-rules';
 import { hasRole } from '@/features/auth/roles';
 import { PAYMENT_METHOD_LABELS } from '@/features/payments/labels';
 import type { PaymentMethod } from '@/features/payments/types';
@@ -54,26 +53,31 @@ export default async function PaymentsPage({ searchParams }: PaymentsPageProps) 
   const period = parsePaymentPeriod(params.period);
   const method = parseMethod(params.method);
 
-  const { service, user } = await getPaymentService();
-  const result = await service.list({
-    dateFrom: paymentPeriodStart(period),
-    method,
-  });
+  // Both factories resolve the same request-memoized auth state, so these run
+  // concurrently instead of the second waiting on the first.
+  const [{ service, user }, { service: customerService }] = await Promise.all([
+    getPaymentService(),
+    getCustomerService(),
+  ]);
 
-  // Names for the payments actually on the page. 'all' rather than 'active' so a
-  // payment from a customer since deactivated still shows who paid it.
-  const customerNames: CustomerNameMap = new Map();
+  // Customers are now fetched unconditionally. Skipping them on an empty list
+  // saved a round trip in the rare case at the cost of serialising the common
+  // one, since the customer query could not start until the payments came back.
+  const [result, namesResult] = await Promise.all([
+    service.list({
+      dateFrom: paymentPeriodStart(period),
+      method,
+    }),
+    // listNames() is deliberately unfiltered by status or deletion, so a payment
+    // from a customer since deactivated — or since removed — still shows who paid
+    // it. That used to be a `status: 'all'` list read of every column.
+    customerService.listNames(),
+  ]);
 
-  if (result.success && result.data.length > 0) {
-    const { service: customerService } = await getCustomerService();
-    const customersResult = await customerService.list({ status: 'all' });
-
-    if (customersResult.success) {
-      for (const customer of customersResult.data) {
-        customerNames.set(customer.id, getCustomerDisplayName(customer));
-      }
-    }
-  }
+  // Names for the payments actually on the page.
+  const customerNames: CustomerNameMap = namesResult.success
+    ? namesResult.data
+    : new Map();
 
   // Editing and voiding are manager work, matching payments_update_manager_or_above.
   // Recording is not — the button above is open to everyone.

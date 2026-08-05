@@ -6,8 +6,8 @@
  * Design decisions:
  * - Simple centered shell, no sidebar or nav — onboarding is linear and should
  *   not offer escape routes into a half-configured app.
- * - No AuthProvider: /onboarding/setup runs before the organization exists, so
- *   there is no 'authenticated' state to seed it with.
+ * - No shared session resolution: /onboarding/setup runs before the organization
+ *   exists, so there is no fully 'authenticated' state to hand down.
  * - No guard in this layout, deliberately. The steps have opposing
  *   requirements: /setup demands the user have NO organization, while every
  *   later step demands one. A single shared guard cannot express both, so each

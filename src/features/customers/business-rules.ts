@@ -99,8 +99,15 @@ export function parseCustomerCodeSequence(code: string): number | null {
 /**
  * Return the best display name for a customer.
  * Prefers business_name if set, falls back to name.
+ *
+ * Takes the two fields it reads rather than a whole Customer, so the callers
+ * that only fetched a name projection can use it without inventing the other
+ * fifteen columns. A full Customer still satisfies this parameter, so every
+ * existing call site is unchanged.
  */
-export function getCustomerDisplayName(customer: Customer): string {
+export function getCustomerDisplayName(
+  customer: Pick<Customer, 'name' | 'business_name'>
+): string {
   return customer.business_name ?? customer.name;
 }
 

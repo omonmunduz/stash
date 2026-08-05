@@ -17,7 +17,7 @@ import type { CustomerRepository, CustomerLookupResult } from './repository';
 import type { Customer, CustomerDebtSummary, CustomerFilter } from './types';
 import type { CustomerId, OrganizationId, Result } from '@/lib/types/common';
 import { createCustomerSchema, updateCustomerSchema } from './schemas';
-import { hasOutstandingBalance } from './business-rules';
+import { getCustomerDisplayName, hasOutstandingBalance } from './business-rules';
 
 /** Shape the list page filters by. */
 export interface CustomerListOptions {
@@ -75,6 +75,34 @@ export class CustomerService {
       return { success: true, data: customer };
     } catch (error) {
       return { success: false, error: toMessage(error, 'Could not load customer.') };
+    }
+  }
+
+  /**
+   * Customer id → display name, for lists that show a name per row and nothing
+   * else about the customer.
+   *
+   * Returns the map rather than the rows because every caller was building the
+   * same one, and because the display-name rule (business_name, falling back to
+   * name) belongs on this side of the boundary rather than in a page.
+   *
+   * Keyed by plain string: the components declare `Map<string, string>`, and a
+   * Map's key type is invariant, so handing back `Map<CustomerId, string>` would
+   * not be assignable to it. Lookups still typecheck, since a CustomerId is a
+   * string.
+   */
+  async listNames(): Promise<Result<Map<string, string>>> {
+    try {
+      const rows = await this.repo.findNames(this.orgId);
+      const names = new Map<string, string>();
+
+      for (const row of rows) {
+        names.set(row.id, getCustomerDisplayName(row));
+      }
+
+      return { success: true, data: names };
+    } catch (error) {
+      return { success: false, error: toMessage(error, 'Could not load customer names.') };
     }
   }
 

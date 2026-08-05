@@ -23,6 +23,7 @@ import {
   applyProductSearch,
   productsBaseQuery,
 } from './queries';
+import { CATALOGUE_LIST_LIMIT } from '@/lib/constants/query-limits';
 
 type ProductUpdate = Database['public']['Tables']['products']['Update'];
 
@@ -124,7 +125,12 @@ export class SupabaseProductRepository implements ProductRepository {
       query = applyProductSearch(query, filter.search);
     }
 
-    const { data, error } = await query.order('name', { ascending: true });
+    // Bound on the worst case, not pagination. See lib/constants/query-limits.
+    // findAllWithInventory builds on this, so the cap also bounds the .in() list
+    // of product ids in the inventory read below it.
+    const { data, error } = await query
+      .order('name', { ascending: true })
+      .limit(CATALOGUE_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list products: ${error.message}`);
     return (data ?? []).map(mapProduct);

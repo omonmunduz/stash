@@ -34,6 +34,7 @@ import {
   expensesListQuery,
   applyExpenseSearch,
 } from './queries';
+import { TRANSACTION_LIST_LIMIT } from '@/lib/constants/query-limits';
 
 type ExpenseUpdate = Database['public']['Tables']['expenses']['Update'];
 
@@ -112,7 +113,10 @@ export class SupabaseExpenseRepository implements ExpenseRepository {
     if (filter.amount_max !== undefined) query = query.lte('amount', filter.amount_max);
     if (filter.search?.trim()) query = applyExpenseSearch(query, filter.search);
 
-    const { data, error } = await query;
+    // Bound on the worst case, not pagination. expensesListQuery already sorts
+    // newest-first, so the rows this drops are the oldest — the far end of a list
+    // nobody scrolls to. See lib/constants/query-limits.
+    const { data, error } = await query.limit(TRANSACTION_LIST_LIMIT);
 
     if (error) throw new Error(`Failed to list expenses: ${error.message}`);
     return (data ?? []).map(mapExpense);

@@ -61,6 +61,7 @@ export interface Sale extends Timestamps, Auditable {
   sale_number: string | null;
 
   customer_id: CustomerId;
+  employee_id: string | null;
 
   /** Date the sale occurred (not necessarily today) */
   sale_date: Date;
@@ -119,7 +120,7 @@ export interface SaleItem {
   id: SaleItemId;
   organization_id: OrganizationId;
   sale_id: SaleId;
-  product_id: ProductId;
+  product_id: ProductId | null;
 
   /** Snapshot of product name at sale time */
   product_name: string;
@@ -130,6 +131,10 @@ export interface SaleItem {
    * render, so the mapper collapses null rather than pushing the check outward.
    */
   product_sku: string;
+
+  service_id: string | null;
+  service_name: string | null;
+  duration_minutes: number | null;
 
   quantity: Quantity;
 

@@ -32,7 +32,7 @@ type PaymentMethod = Database['public']['Enums']['payment_method'];
 /** One product line on a transaction — what was taken, and for how much. */
 export interface CustomerSaleItemRow {
   id: string;
-  product_id: string;
+  product_id: string | null;
   product_name: string;
   product_sku: string | null;
   quantity: number;

@@ -17,12 +17,15 @@
 import {
   BarChart3,
   Boxes,
+  Calendar,
   Home,
   Package,
   Receipt,
   Settings,
   ShoppingCart,
+  Scissors,
   Users,
+  UserCog,
   Wallet,
   type LucideIcon,
 } from 'lucide-react';
@@ -89,6 +92,26 @@ export const NAV_ITEMS: NavItem[] = [
     href: ROUTES.expenses.list,
     icon: Receipt,
     available: true,
+  },
+  {
+    label: 'Appointments',
+    href: ROUTES.appointments.list,
+    icon: Calendar,
+    available: true,
+  },
+  {
+    label: 'Services',
+    href: ROUTES.services.list,
+    icon: Scissors,
+    available: true,
+    minimumRole: 'manager',
+  },
+  {
+    label: 'Employees',
+    href: ROUTES.employees.list,
+    icon: UserCog,
+    available: true,
+    minimumRole: 'admin',
   },
   {
     label: 'Reports',

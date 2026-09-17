@@ -33,7 +33,7 @@ export interface PickerProduct {
 
 interface ProductPickerProps {
   id?: string;
-  value: string;
+  value: string | null;
   onChange: (productId: string) => void;
   products: PickerProduct[];
   disabled?: boolean;
@@ -58,12 +58,12 @@ export function ProductPicker({
    * fall back to its first option and a save would move the line onto a
    * different product than the one on screen.
    */
-  const isMissing = value !== '' && !products.some((product) => product.id === value);
+  const isMissing = value !== '' && value !== null && !products.some((product) => product.id === value);
 
   return (
     <select
       id={id}
-      value={value}
+      value={value ?? ''}
       onChange={(event) => onChange(event.target.value)}
       disabled={disabled}
       required={required}

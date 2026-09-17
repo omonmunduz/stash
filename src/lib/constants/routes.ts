@@ -117,6 +117,28 @@ export const ROUTES = {
     profit: '/reports/profit',
   },
 
+  employees: {
+    list: '/employees',
+    new: '/employees/new',
+    detail: (id: string) => `/employees/${id}`,
+    edit: (id: string) => `/employees/${id}/edit`,
+    schedule: (id: string) => `/employees/${id}/schedule`,
+  },
+
+  services: {
+    list: '/services',
+    new: '/services/new',
+    detail: (id: string) => `/services/${id}`,
+    edit: (id: string) => `/services/${id}/edit`,
+  },
+
+  appointments: {
+    list: '/appointments',
+    new: '/appointments/new',
+    detail: (id: string) => `/appointments/${id}`,
+    edit: (id: string) => `/appointments/${id}/edit`,
+  },
+
   settings: {
     general: '/settings',
     users: '/settings/users',

@@ -131,6 +131,10 @@ export function canCompleteSale(
 
   // Check inventory for each item
   for (const item of items) {
+    if (!item.product_id) {
+      // Items without a product_id (e.g., custom line items) skip inventory checks
+      continue;
+    }
     const inventory = inventoryMap.get(item.product_id);
     if (!inventory) {
       return {

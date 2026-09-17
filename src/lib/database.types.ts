@@ -14,6 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          created_at: string | null
+          created_by: string | null
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          deleted_at: string | null
+          employee_id: string
+          end_time: string
+          id: string
+          notes: string | null
+          organization_id: string
+          service_id: string
+          source: Database["public"]["Enums"]["appointment_source"]
+          start_time: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_date: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          deleted_at?: string | null
+          employee_id: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          organization_id: string
+          service_id: string
+          source: Database["public"]["Enums"]["appointment_source"]
+          start_time: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_date?: string
+          created_at?: string | null
+          created_by?: string | null
+          customer_id?: string
+          customer_name?: string
+          customer_phone?: string
+          deleted_at?: string | null
+          employee_id?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          service_id?: string
+          source?: Database["public"]["Enums"]["appointment_source"]
+          start_time?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      availability_exceptions: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          end_time: string | null
+          exception_date: string
+          id: string
+          is_available: boolean
+          organization_id: string
+          reason: string | null
+          start_time: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          end_time?: string | null
+          exception_date: string
+          id?: string
+          is_available: boolean
+          organization_id: string
+          reason?: string | null
+          start_time?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          end_time?: string | null
+          exception_date?: string
+          id?: string
+          is_available?: boolean
+          organization_id?: string
+          reason?: string | null
+          start_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_exceptions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "availability_exceptions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null
@@ -85,6 +232,63 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employees: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          deleted_at: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          organization_id: string
+          photo_url: string | null
+          slug: string
+          updated_at: string | null
+          user_profile_id: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean | null
+          organization_id: string
+          photo_url?: string | null
+          slug: string
+          updated_at?: string | null
+          user_profile_id?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          organization_id?: string
+          photo_url?: string | null
+          slug?: string
+          updated_at?: string | null
+          user_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employees_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employees_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -580,13 +784,16 @@ export type Database = {
           cost_price: number
           created_at: string | null
           discount: number | null
+          duration_minutes: number | null
           id: string
           organization_id: string
-          product_id: string
+          product_id: string | null
           product_name: string
           product_sku: string | null
           quantity: number
           sale_id: string
+          service_id: string | null
+          service_name: string | null
           subtotal: number
           unit_price: number
           updated_at: string | null
@@ -596,13 +803,16 @@ export type Database = {
           cost_price?: number
           created_at?: string | null
           discount?: number | null
+          duration_minutes?: number | null
           id?: string
           organization_id: string
-          product_id: string
+          product_id?: string | null
           product_name: string
           product_sku?: string | null
           quantity: number
           sale_id: string
+          service_id?: string | null
+          service_name?: string | null
           subtotal: number
           unit_price: number
           updated_at?: string | null
@@ -612,13 +822,16 @@ export type Database = {
           cost_price?: number
           created_at?: string | null
           discount?: number | null
+          duration_minutes?: number | null
           id?: string
           organization_id?: string
-          product_id?: string
+          product_id?: string | null
           product_name?: string
           product_sku?: string | null
           quantity?: number
           sale_id?: string
+          service_id?: string | null
+          service_name?: string | null
           subtotal?: number
           unit_price?: number
           updated_at?: string | null
@@ -647,6 +860,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sale_items_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sale_items_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -665,6 +885,7 @@ export type Database = {
           deleted_at: string | null
           discount: number | null
           due_date: string | null
+          employee_id: string | null
           id: string
           notes: string | null
           organization_id: string
@@ -687,6 +908,7 @@ export type Database = {
           deleted_at?: string | null
           discount?: number | null
           due_date?: string | null
+          employee_id?: string | null
           id?: string
           notes?: string | null
           organization_id: string
@@ -709,6 +931,7 @@ export type Database = {
           deleted_at?: string | null
           discount?: number | null
           due_date?: string | null
+          employee_id?: string | null
           id?: string
           notes?: string | null
           organization_id?: string
@@ -738,6 +961,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sales_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sales_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
@@ -749,6 +979,99 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_providers: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          id: string
+          organization_id: string
+          service_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          id?: string
+          organization_id: string
+          service_id: string
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          id?: string
+          organization_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_providers_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_providers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_providers_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          duration_minutes: number
+          id: string
+          is_active: boolean | null
+          name: string
+          organization_id: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          duration_minutes: number
+          id?: string
+          is_active?: boolean | null
+          name: string
+          organization_id: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          organization_id?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -800,6 +1123,54 @@ export type Database = {
           },
         ]
       }
+      working_hours: {
+        Row: {
+          created_at: string | null
+          day_of_week: number
+          employee_id: string
+          end_time: string
+          id: string
+          organization_id: string
+          start_time: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: number
+          employee_id: string
+          end_time: string
+          id?: string
+          organization_id: string
+          start_time: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: number
+          employee_id?: string
+          end_time?: string
+          id?: string
+          organization_id?: string
+          start_time?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "working_hours_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "working_hours_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -813,6 +1184,20 @@ export type Database = {
           p_organization_id: string
           p_product_id: string
           p_reason: string
+        }
+        Returns: string
+      }
+      book_appointment: {
+        Args: {
+          p_appointment_date: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_employee_id: string
+          p_notes?: string
+          p_organization_id: string
+          p_service_id: string
+          p_source?: Database["public"]["Enums"]["appointment_source"]
+          p_start_time: string
         }
         Returns: string
       }
@@ -834,6 +1219,10 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      find_or_create_customer_by_phone: {
+        Args: { p_name: string; p_organization_id: string; p_phone: string }
+        Returns: string
+      }
       fn_assert_can_edit_sale: {
         Args: { p_organization_id: string; p_sale_id: string }
         Returns: {
@@ -845,6 +1234,7 @@ export type Database = {
           deleted_at: string | null
           discount: number | null
           due_date: string | null
+          employee_id: string | null
           id: string
           notes: string | null
           organization_id: string
@@ -879,6 +1269,10 @@ export type Database = {
       }
       fn_sale_holds_stock: { Args: { p_sale_id: string }; Returns: boolean }
       generate_customer_code: { Args: { org_id: string }; Returns: string }
+      generate_employee_slug: {
+        Args: { p_display_name: string; p_organization_id: string }
+        Returns: string
+      }
       generate_expense_number: { Args: { org_id: string }; Returns: string }
       generate_inventory_item_code: {
         Args: { org_id: string }
@@ -886,6 +1280,19 @@ export type Database = {
       }
       generate_payment_number: { Args: { org_id: string }; Returns: string }
       generate_sale_number: { Args: { org_id: string }; Returns: string }
+      get_available_slots: {
+        Args: {
+          p_date: string
+          p_employee_id?: string
+          p_organization_id: string
+          p_service_id: string
+        }
+        Returns: {
+          available_times: string[]
+          employee_id: string
+          employee_name: string
+        }[]
+      }
       has_role_or_above: {
         Args: { required_role: Database["public"]["Enums"]["user_role"] }
         Returns: boolean
@@ -947,6 +1354,13 @@ export type Database = {
       }
     }
     Enums: {
+      appointment_source: "public_booking" | "staff_created"
+      appointment_status:
+        | "pending"
+        | "confirmed"
+        | "completed"
+        | "cancelled"
+        | "no_show"
       payment_method: "cash" | "card" | "bank_transfer" | "check" | "other"
       payment_status: "unpaid" | "partial" | "paid"
       sale_status: "draft" | "completed" | "cancelled"
@@ -966,12 +1380,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -995,11 +1409,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1020,11 +1434,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1045,11 +1459,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1062,11 +1476,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1078,6 +1492,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      appointment_source: ["public_booking", "staff_created"],
+      appointment_status: [
+        "pending",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show",
+      ],
       payment_method: ["cash", "card", "bank_transfer", "check", "other"],
       payment_status: ["unpaid", "partial", "paid"],
       sale_status: ["draft", "completed", "cancelled"],

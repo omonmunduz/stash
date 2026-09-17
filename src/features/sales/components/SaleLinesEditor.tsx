@@ -53,7 +53,7 @@ import { formatMoney, formatQuantity } from '@/lib/utils/format';
  */
 export interface EditableLine {
   id: string;
-  product_id: string;
+  product_id: string | null;
   product_name: string;
   product_sku: string | null;
   quantity: number;
@@ -81,14 +81,14 @@ interface SaleLinesEditorProps {
 type EditTarget = string | 'new' | null;
 
 interface LineDraft {
-  product_id: string;
+  product_id: string | null;
   quantity: string;
   unit_price: string;
   discount: string;
 }
 
 const EMPTY_DRAFT: LineDraft = {
-  product_id: '',
+  product_id: null,
   quantity: '',
   unit_price: '',
   discount: '',
@@ -155,7 +155,7 @@ export function SaleLinesEditor({
     startTransition(async () => {
       const result = await upsertSaleItemAction(saleId, {
         item_id: target === 'new' ? undefined : (target ?? undefined),
-        product_id: draft.product_id,
+        product_id: draft.product_id || '',
         quantity: draft.quantity,
         unit_price: draft.unit_price || undefined,
         discount: draft.discount || undefined,

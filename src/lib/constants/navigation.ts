@@ -27,6 +27,7 @@ import {
   Users,
   UserCog,
   Wallet,
+  Globe,
   type LucideIcon,
 } from 'lucide-react';
 import { ROUTES } from './routes';
@@ -120,6 +121,13 @@ export const NAV_ITEMS: NavItem[] = [
     available: false,
     minimumRole: 'manager',
     hint: 'Needs sales data to report on',
+  },
+  {
+    label: 'Landing Page',
+    href: ROUTES.settings.landingPage,
+    icon: Globe,
+    available: true,
+    minimumRole: 'owner',
   },
   {
     label: 'Settings',

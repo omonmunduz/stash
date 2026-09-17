@@ -79,6 +79,7 @@ export interface Product extends Timestamps, Auditable {
   reorder_level: Quantity | null;
 
   is_active: boolean;
+  visible_on_landing_page: boolean;
 }
 
 /** Input for creating a new product */

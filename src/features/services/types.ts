@@ -17,6 +17,7 @@ export interface Service {
   duration_minutes: number;
   price: number;
   is_active: boolean | null;
+  visible_on_landing_page: boolean | null;
   deleted_at: Date | null;
   created_at: Date;
   updated_at: Date;

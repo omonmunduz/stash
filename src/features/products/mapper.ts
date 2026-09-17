@@ -33,6 +33,7 @@ export function mapProduct(row: ProductRow): Product {
     // 0 is "warn me only once it is actually gone". Not coalesced for that reason.
     reorder_level: row.reorder_level,
     is_active: row.is_active ?? true,
+    visible_on_landing_page: row.visible_on_landing_page ?? true,
     created_at: new Date(row.created_at!),
     updated_at: new Date(row.updated_at!),
     deleted_at: row.deleted_at ? new Date(row.deleted_at) : null,

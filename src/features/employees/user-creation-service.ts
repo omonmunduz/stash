@@ -137,6 +137,24 @@ export async function createEmployeeWithUser(
 
     createdEmployeeId = employee.id;
 
+    // Step 6: Create default working hours (Monday-Saturday, 9am-5pm)
+    const defaultHours = [1, 2, 3, 4, 5, 6].map((day) => ({
+      organization_id: organizationId,
+      employee_id: employee.id,
+      day_of_week: day,
+      start_time: '09:00:00',
+      end_time: '17:00:00',
+    }));
+
+    const { error: hoursError } = await adminClient
+      .from('working_hours')
+      .insert(defaultHours);
+
+    if (hoursError) {
+      console.error('Failed to create default working hours:', hoursError);
+      // Don't fail the employee creation, just log the error
+    }
+
     return {
       success: true,
       data: {

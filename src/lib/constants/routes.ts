@@ -141,6 +141,7 @@ export const ROUTES = {
 
   settings: {
     general: '/settings',
+    landingPage: '/settings/landing-page',
     users: '/settings/users',
     billing: '/settings/billing',
   },

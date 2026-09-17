@@ -552,7 +552,10 @@ export type Database = {
         Row: {
           created_at: string | null
           deleted_at: string | null
+          description: string | null
+          hero_image_url: string | null
           id: string
+          logo_url: string | null
           name: string
           settings: Json | null
           slug: string
@@ -561,7 +564,10 @@ export type Database = {
         Insert: {
           created_at?: string | null
           deleted_at?: string | null
+          description?: string | null
+          hero_image_url?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           settings?: Json | null
           slug: string
@@ -570,7 +576,10 @@ export type Database = {
         Update: {
           created_at?: string | null
           deleted_at?: string | null
+          description?: string | null
+          hero_image_url?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           settings?: Json | null
           slug?: string
@@ -725,6 +734,7 @@ export type Database = {
           sku: string
           unit_of_measure: string | null
           updated_at: string | null
+          visible_on_landing_page: boolean
         }
         Insert: {
           category?: string | null
@@ -743,6 +753,7 @@ export type Database = {
           sku: string
           unit_of_measure?: string | null
           updated_at?: string | null
+          visible_on_landing_page?: boolean
         }
         Update: {
           category?: string | null
@@ -761,6 +772,7 @@ export type Database = {
           sku?: string
           unit_of_measure?: string | null
           updated_at?: string | null
+          visible_on_landing_page?: boolean
         }
         Relationships: [
           {
@@ -1041,6 +1053,7 @@ export type Database = {
           organization_id: string
           price: number
           updated_at: string | null
+          visible_on_landing_page: boolean
         }
         Insert: {
           created_at?: string | null
@@ -1053,6 +1066,7 @@ export type Database = {
           organization_id: string
           price: number
           updated_at?: string | null
+          visible_on_landing_page?: boolean
         }
         Update: {
           created_at?: string | null
@@ -1065,6 +1079,7 @@ export type Database = {
           organization_id?: string
           price?: number
           updated_at?: string | null
+          visible_on_landing_page?: boolean
         }
         Relationships: [
           {

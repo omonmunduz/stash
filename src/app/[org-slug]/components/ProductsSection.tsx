@@ -6,6 +6,8 @@ interface Product {
   description: string | null;
   sale_price: number | null;
   unit_of_measure: string | null;
+  image_url: string | null;
+  imageSignedUrl: string | null;
 }
 
 interface ProductsSectionProps {

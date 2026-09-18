@@ -59,6 +59,7 @@ export const updateProductSchema = z
     cost_price: priceSchema.optional(),
     sale_price: priceSchema.optional(),
     is_active: z.boolean().optional(),
+    image_url: z.string().nullable().optional(),
   })
   .refine(
     (data) => {

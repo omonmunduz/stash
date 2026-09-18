@@ -14,6 +14,7 @@ import { LandingPageEditor } from '@/features/organizations/components/LandingPa
 import { requireMinimumRole } from '@/features/auth/guards';
 import { createClient } from '@/lib/supabase/server';
 import { getServiceService } from '@/features/services/server';
+import { getSignedUrl } from '@/lib/supabase/storage';
 import type { OrganizationId, ProductId } from '@/lib/types/common';
 
 export const metadata = {
@@ -61,6 +62,24 @@ export default async function LandingPageEditorPage() {
 
   const landingPageUrl = `/${org.slug}`;
 
+  // Get signed URLs for images if they exist
+  let logoSignedUrl: string | null = null;
+  let heroSignedUrl: string | null = null;
+
+  if (org.logo_url) {
+    const logoResult = await getSignedUrl('organization-images', org.logo_url);
+    if (logoResult.success) {
+      logoSignedUrl = logoResult.data.signedUrl;
+    }
+  }
+
+  if (org.hero_image_url) {
+    const heroResult = await getSignedUrl('organization-images', org.hero_image_url);
+    if (heroResult.success) {
+      heroSignedUrl = heroResult.data.signedUrl;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
       <PageHeader
@@ -107,6 +126,8 @@ export default async function LandingPageEditorPage() {
             }}
             services={servicesResult.data}
             products={products ?? []}
+            logoSignedUrl={logoSignedUrl}
+            heroSignedUrl={heroSignedUrl}
           />
         </>
       )}

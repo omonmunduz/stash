@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ImageUpload } from '@/components/shared/ImageUpload';
 import { createProductAction, updateProductAction } from '@/app/actions/products';
 import type { ProductFormValues } from '@/app/actions/products';
 import type { Product } from '../types';
@@ -34,9 +35,11 @@ import { ROUTES } from '@/lib/constants/routes';
 interface ProductFormProps {
   /** Present when editing; absent when creating. */
   product?: Product;
+  /** Signed URL for the product image (only when editing) */
+  productImageUrl?: string | null;
 }
 
-export function ProductForm({ product }: ProductFormProps) {
+export function ProductForm({ product, productImageUrl }: ProductFormProps) {
   const isEdit = product !== undefined;
 
   const [values, setValues] = useState<ProductFormValues>({
@@ -48,6 +51,7 @@ export function ProductForm({ product }: ProductFormProps) {
     cost_price: product ? String(product.cost_price) : '',
     sale_price: product ? String(product.sale_price) : '',
     initial_quantity: '',
+    image: null,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -59,14 +63,33 @@ export function ProductForm({ product }: ProductFormProps) {
     setValues((previous) => ({ ...previous, [field]: event.target.value }));
   };
 
+  const handleImageSelect = (file: File | null) => {
+    setValues((previous) => ({ ...previous, image: file }));
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
     startTransition(async () => {
+      // Create FormData to handle file upload
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('sku', values.sku || '');
+      formData.append('description', values.description || '');
+      formData.append('category', values.category || '');
+      formData.append('unit_of_measure', values.unit_of_measure || 'unit');
+      formData.append('cost_price', values.cost_price || '');
+      formData.append('sale_price', values.sale_price || '');
+      formData.append('initial_quantity', values.initial_quantity || '');
+
+      if (values.image) {
+        formData.append('image', values.image);
+      }
+
       const result = isEdit
-        ? await updateProductAction(product.id, values)
-        : await createProductAction(values);
+        ? await updateProductAction(product.id, formData)
+        : await createProductAction(formData);
 
       // Only reached on failure — both actions redirect on success.
       if (!result.success) setError(result.error);
@@ -150,6 +173,19 @@ export function ProductForm({ product }: ProductFormProps) {
             rows={2}
           />
         </div>
+      </fieldset>
+
+      <fieldset className="space-y-4" disabled={isPending}>
+        <legend className="text-sm font-medium">Product Image</legend>
+
+        <ImageUpload
+          id="product_image"
+          label="Product photo"
+          currentImageUrl={productImageUrl}
+          onFileSelect={handleImageSelect}
+          disabled={isPending}
+          helperText="Optional. JPEG, PNG, or WebP. Max 5MB."
+        />
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>

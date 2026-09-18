@@ -19,6 +19,7 @@ import { getProductService } from '@/features/products/server';
 import { requireMinimumRole } from '@/features/auth/guards';
 import { ROUTES } from '@/lib/constants/routes';
 import { brandId } from '@/lib/types/common';
+import { getSignedUrl } from '@/lib/supabase/storage';
 
 export const metadata = {
   title: 'Edit product',
@@ -40,6 +41,15 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
   const product = result.data;
 
+  // Get signed URL for product image if it exists
+  let productImageUrl: string | null = null;
+  if (product.image_url) {
+    const urlResult = await getSignedUrl('product-images', product.image_url);
+    if (urlResult.success) {
+      productImageUrl = urlResult.data.signedUrl;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6">
       <Button asChild variant="ghost" size="sm" className="-ml-2">
@@ -53,7 +63,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
       <Card>
         <CardContent className="pt-6">
-          <ProductForm product={product} />
+          <ProductForm product={product} productImageUrl={productImageUrl} />
         </CardContent>
       </Card>
     </div>

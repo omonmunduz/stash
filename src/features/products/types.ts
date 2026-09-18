@@ -108,6 +108,7 @@ export interface UpdateProductInput {
   cost_price?: Money;
   sale_price?: Money;
   is_active?: boolean;
+  image_url?: string | null;
 }
 
 /** Filter parameters for querying products */

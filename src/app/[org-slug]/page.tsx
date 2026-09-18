@@ -8,6 +8,7 @@
 
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getSignedUrl } from '@/lib/supabase/storage';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Store } from 'lucide-react';
 import type { OrganizationId } from '@/lib/types/common';
@@ -53,15 +54,48 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
   // Load visible products
   const { data: products } = await supabase
     .from('products')
-    .select('id, name, description, sale_price, unit_of_measure')
+    .select('id, name, description, sale_price, unit_of_measure, image_url')
     .eq('organization_id', organizationId)
     .eq('is_active', true)
     .eq('visible_on_landing_page', true)
     .is('deleted_at', null)
     .order('name');
 
+  // Get signed URLs for organization images
+  let logoSignedUrl: string | null = null;
+  let heroSignedUrl: string | null = null;
+
+  if (org.logo_url) {
+    const logoResult = await getSignedUrl('organization-images', org.logo_url);
+    if (logoResult.success) {
+      logoSignedUrl = logoResult.data.signedUrl;
+    }
+  }
+
+  if (org.hero_image_url) {
+    const heroResult = await getSignedUrl('organization-images', org.hero_image_url);
+    if (heroResult.success) {
+      heroSignedUrl = heroResult.data.signedUrl;
+    }
+  }
+
+  // Get signed URLs for product images
+  const productsWithSignedUrls = await Promise.all(
+    (products || []).map(async (product) => {
+      if (!product.image_url) {
+        return { ...product, imageSignedUrl: null };
+      }
+
+      const result = await getSignedUrl('product-images', product.image_url);
+      return {
+        ...product,
+        imageSignedUrl: result.success ? result.data.signedUrl : null,
+      };
+    })
+  );
+
   const hasServices = (services?.length ?? 0) > 0;
-  const hasProducts = (products?.length ?? 0) > 0;
+  const hasProducts = (productsWithSignedUrls?.length ?? 0) > 0;
   const hasBooking = hasServices;
   const hasContent = hasServices || hasProducts;
 
@@ -72,7 +106,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
         <BusinessHeader
           orgName={org.name}
           orgSlug={slug}
-          logoUrl={org.logo_url}
+          logoUrl={logoSignedUrl}
           hasServices={false}
           hasProducts={false}
           hasBooking={false}
@@ -94,7 +128,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
       <BusinessHeader
         orgName={org.name}
         orgSlug={slug}
-        logoUrl={org.logo_url}
+        logoUrl={logoSignedUrl}
         hasServices={hasServices}
         hasProducts={hasProducts}
         hasBooking={hasBooking}
@@ -103,7 +137,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
       <BusinessHero
         orgName={org.name}
         description={org.description}
-        heroImageUrl={org.hero_image_url}
+        heroImageUrl={heroSignedUrl}
         hasServices={hasServices}
         hasProducts={hasProducts}
         orgSlug={slug}
@@ -111,7 +145,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
 
       <ServicesSection services={services || []} orgSlug={slug} />
 
-      <ProductsSection products={products || []} orgSlug={slug} />
+      <ProductsSection products={productsWithSignedUrls || []} orgSlug={slug} />
 
       {hasBooking && <BookingCTA orgName={org.name} orgSlug={slug} />}
 

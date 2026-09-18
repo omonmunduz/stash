@@ -224,6 +224,7 @@ export class SupabaseProductRepository implements ProductRepository {
       }
     }
 
+
     if (Object.keys(patch).length === 0) {
       const existing = await this.findById(id);
       if (!existing) throw new Error('Product not found.');
@@ -237,6 +238,7 @@ export class SupabaseProductRepository implements ProductRepository {
       .is('deleted_at', null)
       .select(PRODUCT_COLUMNS)
       .single();
+
 
     if (error) throw new Error(`Failed to update product: ${error.message}`);
     return mapProduct(data);

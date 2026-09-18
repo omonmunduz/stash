@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ImageUpload } from '@/components/shared/ImageUpload';
 import {
   updateLandingPageAction,
   toggleServiceVisibilityAction,
@@ -45,13 +46,17 @@ interface LandingPageEditorProps {
     visible_on_landing_page: boolean | null;
     is_active: boolean | null;
   }>;
+  logoSignedUrl?: string | null;
+  heroSignedUrl?: string | null;
 }
 
-export function LandingPageEditor({ organization, services, products }: LandingPageEditorProps) {
+export function LandingPageEditor({ organization, services, products, logoSignedUrl, heroSignedUrl }: LandingPageEditorProps) {
   const [values, setValues] = useState({
     description: organization.description ?? '',
     logo_url: organization.logo_url ?? '',
     hero_image_url: organization.hero_image_url ?? '',
+    logo_file: null as File | null,
+    hero_image_file: null as File | null,
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -63,12 +68,34 @@ export function LandingPageEditor({ organization, services, products }: LandingP
     setValues((previous) => ({ ...previous, [field]: event.target.value }));
   };
 
+  const handleLogoSelect = (file: File | null) => {
+    setValues((previous) => ({ ...previous, logo_file: file }));
+  };
+
+  const handleHeroSelect = (file: File | null) => {
+    setValues((previous) => ({ ...previous, hero_image_file: file }));
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
     startTransition(async () => {
-      const result = await updateLandingPageAction(organization.id, values);
+      // Create FormData to handle file uploads
+      const formData = new FormData();
+      formData.append('description', values.description);
+      formData.append('logo_url', values.logo_url);
+      formData.append('hero_image_url', values.hero_image_url);
+
+      if (values.logo_file) {
+        formData.append('logo_file', values.logo_file);
+      }
+
+      if (values.hero_image_file) {
+        formData.append('hero_image_file', values.hero_image_file);
+      }
+
+      const result = await updateLandingPageAction(organization.id, formData);
       if (!result.success) setError(result.error);
       // On success, page revalidates automatically
     });
@@ -119,33 +146,23 @@ export function LandingPageEditor({ organization, services, products }: LandingP
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo_url">Logo URL</Label>
-                <Input
-                  id="logo_url"
-                  type="url"
-                  value={values.logo_url}
-                  onChange={set('logo_url')}
-                  placeholder="https://example.com/logo.png"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Shown next to your business name
-                </p>
-              </div>
+              <ImageUpload
+                id="logo"
+                label="Logo"
+                currentImageUrl={logoSignedUrl}
+                onFileSelect={handleLogoSelect}
+                disabled={isPending}
+                helperText="Optional. Shown next to your business name. JPEG, PNG, or WebP. Max 5MB."
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="hero_image_url">Hero Image URL</Label>
-                <Input
-                  id="hero_image_url"
-                  type="url"
-                  value={values.hero_image_url}
-                  onChange={set('hero_image_url')}
-                  placeholder="https://example.com/hero.jpg"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Banner image shown at the top of your landing page
-                </p>
-              </div>
+              <ImageUpload
+                id="hero_image"
+                label="Hero Image"
+                currentImageUrl={heroSignedUrl}
+                onFileSelect={handleHeroSelect}
+                disabled={isPending}
+                helperText="Optional. Banner image shown at the top of your landing page. JPEG, PNG, or WebP. Max 5MB."
+              />
             </fieldset>
 
             <Button type="submit" disabled={isPending}>

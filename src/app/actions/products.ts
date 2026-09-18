@@ -20,6 +20,11 @@ import { ROUTES } from '@/lib/constants/routes';
 import type { Product } from '@/features/products/types';
 import type { Result } from '@/lib/types/common';
 import { brandId } from '@/lib/types/common';
+import {
+  uploadFile,
+  deleteFile,
+  generateProductImagePath,
+} from '@/lib/supabase/storage';
 
 /** Fields the create/edit form submits. Strings, as they arrive from inputs. */
 export interface ProductFormValues {
@@ -34,6 +39,8 @@ export interface ProductFormValues {
   sale_price?: string;
   /** Opening stock. Blank means zero. */
   initial_quantity?: string;
+  /** Optional product image file */
+  image?: File | null;
 }
 
 /**
@@ -92,12 +99,26 @@ function firstNumericError(input: ReturnType<typeof normalize>): string | null {
  * every profit figure that follows.
  */
 export async function createProductAction(
-  values: ProductFormValues
+  formData: FormData
 ): Promise<Result<Product>> {
   const { service, user } = await getProductService();
 
   const permission = requireRole(user, 'manager');
   if (!permission.success) return permission;
+
+  // Extract values from FormData
+  const values: ProductFormValues = {
+    name: formData.get('name') as string,
+    sku: formData.get('sku') as string,
+    description: formData.get('description') as string,
+    category: formData.get('category') as string,
+    unit_of_measure: formData.get('unit_of_measure') as string,
+    cost_price: formData.get('cost_price') as string,
+    sale_price: formData.get('sale_price') as string,
+    initial_quantity: formData.get('initial_quantity') as string,
+  };
+
+  const imageFile = formData.get('image') as File | null;
 
   const input = normalize(values);
 
@@ -106,6 +127,28 @@ export async function createProductAction(
 
   const result = await service.create(input);
   if (!result.success) return result;
+
+  // Upload image if provided
+  if (imageFile && imageFile.size > 0) {
+    const imagePath = generateProductImagePath(
+      user.organizationId,
+      result.data.id,
+      imageFile
+    );
+
+    const uploadResult = await uploadFile(
+      'product-images',
+      imagePath,
+      imageFile,
+      { upsert: true, contentType: imageFile.type }
+    );
+
+    if (uploadResult.success) {
+      // Update product with image path
+      await service.update(result.data.id, { image_url: imagePath });
+    }
+    // If upload fails, we still have the product created - don't fail the whole operation
+  }
 
   revalidatePath(ROUTES.products.list);
   redirect(ROUTES.products.list);
@@ -118,12 +161,26 @@ export async function createProductAction(
  */
 export async function updateProductAction(
   id: string,
-  values: ProductFormValues
+  formData: FormData
 ): Promise<Result<Product>> {
   const { service, user } = await getProductService();
 
   const permission = requireRole(user, 'manager');
   if (!permission.success) return permission;
+
+  // Extract values from FormData
+  const values: ProductFormValues = {
+    name: formData.get('name') as string,
+    sku: formData.get('sku') as string,
+    description: formData.get('description') as string,
+    category: formData.get('category') as string,
+    unit_of_measure: formData.get('unit_of_measure') as string,
+    cost_price: formData.get('cost_price') as string,
+    sale_price: formData.get('sale_price') as string,
+    initial_quantity: formData.get('initial_quantity') as string,
+  };
+
+  const imageFile = formData.get('image') as File | null;
 
   const input = normalize(values);
 
@@ -133,7 +190,30 @@ export async function updateProductAction(
   // initial_quantity is create-only: changing stock is an inventory
   // adjustment, not a catalog edit, and silently overwriting the on-hand count
   // from an edit form would lose whatever was sold since.
-  const result = await service.update(brandId<'ProductId'>(id), {
+  const productId = brandId<'ProductId'>(id);
+
+  // Handle image upload if provided
+  let imageUrl: string | undefined = undefined;
+  if (imageFile && imageFile.size > 0) {
+    const imagePath = generateProductImagePath(
+      user.organizationId,
+      productId,
+      imageFile
+    );
+
+    const uploadResult = await uploadFile(
+      'product-images',
+      imagePath,
+      imageFile,
+      { upsert: true, contentType: imageFile.type }
+    );
+
+    if (uploadResult.success) {
+      imageUrl = imagePath;
+    }
+  }
+
+  const updateData = {
     name: input.name,
     sku: input.sku,
     description: input.description ?? null,
@@ -141,7 +221,10 @@ export async function updateProductAction(
     unit_of_measure: input.unit_of_measure,
     cost_price: input.cost_price,
     sale_price: input.sale_price,
-  });
+    ...(imageUrl && { image_url: imageUrl }),
+  };
+
+  const result = await service.update(productId, updateData);
 
   if (!result.success) return result;
 

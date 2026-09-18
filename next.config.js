@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+    ],
+  },
   experimental: {
     serverActions: {
-      bodySizeLimit: '2mb',
+      bodySizeLimit: '10mb', // Increased to support image uploads
     },
     // Client Router Cache. Next 15 changed the `dynamic` default to 0, so every
     // soft navigation refetched the RSC payload — even re-clicking a nav link

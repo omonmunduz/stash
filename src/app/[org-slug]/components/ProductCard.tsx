@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface ProductCardProps {
   product: {
     id: string;
@@ -5,6 +7,8 @@ interface ProductCardProps {
     description: string | null;
     sale_price: number | null;
     unit_of_measure: string | null;
+    image_url: string | null;
+    imageSignedUrl: string | null;
   };
   orgSlug: string;
 }
@@ -20,6 +24,18 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-lg hover:border-slate-300">
+      {product.imageSignedUrl && (
+        <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+          <Image
+            src={product.imageSignedUrl}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
+      )}
+
       <div className="flex flex-1 flex-col p-6 lg:p-8">
         <h3 className="mb-3 text-2xl font-semibold tracking-tight text-slate-900">
           {product.name}

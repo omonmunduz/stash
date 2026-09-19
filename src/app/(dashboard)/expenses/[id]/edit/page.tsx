@@ -18,6 +18,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ interface EditExpensePageProps {
 
 export default async function EditExpensePage({ params }: EditExpensePageProps) {
   const { id } = await params;
+  const t = await getTranslations('expenses.edit');
 
   await requireMinimumRole('manager');
 
@@ -52,11 +54,11 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.expenses.list}>
           <ArrowLeft aria-hidden="true" />
-          Expenses
+          {t('backToExpenses')}
         </Link>
       </Button>
 
-      <PageHeader title="Edit expense" description={expense.expense_number} />
+      <PageHeader title={t('title')} description={expense.expense_number} />
 
       <Card>
         <CardContent className="pt-6">

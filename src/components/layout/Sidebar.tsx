@@ -12,15 +12,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { LogOut } from 'lucide-react';
 import { NAV_ITEMS, isNavItemActive } from '@/lib/constants/navigation';
 import { hasRole } from '@/features/auth/roles';
 import { ROUTES } from '@/lib/constants/routes';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import type { AuthUser } from '@/features/auth/types';
 import { cn } from '@/lib/utils/cn';
 
 export function Sidebar({ user }: { user: AuthUser }) {
   const pathname = usePathname();
+  const t = useTranslations('common.nav');
+  const tActions = useTranslations('common.actions');
 
   const items = NAV_ITEMS.filter(
     (item) => !item.minimumRole || hasRole(user, item.minimumRole)
@@ -39,6 +43,7 @@ export function Sidebar({ user }: { user: AuthUser }) {
           {items.map((item) => {
             const Icon = item.icon;
             const active = isNavItemActive(item.href, pathname);
+            const label = t(item.labelKey);
 
             if (!item.available) {
               return (
@@ -49,7 +54,7 @@ export function Sidebar({ user }: { user: AuthUser }) {
                   className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/60"
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
-                  <span className="flex-1">{item.label}</span>
+                  <span className="flex-1">{label}</span>
                   <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide">
                     Soon
                   </span>
@@ -70,7 +75,7 @@ export function Sidebar({ user }: { user: AuthUser }) {
                 )}
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
-                {item.label}
+                {label}
               </Link>
             );
           })}
@@ -78,15 +83,20 @@ export function Sidebar({ user }: { user: AuthUser }) {
 
         {/* POST, not a link: sign-out writes cookies, and a GET could be fired
             by Next's link prefetching on hover. */}
-        <form action={ROUTES.auth.logout} method="post" className="border-t border-border pt-2">
-          <button
-            type="submit"
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <LogOut className="size-4 shrink-0" aria-hidden="true" />
-            Sign out
-          </button>
-        </form>
+        <div className="border-t border-border pt-2 space-y-1">
+          <div className="px-3">
+            <LanguageSwitcher />
+          </div>
+          <form action={ROUTES.auth.logout} method="post">
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <LogOut className="size-4 shrink-0" aria-hidden="true" />
+              {tActions('signOut')}
+            </button>
+          </form>
+        </div>
       </div>
     </aside>
   );

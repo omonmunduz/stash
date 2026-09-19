@@ -1,0 +1,52 @@
+{
+  "title": "Products",
+  "description": "Your product catalog and pricing.",
+  "newProduct": "New product",
+  "addProduct": "Add product",
+  "list": {
+    "nothingRecorded": "No products yet",
+    "nothingRecordedDescription": "Products you add appear here. Each product can track stock, pricing, and sales history.",
+    "count": "{count, plural, =1 {1 product} other {# products}}"
+  },
+  "edit": {
+    "backToProducts": "Products",
+    "title": "Edit product"
+  },
+  "new": {
+    "backToProducts": "Products",
+    "title": "Add product",
+    "description": "Name, what it costs you, and what you charge."
+  },
+  "form": {
+    "sectionWhatItIs": "What it is",
+    "name": "Name",
+    "namePlaceholder": "Chocolate chip cookies",
+    "sku": "SKU",
+    "skuPlaceholder": "Auto-generated from name",
+    "skuHelp": "Optional. Auto-generated if blank.",
+    "category": "Category",
+    "categoryPlaceholder": "Cookies",
+    "description": "Description",
+    "sectionProductImage": "Product image",
+    "imageLabel": "Image",
+    "imageHelp": "Optional. Shown on your landing page. JPEG, PNG, or WebP. Max 5MB.",
+    "sectionPricing": "Pricing",
+    "costPrice": "Cost price",
+    "costPriceHelp": "What you pay for it",
+    "salePrice": "Sale price",
+    "salePriceHelp": "What you charge",
+    "unitOfMeasure": "Unit",
+    "unitOfMeasurePlaceholder": "unit",
+    "unitOfMeasureHelp": "e.g. kg, box, dozen",
+    "profitPerUnit": "Profit per unit:",
+    "margin": "{percent}% margin",
+    "sectionStock": "Stock",
+    "initialQuantity": "Initial quantity",
+    "initialQuantityPlaceholder": "0",
+    "initialQuantityHelp": "How much is on hand right now. You can adjust stock later.",
+    "saving": "Saving...",
+    "adding": "Adding...",
+    "saveChanges": "Save changes",
+    "addProductButton": "Add product"
+  }
+}

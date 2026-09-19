@@ -1,0 +1,59 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back, {name}",
+  "metrics": {
+    "owedToYou": "Owed to you",
+    "salesThisMonth": "Sales in {month}",
+    "customers": "Customers",
+    "outOfStock": "Out of stock",
+    "acrossCustomers": "across {count, plural, =1 {1 customer} other {# customers}}",
+    "sales": "{count, plural, =1 {1 sale} other {# sales}}",
+    "productsAtZero": "products at zero",
+    "everythingInStock": "everything in stock",
+    "active": "active"
+  },
+  "quickActions": {
+    "title": "Quick actions",
+    "newSale": "New sale",
+    "recordExpense": "Record expense",
+    "newCustomer": "New customer",
+    "newAppointment": "New appointment",
+    "recordSale": "Record sale (soon)"
+  },
+  "topDebtors": {
+    "title": "Who owes the most",
+    "subtitle": "Largest outstanding balances",
+    "seeAll": "See all",
+    "nobodyOwes": "Nobody owes you anything right now.",
+    "overLimit": "Over limit",
+    "andMore": "and {count, plural, =1 {1 more customer} other {# more customers}} with a balance"
+  },
+  "monthSummary": {
+    "title": "{month} so far",
+    "sales": "Sales",
+    "expenses": "Expenses",
+    "profitNote": "Money in and out. Profit needs product costs, which comes with reports."
+  },
+  "setupChecklist": {
+    "title": "Get set up",
+    "progress": "{done} of {total}",
+    "comingSoon": "Coming soon",
+    "steps": {
+      "customers": {
+        "label": "Add your customers",
+        "detail": "The people who buy from you, with their credit limits.",
+        "cta": "Add a customer"
+      },
+      "products": {
+        "label": "Add your products",
+        "detail": "What you sell, with cost and sale price.",
+        "cta": "Add a product"
+      },
+      "sales": {
+        "label": "Record your first sale",
+        "detail": "Cash or on credit. Balances update themselves.",
+        "cta": "Record a sale"
+      }
+    }
+  }
+}

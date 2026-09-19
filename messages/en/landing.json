@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "learnMore": "Learn more",
+    "bookNow": "Book now",
+    "seeServices": "See services",
+    "browseProducts": "Browse products"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Discover what we can do for you"
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Browse our selection",
+    "per": "/"
+  },
+  "booking": {
+    "title": "Ready to book?",
+    "subtitle": "Schedule an appointment with us today",
+    "bookAppointment": "Book an appointment"
+  },
+  "comingSoon": {
+    "title": "Coming soon",
+    "description": "This business is setting up their page. Check back soon!"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved"
+  }
+}

@@ -29,6 +29,7 @@ export interface AuthUser {
     id: OrganizationId;
     name: string;
     slug: string;
+    settings?: Record<string, unknown>;
   };
 }
 

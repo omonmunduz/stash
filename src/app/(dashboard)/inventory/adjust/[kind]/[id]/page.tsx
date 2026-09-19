@@ -15,6 +15,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,7 @@ export default async function AdjustStockPage({ params }: AdjustStockPageProps) 
 
   await requireMinimumRole('manager');
 
+  const t = await getTranslations('inventory.adjust');
   const { service } = await getInventoryService();
 
   const ref = toSubjectRef(kind, id);
@@ -72,7 +74,7 @@ export default async function AdjustStockPage({ params }: AdjustStockPageProps) 
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.inventory.list}>
           <ArrowLeft aria-hidden="true" />
-          Stock
+          {t('backToStock')}
         </Link>
       </Button>
 
@@ -82,7 +84,7 @@ export default async function AdjustStockPage({ params }: AdjustStockPageProps) 
         action={
           <Button asChild variant="outline" size="sm">
             <Link href={backHref}>
-              {kind === 'product' ? 'Products' : 'Supplies'}
+              {kind === 'product' ? t('products') : t('supplies')}
             </Link>
           </Button>
         }
@@ -95,25 +97,24 @@ export default async function AdjustStockPage({ params }: AdjustStockPageProps) 
           {formatQuantity(line.quantity_on_hand)}
         </span>
         <span className="text-sm text-muted-foreground">
-          {line.unit_of_measure} on hand
+          {line.unit_of_measure} {t('onHand')}
         </span>
         {line.is_low_stock && (
           <Badge variant="warning" className="ml-auto">
-            {line.quantity_on_hand <= 0 ? 'Out of stock' : 'Low stock'}
+            {line.quantity_on_hand <= 0 ? t('outOfStock') : t('lowStock')}
           </Badge>
         )}
         <span className="w-full text-xs text-muted-foreground">
-          Worth {formatMoney(line.stock_value)} at cost
+          {t('worthAtCost', { value: formatMoney(line.stock_value) })}
           {line.reorder_level !== null &&
-            ` · reorder at ${formatQuantity(line.reorder_level)}`}
+            ` · ${t('reorderAt', { level: formatQuantity(line.reorder_level) })}`}
         </span>
       </div>
 
       {!line.is_active && (
         <Alert>
           <AlertDescription>
-            This {kind === 'product' ? 'product' : 'item'} is inactive. Stock can
-            still be corrected, but it will not appear when recording a sale.
+            {t('inactiveAlert', { type: kind === 'product' ? t('product') : t('item') })}
           </AlertDescription>
         </Alert>
       )}
@@ -132,7 +133,7 @@ export default async function AdjustStockPage({ params }: AdjustStockPageProps) 
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Recent changes</CardTitle>
+          <CardTitle className="text-base">{t('recentChanges')}</CardTitle>
         </CardHeader>
         <CardContent>
           {history.success ? (

@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
   await requireMinimumRole('manager');
 
   const { id } = await params;
+  const t = await getTranslations('services.edit');
   const { service: serviceService } = await getServiceService();
   const { service: employeeService } = await getEmployeeService();
 
@@ -56,12 +58,12 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.services.list}>
           <ArrowLeft aria-hidden="true" />
-          Services
+          {t('backToServices')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Edit service"
+        title={t('title')}
         description={result.data.name}
       />
 

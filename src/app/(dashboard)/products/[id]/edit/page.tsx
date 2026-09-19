@@ -11,6 +11,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ interface EditProductPageProps {
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
   const { id } = await params;
+  const t = await getTranslations('products.edit');
 
   await requireMinimumRole('manager');
 
@@ -55,11 +57,11 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.products.list}>
           <ArrowLeft aria-hidden="true" />
-          Products
+          {t('backToProducts')}
         </Link>
       </Button>
 
-      <PageHeader title="Edit product" description={product.sku} />
+      <PageHeader title={t('title')} description={product.sku} />
 
       <Card>
         <CardContent className="pt-6">

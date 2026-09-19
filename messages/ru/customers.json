@@ -1,0 +1,80 @@
+{
+  "title": "Клиенты",
+  "description": "Управление клиентской базой и кредитными счетами.",
+  "newCustomer": "Новый клиент",
+  "addCustomer": "Добавить клиента",
+  "addFirstCustomer": "Добавить первого клиента",
+  "list": {
+    "nothingRecorded": "Пока нет клиентов",
+    "nothingRecordedDescription": "Добавленные вами клиенты появятся здесь. Для каждого клиента можно установить кредитный лимит и разрешить покупки в долг.",
+    "count": "{count, plural, =1 {1 клиент} few {# клиента} other {# клиентов}}",
+    "totalOwed": "Всего вам должны",
+    "outstanding": "К оплате",
+    "across": "{count, plural, =1 {у 1 клиента} few {у # клиентов} other {у # клиентов}}",
+    "noMatch": {
+      "title": "Нет совпадающих клиентов",
+      "description": "Попробуйте изменить фильтры или поисковый запрос."
+    },
+    "empty": {
+      "title": "Пока нет клиентов",
+      "description": "Добавленные вами клиенты появятся здесь. Для каждого клиента можно установить кредитный лимит и разрешить покупки в долг."
+    }
+  },
+  "detail": {
+    "backToCustomers": "Клиенты",
+    "edit": "Редактировать",
+    "deactivatedAlert": "Этот клиент деактивирован. Он не сможет совершать новые покупки до повторной активации.",
+    "currentlyOwes": "Текущий долг",
+    "overLimit": "Превышен лимит",
+    "nearLimit": "Близко к лимиту",
+    "settledUp": "Расчёт завершён",
+    "inCredit": "Переплата",
+    "contact": "Контакты",
+    "contactName": "Контактное лицо:",
+    "noPhone": "Телефон не указан",
+    "customerSince": "Клиент с {date}",
+    "notes": "Заметки",
+    "noNotes": "Заметок нет",
+    "takePayment": "Принять платёж",
+    "whatTheyTook": "Что взяли",
+    "salesDescription": "{canEdit, select, true {Продажи в кредит, от новых к старым. Исправьте количество или цену на странице детализации продажи.} false {Продажи в кредит, от новых к старым.} other {Продажи в кредит, от новых к старым.}}",
+    "historyLoadError": "Не удалось загрузить историю",
+    "payments": "Платежи",
+    "paymentAppliedTo": "Применено к",
+    "paymentsDescription": "Полученные платежи, от новых к старым."
+  },
+  "new": {
+    "backToCustomers": "Клиенты",
+    "title": "Добавить клиента",
+    "description": "Требуется только имя. Всё остальное можно добавить позже."
+  },
+  "edit": {
+    "title": "Редактировать клиента"
+  },
+  "form": {
+    "sectionWhoTheyAre": "Кто это",
+    "name": "Имя",
+    "namePlaceholder": "Иван Иванов",
+    "businessName": "Название компании",
+    "businessNamePlaceholder": "ООО «Рога и копыта»",
+    "businessNameHelp": "Необязательно. Укажите, если покупают для бизнеса.",
+    "sectionHowToReach": "Как связаться",
+    "phone": "Телефон",
+    "phonePlaceholder": "+7 (999) 123-45-67",
+    "email": "Email",
+    "emailPlaceholder": "ivan@example.com",
+    "address": "Адрес",
+    "addressPlaceholder": "ул. Ленина, д. 123",
+    "city": "Город",
+    "sectionCreditTerms": "Условия кредита",
+    "creditLimit": "Кредитный лимит",
+    "creditLimitPlaceholder": "1000.00",
+    "creditLimitHelp": "Максимальная сумма, которую этот клиент может должать одновременно. Оставьте пустым для неограниченного кредита.",
+    "notes": "Заметки",
+    "notesPlaceholder": "Внутренние заметки об этом клиенте",
+    "saving": "Сохранение...",
+    "adding": "Добавление...",
+    "saveChanges": "Сохранить изменения",
+    "addCustomerButton": "Добавить клиента"
+  }
+}

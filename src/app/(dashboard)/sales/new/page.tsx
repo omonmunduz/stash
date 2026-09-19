@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, Package, Users } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,6 +34,7 @@ interface NewSalePageProps {
 
 export default async function NewSalePage({ searchParams }: NewSalePageProps) {
   const params = await searchParams;
+  const t = await getTranslations('sales.new');
 
   const [{ service: customerService }, { service: productService }] = await Promise.all([
     getCustomerService(),
@@ -49,13 +51,13 @@ export default async function NewSalePage({ searchParams }: NewSalePageProps) {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.sales.list}>
           <ArrowLeft aria-hidden="true" />
-          Sales
+          {t('backToSales')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Record a sale"
-        description="What went out, and what they paid for it now."
+        title={t('title')}
+        description={t('description')}
       />
 
       {!customersResult.success ? (
@@ -68,23 +70,23 @@ export default async function NewSalePage({ searchParams }: NewSalePageProps) {
         </Alert>
       ) : customersResult.data.length === 0 ? (
         <EmptyState
-          title="No customers yet"
-          description="A sale needs someone to sell to. Add a customer first."
+          title={t('noCustomers')}
+          description={t('noCustomersDescription')}
           icon={<Users className="size-6" aria-hidden="true" />}
           action={
             <Button asChild>
-              <Link href={ROUTES.customers.new}>Add a customer</Link>
+              <Link href={ROUTES.customers.new}>{t('addCustomer')}</Link>
             </Button>
           }
         />
       ) : productsResult.data.length === 0 ? (
         <EmptyState
-          title="No products yet"
-          description="A sale needs something to sell. Add a product first."
+          title={t('noProducts')}
+          description={t('noProductsDescription')}
           icon={<Package className="size-6" aria-hidden="true" />}
           action={
             <Button asChild>
-              <Link href={ROUTES.products.new}>Add a product</Link>
+              <Link href={ROUTES.products.new}>{t('addProduct')}</Link>
             </Button>
           }
         />

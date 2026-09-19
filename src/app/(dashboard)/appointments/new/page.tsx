@@ -6,6 +6,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -20,6 +21,8 @@ export const metadata = {
 };
 
 export default async function NewAppointmentPage() {
+  const t = await getTranslations('appointments.new');
+
   // Fetch required data for the form
   const [customersResult, servicesResult, employeesResult] = await Promise.all([
     (await getCustomerService()).service.list({ status: 'active' }),
@@ -34,13 +37,13 @@ export default async function NewAppointmentPage() {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.appointments.list}>
           <ArrowLeft aria-hidden="true" />
-          Appointments
+          {t('backToAppointments')}
         </Link>
       </Button>
 
       <PageHeader
-        title="New Appointment"
-        description="Schedule an appointment for a customer"
+        title={t('title')}
+        description={t('description')}
       />
 
       {hasError ? (
@@ -52,33 +55,33 @@ export default async function NewAppointmentPage() {
                 ? servicesResult.error
                 : !employeesResult.success
                   ? employeesResult.error
-                  : 'Failed to load data'}
+                  : t('failedToLoad')}
           </AlertDescription>
         </Alert>
       ) : customersResult.data.length === 0 ? (
         <Alert>
           <AlertDescription>
-            You need to add customers before scheduling appointments.{' '}
+            {t('needCustomers')}{' '}
             <Link href={ROUTES.customers.new} className="underline">
-              Add a customer
+              {t('addCustomer')}
             </Link>
           </AlertDescription>
         </Alert>
       ) : servicesResult.data.length === 0 ? (
         <Alert>
           <AlertDescription>
-            You need to add services before scheduling appointments.{' '}
+            {t('needServices')}{' '}
             <Link href={ROUTES.services.new} className="underline">
-              Add a service
+              {t('addService')}
             </Link>
           </AlertDescription>
         </Alert>
       ) : employeesResult.data.length === 0 ? (
         <Alert>
           <AlertDescription>
-            You need to add employees before scheduling appointments.{' '}
+            {t('needEmployees')}{' '}
             <Link href={ROUTES.employees.new} className="underline">
-              Add an employee
+              {t('addEmployee')}
             </Link>
           </AlertDescription>
         </Alert>

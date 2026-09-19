@@ -1,0 +1,18 @@
+{
+  "expenses": {
+    "backToExpenses": "Расходы",
+    "title": "Расшифровка расходов",
+    "description": "Куда ушли деньги и как это соотносится с доходами.",
+    "nothingToBreakdown": "Пока нечего расшифровывать",
+    "noExpensesRecorded": "Нет записанных расходов {period}",
+    "recordExpense": "Записать расход",
+    "moneyIn": "Поступило",
+    "moneyOut": "Израсходовано",
+    "difference": "Разница",
+    "salesPeriod": "Продажи, {period}",
+    "expensesPeriod": "Расходы, {period}",
+    "spentMoreThanTook": "Вы потратили больше, чем получили",
+    "beforeStockCosts": "До учёта себестоимости товара",
+    "notProfitNote": "Это не прибыль. Здесь учитывается выручка по счетам минус расходы, но не учитывается себестоимость товара."
+  }
+}

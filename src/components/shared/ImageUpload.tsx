@@ -126,6 +126,7 @@ export function ImageUpload({
               alt="Preview"
               fill
               className="object-cover"
+              sizes="(max-width: 768px) 100vw, 448px"
               unoptimized={!!previewUrl} // object URLs can't be optimized
             />
             {!disabled && (

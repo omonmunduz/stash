@@ -1,0 +1,9 @@
+{
+  "landingPage": {
+    "title": "Landing Page",
+    "description": "Manage your public-facing landing page content and visibility",
+    "previewPage": "Preview Page",
+    "failedToLoad": "Failed to load organization data",
+    "liveAt": "Your landing page is live at:"
+  }
+}

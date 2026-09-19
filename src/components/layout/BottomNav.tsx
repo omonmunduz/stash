@@ -14,11 +14,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { PRIMARY_NAV_ITEMS, isNavItemActive } from '@/lib/constants/navigation';
 import { cn } from '@/lib/utils/cn';
 
 export function BottomNav() {
   const pathname = usePathname();
+  const t = useTranslations('common.nav');
 
   return (
     <nav
@@ -29,6 +31,7 @@ export function BottomNav() {
         {PRIMARY_NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = isNavItemActive(item.href, pathname);
+          const label = t(item.labelKey);
 
           return (
             <li key={item.href} className="flex-1">
@@ -46,7 +49,7 @@ export function BottomNav() {
                     className={cn('size-5', active && 'stroke-[2.5]')}
                     aria-hidden="true"
                   />
-                  {item.label}
+                  {label}
                 </Link>
               ) : (
                 <span
@@ -55,7 +58,7 @@ export function BottomNav() {
                   className="flex min-h-14 cursor-not-allowed flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] text-muted-foreground/50"
                 >
                   <Icon className="size-5" aria-hidden="true" />
-                  {item.label}
+                  {label}
                 </span>
               )}
             </li>

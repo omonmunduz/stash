@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { Package, Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
   const { service } = await getProductService();
+  const t = await getTranslations('products');
 
   const search = params.q?.trim() || undefined;
   const status = params.status === 'all' ? 'all' : 'active';
@@ -39,13 +41,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Products"
-        description="What you sell, and what it costs you."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.products.new}>
               <Plus aria-hidden="true" />
-              Add product
+              {t('addProduct')}
             </Link>
           </Button>
         }
@@ -58,20 +60,20 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       ) : result.data.length === 0 ? (
         search ? (
           <EmptyState
-            title="No products match that search"
-            description="Try a different name or product code."
+            title={t('list.noMatch.title')}
+            description={t('list.noMatch.description')}
             icon={<Package className="size-6" aria-hidden="true" />}
           />
         ) : (
           <EmptyState
-            title="No products yet"
-            description="Add what you sell. You need at least one product before you can record a sale."
+            title={t('list.empty.title')}
+            description={t('list.empty.description')}
             icon={<Package className="size-6" aria-hidden="true" />}
             action={
               <Button asChild>
                 <Link href={ROUTES.products.new}>
                   <Plus aria-hidden="true" />
-                  Add your first product
+                  {t('addFirstProduct')}
                 </Link>
               </Button>
             }
@@ -80,7 +82,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
-            {result.data.length} {result.data.length === 1 ? 'product' : 'products'}
+            {t('list.count', { count: result.data.length })}
           </p>
           <ProductList products={result.data} />
         </>

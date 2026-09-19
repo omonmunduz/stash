@@ -11,6 +11,7 @@ import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Mail, MapPin, Pencil, Phone } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -69,6 +70,7 @@ export async function generateMetadata({ params }: CustomerDetailPageProps) {
 export default async function CustomerDetailPage({ params }: CustomerDetailPageProps) {
   const { id } = await params;
   const { result, user } = await loadCustomer(id);
+  const t = await getTranslations('customers.detail');
 
   // getById already scopes to the caller's organization, so a cross-tenant or
   // deleted ID lands here rather than leaking that the record exists.
@@ -98,7 +100,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.customers.list}>
           <ArrowLeft aria-hidden="true" />
-          Customers
+          {t('backToCustomers')}
         </Link>
       </Button>
 
@@ -110,7 +112,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
             <Button asChild variant="outline">
               <Link href={ROUTES.customers.edit(customer.id)}>
                 <Pencil aria-hidden="true" />
-                Edit
+                {t('edit')}
               </Link>
             </Button>
           ) : undefined
@@ -120,9 +122,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
       {!customer.is_active && (
         <Alert>
           <AlertDescription>
-            This customer is deactivated — they will not appear in customer lists
-            and new sales to them are blocked. Their balance and history are
-            unchanged.
+            {t('deactivatedAlert')}
           </AlertDescription>
         </Alert>
       )}
@@ -130,8 +130,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
       {history.partialFailure && (
         <Alert variant="destructive">
           <AlertDescription>
-            Some history could not be loaded, so the lists below may be
-            incomplete. Refresh to try again.
+            {t('historyLoadError')}
           </AlertDescription>
         </Alert>
       )}
@@ -139,7 +138,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
       {/* Balance first — the reason this page gets opened. */}
       <Card>
         <CardHeader className="pb-3">
-          <CardDescription>Currently owes</CardDescription>
+          <CardDescription>{t('currentlyOwes')}</CardDescription>
           <div className="flex flex-wrap items-center gap-3">
             <span
               className={
@@ -150,10 +149,10 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
             >
               {formatMoney(customer.current_balance)}
             </span>
-            {standing === 'over_limit' && <Badge variant="destructive">Over limit</Badge>}
-            {standing === 'near_limit' && <Badge variant="warning">Near limit</Badge>}
-            {standing === 'settled' && <Badge variant="success">Settled up</Badge>}
-            {standing === 'in_credit' && <Badge variant="secondary">In credit</Badge>}
+            {standing === 'over_limit' && <Badge variant="destructive">{t('overLimit')}</Badge>}
+            {standing === 'near_limit' && <Badge variant="warning">{t('nearLimit')}</Badge>}
+            {standing === 'settled' && <Badge variant="success">{t('settledUp')}</Badge>}
+            {standing === 'in_credit' && <Badge variant="secondary">{t('inCredit')}</Badge>}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -165,12 +164,12 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
       <div className="grid gap-6 sm:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Contact</CardTitle>
+            <CardTitle className="text-base">{t('contact')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             {customer.business_name && (
               <p className="text-muted-foreground">
-                Contact name: <span className="text-foreground">{customer.name}</span>
+                {t('contactName')} <span className="text-foreground">{customer.name}</span>
               </p>
             )}
 
@@ -184,7 +183,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
                 </a>
               </p>
             ) : (
-              <p className="text-muted-foreground">No phone number on file</p>
+              <p className="text-muted-foreground">{t('noPhone')}</p>
             )}
 
             {customer.email && (
@@ -207,14 +206,14 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
             )}
 
             <p className="pt-1 text-xs text-muted-foreground">
-              Customer since {formatDate(customer.created_at)}
+              {t('customerSince', { date: formatDate(customer.created_at) })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Notes</CardTitle>
+            <CardTitle className="text-base">{t('notes')}</CardTitle>
           </CardHeader>
           <CardContent>
             {customer.notes ? (
@@ -222,8 +221,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               <p className="whitespace-pre-line text-sm">{customer.notes}</p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Nothing noted. Use notes for delivery days, who to ask for, or
-                payment habits.
+                {t('noNotes')}
               </p>
             )}
           </CardContent>
@@ -234,9 +232,9 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
           the tables below it are the evidence. */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Take a payment</CardTitle>
+          <CardTitle className="text-base">{t('takePayment')}</CardTitle>
           <CardDescription>
-            Applied to their oldest unpaid invoice first.
+            {t('paymentAppliedTo')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -249,10 +247,11 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">What they took</CardTitle>
+          <CardTitle className="text-base">{t('whatTheyTook')}</CardTitle>
           <CardDescription>
-            Newest first. Open a row to see the products on it
-            {canEdit ? ' and correct anything that was written down wrong.' : '.'}
+            {canEdit
+              ? t('salesDescription', { canEdit: 'true' })
+              : t('salesDescription', { canEdit: 'false' })}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0 sm:px-0">
@@ -269,8 +268,8 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Payments</CardTitle>
-          <CardDescription>Money received from this customer.</CardDescription>
+          <CardTitle className="text-base">{t('payments')}</CardTitle>
+          <CardDescription>{t('paymentsDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0 sm:px-0">
           <CustomerPaymentsHistory

@@ -1,0 +1,41 @@
+{
+  "title": "Записи",
+  "description": "Управление календарём записей.",
+  "newAppointment": "Новая запись",
+  "detail": {
+    "backToAppointments": "Записи",
+    "title": "Детали записи",
+    "description": "{service} с {employee}",
+    "status": "Статус",
+    "statusBadge": {
+      "pending": "Ожидает",
+      "confirmed": "Подтверждено",
+      "completed": "Завершено",
+      "cancelled": "Отменено",
+      "no_show": "Не пришёл"
+    },
+    "details": "Детали",
+    "date": "Дата",
+    "time": "Время",
+    "customer": "Клиент",
+    "phone": "Телефон",
+    "service": "Услуга",
+    "price": "Цена",
+    "notes": "Заметки",
+    "bookedInfo": "Записано {source} {date}",
+    "sourceOnline": "онлайн",
+    "sourceStaff": "сотрудником"
+  },
+  "new": {
+    "backToAppointments": "Записи",
+    "title": "Новая запись",
+    "description": "Запланировать встречу для клиента",
+    "failedToLoad": "Не удалось загрузить данные",
+    "needCustomers": "Вам нужно добавить клиентов перед планированием записей.",
+    "addCustomer": "Добавить клиента",
+    "needServices": "Вам нужно добавить услуги перед планированием записей.",
+    "addService": "Добавить услугу",
+    "needEmployees": "Вам нужно добавить сотрудников перед планированием записей.",
+    "addEmployee": "Добавить сотрудника"
+  }
+}

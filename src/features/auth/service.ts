@@ -118,7 +118,7 @@ export class AuthService {
     // Type cast needed because generated types don't infer the join shape
     const { data: profile, error } = await this.supabase
       .from('user_profiles')
-      .select('*, organization:organizations(id, name, slug)')
+      .select('*, organization:organizations(id, name, slug, settings)')
       .eq('id', user.id)
       .single() as any;
 
@@ -134,6 +134,7 @@ export class AuthService {
         id: profile.organization.id as OrganizationId,
         name: profile.organization.name,
         slug: profile.organization.slug,
+        settings: profile.organization.settings,
       },
     };
   }

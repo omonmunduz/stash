@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Edit } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { requireMinimumRole } from '@/features/auth/guards';
 import { getEmployeeService } from '@/features/employees/server';
 import { getWorkingHoursService } from '@/features/working-hours/server';
@@ -21,6 +22,7 @@ export default async function EmployeeDetailPage({
   await requireMinimumRole('manager');
 
   const { id } = await params;
+  const t = await getTranslations('employees.detail');
 
   const { service: employeeService } = await getEmployeeService();
   const workingHoursService = await getWorkingHoursService();
@@ -49,7 +51,7 @@ export default async function EmployeeDetailPage({
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to employees
+          {t('backToEmployees')}
         </Link>
       </div>
 
@@ -72,9 +74,9 @@ export default async function EmployeeDetailPage({
             </h1>
             <p className="text-muted-foreground">
               {employee.is_active ? (
-                <span className="text-green-600">Active</span>
+                <span className="text-green-600">{t('active')}</span>
               ) : (
-                <span className="text-red-600">Inactive</span>
+                <span className="text-red-600">{t('inactive')}</span>
               )}
             </p>
           </div>
@@ -83,7 +85,7 @@ export default async function EmployeeDetailPage({
           <Button asChild variant="outline" size="sm">
             <Link href={`/employees/${id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              {t('edit')}
             </Link>
           </Button>
           <DeleteEmployeeButton
@@ -96,7 +98,7 @@ export default async function EmployeeDetailPage({
       {/* Bio */}
       {employee.bio && (
         <div className="rounded-lg border bg-card p-6">
-          <h2 className="mb-2 text-lg font-semibold">About</h2>
+          <h2 className="mb-2 text-lg font-semibold">{t('about')}</h2>
           <p className="text-muted-foreground">{employee.bio}</p>
         </div>
       )}
@@ -106,11 +108,11 @@ export default async function EmployeeDetailPage({
         <div className="flex items-center justify-between border-b p-6">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold">Working Hours</h2>
+            <h2 className="text-lg font-semibold">{t('workingHours')}</h2>
           </div>
           <Button asChild variant="outline" size="sm">
             <Link href={`/employees/${id}/schedule`}>
-              {hasSchedule ? 'Edit Schedule' : 'Set Schedule'}
+              {hasSchedule ? t('editSchedule') : t('setSchedule')}
             </Link>
           </Button>
         </div>
@@ -135,14 +137,13 @@ export default async function EmployeeDetailPage({
           ) : (
             <div className="text-center py-8">
               <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-semibold">No schedule set</h3>
+              <h3 className="mt-4 text-lg font-semibold">{t('noSchedule')}</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Set working hours to enable appointment bookings for this
-                employee
+                {t('noScheduleDescription')}
               </p>
               <Button asChild className="mt-4">
                 <Link href={`/employees/${id}/schedule`}>
-                  Set Schedule
+                  {t('setSchedule')}
                 </Link>
               </Button>
             </div>
@@ -154,11 +155,10 @@ export default async function EmployeeDetailPage({
       {employee.is_active && hasSchedule && (
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <h3 className="mb-2 text-sm font-medium text-blue-900">
-            Public Booking Link
+            {t('publicBookingLink')}
           </h3>
           <p className="mb-3 text-sm text-blue-800">
-            Share this link with customers to book appointments with{' '}
-            {employee.display_name}
+            {t('bookingLinkDescription', { name: employee.display_name })}
           </p>
           <code className="block rounded bg-blue-100 p-2 text-sm text-blue-900">
             {typeof window !== 'undefined'
@@ -166,8 +166,7 @@ export default async function EmployeeDetailPage({
               : '/book/{organization-slug}'}
           </code>
           <p className="mt-2 text-xs text-blue-700">
-            Replace {'{'}organization-slug{'}'} with your organization&apos;s
-            booking URL
+            {t('replaceSlug')}
           </p>
         </div>
       )}

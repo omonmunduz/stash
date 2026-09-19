@@ -6,6 +6,7 @@
 
 import Link from 'next/link';
 import { Plus, Scissors } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -20,19 +21,20 @@ export const metadata = {
 
 export default async function ServicesPage() {
   const { service } = await getServiceService();
+  const t = await getTranslations('services');
 
   const result = await service.list({ is_active: true });
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Services"
-        description="What you offer: haircuts, styling, treatments."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.services.new}>
               <Plus aria-hidden="true" />
-              Add service
+              {t('addService')}
             </Link>
           </Button>
         }
@@ -44,14 +46,14 @@ export default async function ServicesPage() {
         </Alert>
       ) : result.data.length === 0 ? (
         <EmptyState
-          title="No services yet"
-          description="Add the services your business offers. Each service has a duration and price."
+          title={t('list.empty.title')}
+          description={t('list.empty.description')}
           icon={<Scissors className="size-6" aria-hidden="true" />}
           action={
             <Button asChild>
               <Link href={ROUTES.services.new}>
                 <Plus aria-hidden="true" />
-                Add your first service
+                {t('addFirstService')}
               </Link>
             </Button>
           }
@@ -59,7 +61,7 @@ export default async function ServicesPage() {
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
-            {result.data.length} {result.data.length === 1 ? 'service' : 'services'}
+            {t('list.count', { count: result.data.length })}
           </p>
           <ServiceList services={result.data} />
         </>

@@ -17,6 +17,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Plus, Wallet } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ interface PaymentsPageProps {
 
 export default async function PaymentsPage({ searchParams }: PaymentsPageProps) {
   const params = await searchParams;
+  const t = await getTranslations('payments');
 
   const period = parsePaymentPeriod(params.period);
   const method = parseMethod(params.method);
@@ -88,13 +90,13 @@ export default async function PaymentsPage({ searchParams }: PaymentsPageProps) 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Payments"
-        description="What came in, and who it came from."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.payments.new()}>
               <Plus aria-hidden="true" />
-              Record payment
+              {t('recordPayment')}
             </Link>
           </Button>
         }
@@ -113,25 +115,25 @@ export default async function PaymentsPage({ searchParams }: PaymentsPageProps) 
       ) : result.data.length === 0 ? (
         isFiltered ? (
           <EmptyState
-            title="Nothing here"
-            description="No payments match what you are looking at. Try a longer period, or any method."
+            title={t('list.noMatch.title')}
+            description={t('list.noMatch.description')}
             icon={<Wallet className="size-6" aria-hidden="true" />}
             action={
               <Button asChild variant="outline">
-                <Link href={ROUTES.payments.list}>Clear filters</Link>
+                <Link href={ROUTES.payments.list}>{t('clearFilters')}</Link>
               </Button>
             }
           />
         ) : (
           <EmptyState
-            title="No payments yet"
-            description="When a customer settles up, record it here and it comes off what they owe."
+            title={t('list.empty.title')}
+            description={t('list.empty.description')}
             icon={<Wallet className="size-6" aria-hidden="true" />}
             action={
               <Button asChild>
                 <Link href={ROUTES.payments.new()}>
                   <Plus aria-hidden="true" />
-                  Record a payment
+                  {t('recordAPayment')}
                 </Link>
               </Button>
             }
@@ -158,16 +160,17 @@ export default async function PaymentsPage({ searchParams }: PaymentsPageProps) 
  * always describes what is visible — a filtered list showing an unfiltered total
  * would be read as the wrong answer to the question that was asked.
  */
-function ListSummary({ payments }: { payments: Array<{ amount: number }> }) {
+async function ListSummary({ payments }: { payments: Array<{ amount: number }> }) {
+  const t = await getTranslations('payments.list');
   const total = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
   return (
     <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
       <span className="text-muted-foreground">
-        {payments.length} {payments.length === 1 ? 'payment' : 'payments'}
+        {t('count', { count: payments.length })}
       </span>
       <span>
-        <span className="text-muted-foreground">Total: </span>
+        <span className="text-muted-foreground">{t('total')} </span>
         <span className="font-medium tabular-nums">{formatMoney(total)}</span>
       </span>
     </div>

@@ -1,0 +1,41 @@
+{
+  "title": "Appointments",
+  "description": "Manage your appointment calendar.",
+  "newAppointment": "New appointment",
+  "detail": {
+    "backToAppointments": "Appointments",
+    "title": "Appointment details",
+    "description": "{service} with {employee}",
+    "status": "Status",
+    "statusBadge": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No show"
+    },
+    "details": "Details",
+    "date": "Date",
+    "time": "Time",
+    "customer": "Customer",
+    "phone": "Phone",
+    "service": "Service",
+    "price": "Price",
+    "notes": "Notes",
+    "bookedInfo": "Booked {source} on {date}",
+    "sourceOnline": "online",
+    "sourceStaff": "by staff"
+  },
+  "new": {
+    "backToAppointments": "Appointments",
+    "title": "New Appointment",
+    "description": "Schedule an appointment for a customer",
+    "failedToLoad": "Failed to load data",
+    "needCustomers": "You need to add customers before scheduling appointments.",
+    "addCustomer": "Add a customer",
+    "needServices": "You need to add services before scheduling appointments.",
+    "addService": "Add a service",
+    "needEmployees": "You need to add employees before scheduling appointments.",
+    "addEmployee": "Add an employee"
+  }
+}

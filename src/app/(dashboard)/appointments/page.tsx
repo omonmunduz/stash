@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -45,6 +46,7 @@ function getSunday(monday: Date): Date {
 export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
   const params = await searchParams;
   const { service } = await getAppointmentService();
+  const t = await getTranslations('appointments');
 
   // Determine which week to show
   const weekStart = params.week ? new Date(params.week) : getMonday(new Date());
@@ -59,13 +61,13 @@ export default async function AppointmentsPage({ searchParams }: AppointmentsPag
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Appointments"
-        description="Weekly calendar of scheduled bookings and services."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.appointments.new}>
               <Plus aria-hidden="true" />
-              New appointment
+              {t('newAppointment')}
             </Link>
           </Button>
         }

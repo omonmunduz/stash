@@ -18,6 +18,7 @@
  */
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -55,9 +56,9 @@ function adjustHref(line: InventoryLine): string {
  *
  * Colour never carries the meaning alone; each state has text.
  */
-function StockLevel({ line }: { line: InventoryLine }) {
+function StockLevel({ line, t }: { line: InventoryLine; t: any }) {
   if (line.quantity_on_hand <= 0) {
-    return <Badge variant="destructive">Out of stock</Badge>;
+    return <Badge variant="destructive">{t('adjust.outOfStock')}</Badge>;
   }
 
   return (
@@ -68,13 +69,13 @@ function StockLevel({ line }: { line: InventoryLine }) {
           {line.unit_of_measure}
         </span>
       </span>
-      {line.is_low_stock && <Badge variant="warning">Low</Badge>}
+      {line.is_low_stock && <Badge variant="warning">{t('table.low')}</Badge>}
     </span>
   );
 }
 
 /** Marks which of the two catalogues a line comes from. */
-function KindBadge({ line }: { line: InventoryLine }) {
+function KindBadge({ line, t }: { line: InventoryLine; t: any }) {
   if (line.subject.kind === 'product') return null;
 
   // Only items are marked. Products are the default expectation on a stock
@@ -82,7 +83,7 @@ function KindBadge({ line }: { line: InventoryLine }) {
   // minority of them.
   return (
     <Badge variant="outline" className="shrink-0">
-      Supply
+      {t('table.supply')}
     </Badge>
   );
 }
@@ -95,6 +96,8 @@ export function InventoryList({
   /** Manager or above. The adjust control is hidden otherwise. */
   canAdjust: boolean;
 }) {
+  const t = useTranslations('inventory');
+
   return (
     <>
       {/* Phone layout. */}
@@ -110,7 +113,7 @@ export function InventoryList({
                   >
                     {line.subject.name}
                   </Link>
-                  <KindBadge line={line} />
+                  <KindBadge line={line} t={t} />
                 </div>
                 <p className="truncate text-xs text-muted-foreground tabular-nums">
                   {line.subject.code}
@@ -118,18 +121,18 @@ export function InventoryList({
               </div>
 
               <div className="shrink-0 text-right">
-                <StockLevel line={line} />
+                <StockLevel line={line} t={t} />
               </div>
             </div>
 
             <div className="mt-2 flex items-center justify-between gap-3">
               <p className="text-xs text-muted-foreground tabular-nums">
-                {formatMoney(line.stock_value)} at cost
+                {formatMoney(line.stock_value)} {t('table.atCost')}
               </p>
 
               {canAdjust && (
                 <Button asChild variant="outline" size="sm">
-                  <Link href={adjustHref(line)}>Adjust</Link>
+                  <Link href={adjustHref(line)}>{t('table.adjust')}</Link>
                 </Button>
               )}
             </div>
@@ -142,10 +145,10 @@ export function InventoryList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Item</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead className="text-right">In stock</TableHead>
-              <TableHead className="text-right">Value at cost</TableHead>
+              <TableHead>{t('table.item')}</TableHead>
+              <TableHead>{t('table.code')}</TableHead>
+              <TableHead className="text-right">{t('table.inStock')}</TableHead>
+              <TableHead className="text-right">{t('table.valueAtCost')}</TableHead>
               {canAdjust && <TableHead className="w-0" />}
             </TableRow>
           </TableHeader>
@@ -162,11 +165,11 @@ export function InventoryList({
                     >
                       {line.subject.name}
                     </Link>
-                    <KindBadge line={line} />
+                    <KindBadge line={line} t={t} />
                   </div>
                   {!line.is_active && (
                     <Badge variant="secondary" className="mt-1">
-                      Inactive
+                      {t('table.inactive')}
                     </Badge>
                   )}
                 </TableCell>
@@ -176,10 +179,10 @@ export function InventoryList({
                 </TableCell>
 
                 <TableCell className="text-right text-sm">
-                  <StockLevel line={line} />
+                  <StockLevel line={line} t={t} />
                   {line.reorder_level !== null && (
                     <p className="text-xs font-normal text-muted-foreground tabular-nums">
-                      reorder at {formatQuantity(line.reorder_level)}
+                      {t('table.reorderAt', { level: formatQuantity(line.reorder_level) })}
                     </p>
                   )}
                 </TableCell>
@@ -187,14 +190,14 @@ export function InventoryList({
                 <TableCell className="text-right text-sm tabular-nums">
                   {formatMoney(line.stock_value)}
                   <p className="text-xs font-normal text-muted-foreground tabular-nums">
-                    {formatMoney(line.cost_price)} each
+                    {formatMoney(line.cost_price)} {t('table.each')}
                   </p>
                 </TableCell>
 
                 {canAdjust && (
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={adjustHref(line)}>Adjust</Link>
+                      <Link href={adjustHref(line)}>{t('table.adjust')}</Link>
                     </Button>
                   </TableCell>
                 )}

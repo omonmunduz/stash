@@ -1,0 +1,20 @@
+{
+  "title": "Services",
+  "description": "Services offered for appointments.",
+  "newService": "New service",
+  "addService": "Add service",
+  "list": {
+    "nothingRecorded": "No services yet",
+    "nothingRecordedDescription": "Add services that customers can book appointments for.",
+    "count": "{count, plural, =1 {1 service} other {# services}}"
+  },
+  "edit": {
+    "backToServices": "Services",
+    "title": "Edit service"
+  },
+  "new": {
+    "backToServices": "Services",
+    "title": "Add service",
+    "description": "A service your business offers with duration and pricing."
+  }
+}

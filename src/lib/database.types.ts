@@ -551,6 +551,7 @@ export type Database = {
       organizations: {
         Row: {
           created_at: string | null
+          default_locale: string | null
           deleted_at: string | null
           description: string | null
           hero_image_url: string | null
@@ -563,6 +564,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          default_locale?: string | null
           deleted_at?: string | null
           description?: string | null
           hero_image_url?: string | null
@@ -575,6 +577,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          default_locale?: string | null
           deleted_at?: string | null
           description?: string | null
           hero_image_url?: string | null
@@ -1099,6 +1102,7 @@ export type Database = {
           full_name: string
           id: string
           is_active: boolean | null
+          locale: string | null
           organization_id: string
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
@@ -1111,6 +1115,7 @@ export type Database = {
           full_name: string
           id: string
           is_active?: boolean | null
+          locale?: string | null
           organization_id: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
@@ -1123,6 +1128,7 @@ export type Database = {
           full_name?: string
           id?: string
           is_active?: boolean | null
+          locale?: string | null
           organization_id?: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]

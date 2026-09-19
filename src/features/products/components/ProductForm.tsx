@@ -21,6 +21,7 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +41,8 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ product, productImageUrl }: ProductFormProps) {
+  const t = useTranslations('products.form');
+  const tActions = useTranslations('common.actions');
   const isEdit = product !== undefined;
 
   const [values, setValues] = useState<ProductFormValues>({
@@ -118,17 +121,17 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">What it is</legend>
+        <legend className="text-sm font-medium">{t('sectionWhatItIs')}</legend>
 
         <div className="space-y-2">
           <Label htmlFor="name">
-            Name <span aria-hidden="true">*</span>
+            {t('name')} <span aria-hidden="true">*</span>
           </Label>
           <Input
             id="name"
             value={values.name}
             onChange={set('name')}
-            placeholder="e.g., Chocolate biscuits 200g"
+            placeholder={t('namePlaceholder')}
             required
             minLength={2}
             maxLength={100}
@@ -138,33 +141,33 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="sku">Product code</Label>
+            <Label htmlFor="sku">{t('sku')}</Label>
             <Input
               id="sku"
               value={values.sku}
               onChange={set('sku')}
-              placeholder="Leave blank to generate one"
+              placeholder={t('skuPlaceholder')}
               maxLength={50}
             />
             <p className="text-xs text-muted-foreground">
-              Letters, numbers, hyphens. Used to find the product quickly.
+              {t('skuHelp')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('category')}</Label>
             <Input
               id="category"
               value={values.category}
               onChange={set('category')}
-              placeholder="e.g., Biscuits"
+              placeholder={t('categoryPlaceholder')}
               maxLength={50}
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('description')}</Label>
           <Textarea
             id="description"
             value={values.description}
@@ -176,25 +179,25 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Product Image</legend>
+        <legend className="text-sm font-medium">{t('sectionProductImage')}</legend>
 
         <ImageUpload
           id="product_image"
-          label="Product photo"
+          label={t('imageLabel')}
           currentImageUrl={productImageUrl}
           onFileSelect={handleImageSelect}
           disabled={isPending}
-          helperText="Optional. JPEG, PNG, or WebP. Max 5MB."
+          helperText={t('imageHelp')}
         />
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Pricing</legend>
+        <legend className="text-sm font-medium">{t('sectionPricing')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="cost_price">
-              Cost price <span aria-hidden="true">*</span>
+              {t('costPrice')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="cost_price"
@@ -206,12 +209,12 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
               onChange={set('cost_price')}
               required
             />
-            <p className="text-xs text-muted-foreground">What you pay for it.</p>
+            <p className="text-xs text-muted-foreground">{t('costPriceHelp')}</p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="sale_price">
-              Selling price <span aria-hidden="true">*</span>
+              {t('salePrice')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="sale_price"
@@ -223,20 +226,20 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
               onChange={set('sale_price')}
               required
             />
-            <p className="text-xs text-muted-foreground">What customers pay.</p>
+            <p className="text-xs text-muted-foreground">{t('salePriceHelp')}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="unit_of_measure">Sold by</Label>
+            <Label htmlFor="unit_of_measure">{t('unitOfMeasure')}</Label>
             <Input
               id="unit_of_measure"
               value={values.unit_of_measure}
               onChange={set('unit_of_measure')}
-              placeholder="unit"
+              placeholder={t('unitOfMeasurePlaceholder')}
               maxLength={20}
             />
             <p className="text-xs text-muted-foreground">
-              unit, box, kg, packet.
+              {t('unitOfMeasureHelp')}
             </p>
           </div>
         </div>
@@ -248,11 +251,11 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
             // as it changes, without interrupting typing.
             aria-live="polite"
           >
-            <span className="text-muted-foreground">Profit per unit: </span>
+            <span className="text-muted-foreground">{t('profitPerUnit')} </span>
             <span className="font-medium tabular-nums">{profit.toFixed(2)}</span>
             <span className="text-muted-foreground">
               {' '}
-              ({marginPercent.toFixed(1)}% margin)
+              ({t('margin', { percent: marginPercent.toFixed(1) })})
             </span>
           </p>
         )}
@@ -260,10 +263,10 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
 
       {!isEdit && (
         <fieldset className="space-y-4" disabled={isPending}>
-          <legend className="text-sm font-medium">Stock</legend>
+          <legend className="text-sm font-medium">{t('sectionStock')}</legend>
 
           <div className="space-y-2">
-            <Label htmlFor="initial_quantity">How many do you have now?</Label>
+            <Label htmlFor="initial_quantity">{t('initialQuantity')}</Label>
             <Input
               id="initial_quantity"
               type="number"
@@ -272,10 +275,10 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
               step="0.001"
               value={values.initial_quantity}
               onChange={set('initial_quantity')}
-              placeholder="0"
+              placeholder={t('initialQuantityPlaceholder')}
             />
             <p className="text-xs text-muted-foreground">
-              Leave blank if you are not counting stock for this product yet.
+              {t('initialQuantityHelp')}
             </p>
           </div>
         </fieldset>
@@ -285,14 +288,14 @@ export function ProductForm({ product, productImageUrl }: ProductFormProps) {
         <Button type="submit" disabled={isPending} className="sm:w-auto">
           {isPending
             ? isEdit
-              ? 'Saving...'
-              : 'Adding...'
+              ? t('saving')
+              : t('adding')
             : isEdit
-              ? 'Save changes'
-              : 'Add product'}
+              ? t('saveChanges')
+              : t('addProductButton')}
         </Button>
         <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-          <Link href={ROUTES.products.list}>Cancel</Link>
+          <Link href={ROUTES.products.list}>{tActions('cancel')}</Link>
         </Button>
       </div>
     </form>

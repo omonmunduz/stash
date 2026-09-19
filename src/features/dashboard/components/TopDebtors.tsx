@@ -11,6 +11,7 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { ROUTES } from '@/lib/constants/routes';
 import { formatMoney } from '@/lib/utils/format';
@@ -29,7 +30,8 @@ interface TopDebtorsProps {
   totalInDebt: number | null;
 }
 
-export function TopDebtors({ debtors, totalInDebt }: TopDebtorsProps) {
+export async function TopDebtors({ debtors, totalInDebt }: TopDebtorsProps) {
+  const t = await getTranslations('dashboard.topDebtors');
   const remaining = totalInDebt === null ? 0 : Math.max(0, totalInDebt - debtors.length);
 
   return (
@@ -40,21 +42,21 @@ export function TopDebtors({ debtors, totalInDebt }: TopDebtorsProps) {
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div>
           <h2 id="top-debtors-heading" className="text-sm font-semibold">
-            Who owes the most
+            {t('title')}
           </h2>
-          <p className="text-xs text-muted-foreground">Largest outstanding balances</p>
+          <p className="text-xs text-muted-foreground">{t('subtitle')}</p>
         </div>
         <Link
           href={`${ROUTES.customers.list}?debt=1`}
           className="shrink-0 text-xs font-medium text-primary hover:underline"
         >
-          See all
+          {t('seeAll')}
         </Link>
       </div>
 
       {debtors.length === 0 ? (
         <p className="px-4 py-6 text-sm text-muted-foreground">
-          Nobody owes you anything right now.
+          {t('nobodyOwes')}
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -88,7 +90,7 @@ export function TopDebtors({ debtors, totalInDebt }: TopDebtorsProps) {
                       </span>
                       {overLimit ? (
                         <span className="block text-xs font-medium text-amber-600">
-                          Over limit
+                          {t('overLimit')}
                         </span>
                       ) : null}
                     </span>
@@ -106,7 +108,7 @@ export function TopDebtors({ debtors, totalInDebt }: TopDebtorsProps) {
 
       {remaining > 0 ? (
         <p className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
-          and {remaining} more {remaining === 1 ? 'customer' : 'customers'} with a balance
+          {t('andMore', { count: remaining })}
         </p>
       ) : null}
     </section>

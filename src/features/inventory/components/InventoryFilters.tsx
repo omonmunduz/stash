@@ -17,6 +17,7 @@
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
@@ -24,16 +25,17 @@ import { cn } from '@/lib/utils/cn';
 
 type Kind = 'all' | 'products' | 'items';
 
-const KIND_TABS: Array<{ value: Kind; label: string }> = [
-  { value: 'all', label: 'Everything' },
-  { value: 'products', label: 'Products' },
-  { value: 'items', label: 'Supplies' },
-];
-
 export function InventoryFilters() {
+  const t = useTranslations('inventory.filters');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+
+  const KIND_TABS: Array<{ value: Kind; label: string }> = [
+    { value: 'all', label: t('everything') },
+    { value: 'products', label: t('products') },
+    { value: 'items', label: t('supplies') },
+  ];
 
   const currentSearch = searchParams.get('q') ?? '';
   const currentKind = (searchParams.get('kind') ?? 'all') as Kind;
@@ -91,16 +93,16 @@ export function InventoryFilters() {
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by name or code"
+          placeholder={t('searchPlaceholder')}
           className="pl-9"
-          aria-label="Search stock"
+          aria-label={t('searchLabel')}
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         {/* A radio group rather than buttons: these are one exclusive choice, and
             arrow-key navigation between them comes free with the role. */}
-        <div role="radiogroup" aria-label="Filter by kind" className="flex gap-2">
+        <div role="radiogroup" aria-label={t('filterByKind')} className="flex gap-2">
           {KIND_TABS.map((tab) => (
             <button
               key={tab.value}
@@ -133,7 +135,7 @@ export function InventoryFilters() {
               : 'border-border bg-background hover:bg-accent'
           )}
         >
-          Needs reordering
+          {t('needsReordering')}
         </button>
 
         {hasFilters && (
@@ -148,14 +150,14 @@ export function InventoryFilters() {
             }}
           >
             <X aria-hidden="true" />
-            Clear
+            {t('clear')}
           </Button>
         )}
 
         {/* aria-live so the result change is announced to screen readers, since
             the table updates without a page navigation. */}
         <span className="sr-only" role="status" aria-live="polite">
-          {isPending ? 'Updating results' : ''}
+          {isPending ? t('updatingResults') : ''}
         </span>
       </div>
     </div>

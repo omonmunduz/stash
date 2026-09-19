@@ -34,7 +34,7 @@ import { ROUTES } from './routes';
 import type { UserRole } from '@/features/users/types';
 
 export interface NavItem {
-  label: string;
+  labelKey: string; // Translation key for common.nav
   href: string;
   icon: LucideIcon;
   /** False until the feature's routes exist. Renders disabled. */
@@ -49,73 +49,73 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   {
-    label: 'Home',
+    labelKey: 'dashboard',
     href: ROUTES.dashboard.home,
     icon: Home,
     available: true,
     primary: true,
   },
   {
-    label: 'Customers',
+    labelKey: 'customers',
     href: ROUTES.customers.list,
     icon: Users,
     available: true,
     primary: true,
   },
   {
-    label: 'Sales',
+    labelKey: 'sales',
     href: ROUTES.sales.list,
     icon: ShoppingCart,
     available: true,
     primary: true,
   },
   {
-    label: 'Products',
+    labelKey: 'products',
     href: ROUTES.products.list,
     icon: Package,
     available: true,
     primary: true,
   },
   {
-    label: 'Inventory',
+    labelKey: 'inventory',
     href: ROUTES.inventory.list,
     icon: Boxes,
     available: true,
   },
   {
-    label: 'Payments',
+    labelKey: 'payments',
     href: ROUTES.payments.list,
     icon: Wallet,
     available: true,
   },
   {
-    label: 'Expenses',
+    labelKey: 'expenses',
     href: ROUTES.expenses.list,
     icon: Receipt,
     available: true,
   },
   {
-    label: 'Appointments',
+    labelKey: 'appointments',
     href: ROUTES.appointments.list,
     icon: Calendar,
     available: true,
   },
   {
-    label: 'Services',
+    labelKey: 'services',
     href: ROUTES.services.list,
     icon: Scissors,
     available: true,
     minimumRole: 'manager',
   },
   {
-    label: 'Employees',
+    labelKey: 'employees',
     href: ROUTES.employees.list,
     icon: UserCog,
     available: true,
     minimumRole: 'admin',
   },
   {
-    label: 'Reports',
+    labelKey: 'reports',
     href: ROUTES.reports.overview,
     icon: BarChart3,
     available: false,
@@ -123,14 +123,14 @@ export const NAV_ITEMS: NavItem[] = [
     hint: 'Needs sales data to report on',
   },
   {
-    label: 'Landing Page',
+    labelKey: 'landingPage', // Need to add to common.nav
     href: ROUTES.settings.landingPage,
     icon: Globe,
     available: true,
     minimumRole: 'owner',
   },
   {
-    label: 'Settings',
+    labelKey: 'settings',
     href: ROUTES.settings.general,
     icon: Settings,
     available: false,

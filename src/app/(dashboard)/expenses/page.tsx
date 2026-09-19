@@ -19,6 +19,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { PieChart, Plus, Receipt, Tag, Wallet } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { MetricCard } from '@/features/dashboard/components/MetricCard';
@@ -56,6 +57,7 @@ interface ExpensesPageProps {
 
 export default async function ExpensesPage({ searchParams }: ExpensesPageProps) {
   const params = await searchParams;
+  const t = await getTranslations('expenses');
 
   const period = parseExpensePeriod(params.period);
   const category = params.category?.trim() || undefined;
@@ -101,22 +103,22 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Expenses"
-        description="What you spent, and what on."
+        title={t('title')}
+        description={t('description')}
         action={
           <>
             {isManager && (
               <Button asChild variant="outline">
                 <Link href={ROUTES.reports.expenses}>
                   <PieChart aria-hidden="true" />
-                  Breakdown
+                  {t('breakdown')}
                 </Link>
               </Button>
             )}
             <Button asChild>
               <Link href={ROUTES.expenses.new}>
                 <Plus aria-hidden="true" />
-                Add expense
+                {t('addExpense')}
               </Link>
             </Button>
           </>
@@ -138,25 +140,25 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
           {result.data.length === 0 ? (
             isFiltered ? (
               <EmptyState
-                title="Nothing here"
-                description="No expenses match what you are looking at. Try a longer period, or clear the filters."
+                title={t('list.noMatch.title')}
+                description={t('list.noMatch.description')}
                 icon={<Receipt className="size-6" aria-hidden="true" />}
                 action={
                   <Button asChild variant="outline">
-                    <Link href={ROUTES.expenses.list}>Clear filters</Link>
+                    <Link href={ROUTES.expenses.list}>{t('clearFilters')}</Link>
                   </Button>
                 }
               />
             ) : (
               <EmptyState
-                title="No expenses yet"
-                description="Rent, transport, packaging, wages. Write down what you spend and you will know what the business actually costs to run."
+                title={t('list.empty.title')}
+                description={t('list.empty.description')}
                 icon={<Receipt className="size-6" aria-hidden="true" />}
                 action={
                   <Button asChild>
                     <Link href={ROUTES.expenses.new}>
                       <Plus aria-hidden="true" />
-                      Record your first expense
+                      {t('recordFirstExpense')}
                     </Link>
                   </Button>
                 }
@@ -191,7 +193,7 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
  * The heading says which period it covers, because "12,400.00" means nothing
  * without it and the presets above are easy to forget having tapped.
  */
-function PeriodSummary({
+async function PeriodSummary({
   expenses,
   periodLabel,
   isFiltered,
@@ -200,6 +202,7 @@ function PeriodSummary({
   periodLabel: string;
   isFiltered: boolean;
 }) {
+  const t = await getTranslations('expenses.list');
   const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const breakdown = summarizeByCategory(expenses);
   const biggest = breakdown[0];
@@ -207,29 +210,32 @@ function PeriodSummary({
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       <MetricCard
-        label="Total spent"
+        label={t('totalSpent')}
         value={formatMoney(total)}
         // The period is named here rather than in the label so the figure is never
         // read without knowing what it covers, and so a filtered view says it is
         // filtered instead of quietly claiming to be the whole month.
-        detail={isFiltered ? 'Matching your filters' : periodLabel}
+        detail={isFiltered ? t('matchingFilters') : periodLabel}
         icon={Wallet}
         tone="warning"
       />
 
       <MetricCard
-        label="Expenses"
+        label={t('expenses')}
         value={String(expenses.length)}
-        detail={expenses.length === 1 ? 'record' : 'records'}
+        detail={t('records', { count: expenses.length })}
         icon={Receipt}
       />
 
       <MetricCard
-        label="Biggest category"
+        label={t('biggestCategory')}
         value={biggest ? biggest.category : '—'}
         detail={
           biggest
-            ? `${formatMoney(biggest.total)} · ${Math.round(biggest.percentage_of_total)}% of the total`
+            ? t('categoryDetail', {
+                amount: formatMoney(biggest.total),
+                percent: Math.round(biggest.percentage_of_total),
+              })
             : undefined
         }
         icon={Tag}

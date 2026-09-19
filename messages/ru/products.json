@@ -1,0 +1,52 @@
+{
+  "title": "Товары",
+  "description": "Ваш каталог товаров и цены.",
+  "newProduct": "Новый товар",
+  "addProduct": "Добавить товар",
+  "list": {
+    "nothingRecorded": "Пока нет товаров",
+    "nothingRecordedDescription": "Добавленные вами товары появятся здесь. Для каждого товара можно отслеживать остатки, цены и историю продаж.",
+    "count": "{count, plural, =1 {1 товар} few {# товара} other {# товаров}}"
+  },
+  "edit": {
+    "backToProducts": "Товары",
+    "title": "Редактировать товар"
+  },
+  "new": {
+    "backToProducts": "Товары",
+    "title": "Добавить товар",
+    "description": "Название, себестоимость и цена продажи."
+  },
+  "form": {
+    "sectionWhatItIs": "Что это",
+    "name": "Название",
+    "namePlaceholder": "Печенье с шоколадной крошкой",
+    "sku": "Артикул",
+    "skuPlaceholder": "Генерируется из названия",
+    "skuHelp": "Необязательно. Генерируется автоматически, если не указан.",
+    "category": "Категория",
+    "categoryPlaceholder": "Печенье",
+    "description": "Описание",
+    "sectionProductImage": "Изображение товара",
+    "imageLabel": "Изображение",
+    "imageHelp": "Необязательно. Отображается на вашей целевой странице. JPEG, PNG или WebP. Макс. 5 МБ.",
+    "sectionPricing": "Ценообразование",
+    "costPrice": "Себестоимость",
+    "costPriceHelp": "Сколько вы за него платите",
+    "salePrice": "Цена продажи",
+    "salePriceHelp": "Сколько вы берёте",
+    "unitOfMeasure": "Единица",
+    "unitOfMeasurePlaceholder": "шт",
+    "unitOfMeasureHelp": "напр. кг, коробка, дюжина",
+    "profitPerUnit": "Прибыль за единицу:",
+    "margin": "{percent}% наценка",
+    "sectionStock": "Запас",
+    "initialQuantity": "Начальное количество",
+    "initialQuantityPlaceholder": "0",
+    "initialQuantityHelp": "Сколько сейчас на складе. Можно скорректировать запас позже.",
+    "saving": "Сохранение...",
+    "adding": "Добавление...",
+    "saveChanges": "Сохранить изменения",
+    "addProductButton": "Добавить товар"
+  }
+}

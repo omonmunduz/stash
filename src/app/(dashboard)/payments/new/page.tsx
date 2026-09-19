@@ -12,6 +12,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, Users } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Card, CardContent } from '@/components/ui/card';
@@ -32,6 +33,7 @@ interface NewPaymentPageProps {
 
 export default async function NewPaymentPage({ searchParams }: NewPaymentPageProps) {
   const params = await searchParams;
+  const t = await getTranslations('payments.new');
 
   // Active only. Money from a deactivated customer is a correction to old
   // business, not a routine handover, and offering them here would suggest the
@@ -44,13 +46,13 @@ export default async function NewPaymentPage({ searchParams }: NewPaymentPagePro
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.payments.list}>
           <ArrowLeft aria-hidden="true" />
-          Payments
+          {t('backToPayments')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Record a payment"
-        description="Money received. It comes off their oldest unpaid invoice first."
+        title={t('title')}
+        description={t('description')}
       />
 
       {!result.success ? (
@@ -59,12 +61,12 @@ export default async function NewPaymentPage({ searchParams }: NewPaymentPagePro
         </Alert>
       ) : result.data.length === 0 ? (
         <EmptyState
-          title="No customers yet"
-          description="A payment needs someone it came from. Add a customer first."
+          title={t('noCustomers')}
+          description={t('noCustomersDescription')}
           icon={<Users className="size-6" aria-hidden="true" />}
           action={
             <Button asChild>
-              <Link href={ROUTES.customers.new}>Add a customer</Link>
+              <Link href={ROUTES.customers.new}>{t('addCustomer')}</Link>
             </Button>
           }
         />

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { requireMinimumRole } from '@/features/auth/guards';
 import { getEmployeeService } from '@/features/employees/server';
 import { getWorkingHoursService } from '@/features/working-hours/server';
@@ -20,6 +21,7 @@ export default async function EmployeeSchedulePage({
   await requireMinimumRole('manager');
 
   const { id } = await params;
+  const t = await getTranslations('employees.schedule');
 
   const { service: employeeService } = await getEmployeeService();
   const workingHoursService = await getWorkingHoursService();
@@ -48,16 +50,16 @@ export default async function EmployeeSchedulePage({
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to {employee.display_name}
+          {t('backTo', { name: employee.display_name })}
         </Link>
       </div>
 
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          {employee.display_name}&apos;s Schedule
+          {t('title', { name: employee.display_name })}
         </h1>
         <p className="text-muted-foreground">
-          Set weekly working hours for appointment availability
+          {t('description')}
         </p>
       </div>
 
@@ -72,21 +74,14 @@ export default async function EmployeeSchedulePage({
 
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
         <h3 className="mb-2 text-sm font-medium text-blue-900">
-          How schedules work
+          {t('howItWorks')}
         </h3>
         <ul className="space-y-1 text-sm text-blue-800">
-          <li>• Check the days this employee is available to work</li>
-          <li>• Set start and end times for each working day</li>
-          <li>
-            • Use &quot;Copy to all&quot; to apply times to all checked days
-          </li>
-          <li>
-            • Use &quot;Mon-Fri 9-5&quot; for a standard business week preset
-          </li>
-          <li>
-            • This schedule controls what appointment times are available on the
-            booking page
-          </li>
+          <li>• {t('step1')}</li>
+          <li>• {t('step2')}</li>
+          <li>• {t('step3')}</li>
+          <li>• {t('step4')}</li>
+          <li>• {t('step5')}</li>
         </ul>
       </div>
     </div>

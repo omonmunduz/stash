@@ -23,6 +23,7 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,6 +59,7 @@ export function AdjustStockForm({
   unitOfMeasure,
   quantityOnHand,
 }: AdjustStockFormProps) {
+  const t = useTranslations('inventory.adjustForm');
   const router = useRouter();
 
   const [mode, setMode] = useState<Mode>('move');
@@ -138,32 +140,32 @@ export function AdjustStockForm({
           arrow-key navigation between them comes free with the role. */}
       <div
         role="radiogroup"
-        aria-label="What kind of change is this?"
+        aria-label={t('modeLabel')}
         className="grid gap-2 sm:grid-cols-2"
       >
         <ModeOption
           checked={mode === 'move'}
           onSelect={() => setMode('move')}
           disabled={isPending}
-          title="Stock moved"
-          description="A delivery came in, or goods were damaged, lost, or returned."
+          title={t('stockMoved')}
+          description={t('stockMovedDesc')}
         />
         <ModeOption
           checked={mode === 'recount'}
           onSelect={() => setMode('recount')}
           disabled={isPending}
-          title="I counted it"
-          description="Correct the figure to what is physically on the shelf."
+          title={t('iCountedIt')}
+          description={t('iCountedItDesc')}
         />
       </div>
 
       {mode === 'move' ? (
         <fieldset className="space-y-4" disabled={isPending}>
-          <legend className="sr-only">Stock movement</legend>
+          <legend className="sr-only">{t('stockMovement')}</legend>
 
           <div className="space-y-2">
             <Label htmlFor="reason">
-              Why <span aria-hidden="true">*</span>
+              {t('why')} <span aria-hidden="true">*</span>
             </Label>
             {/*
               Native select: the project has no select primitive, and on a phone
@@ -189,7 +191,7 @@ export function AdjustStockForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="quantity">
-                How much <span aria-hidden="true">*</span>
+                {t('howMuch')} <span aria-hidden="true">*</span>
               </Label>
               <Input
                 id="quantity"
@@ -203,13 +205,13 @@ export function AdjustStockForm({
                 autoFocus
               />
               <p className="text-xs text-muted-foreground">
-                In {unitOfMeasure}. Enter a positive number.
+                {t('howMuchHelp', { unit: unitOfMeasure })}
               </p>
             </div>
 
             <div className="space-y-2">
               <span id="direction-label" className="text-sm font-medium">
-                Direction
+                {t('direction')}
               </span>
               <div
                 role="radiogroup"
@@ -219,12 +221,12 @@ export function AdjustStockForm({
                 <DirectionOption
                   checked={direction === 'in'}
                   onSelect={() => setDirection('in')}
-                  label="Came in"
+                  label={t('cameIn')}
                 />
                 <DirectionOption
                   checked={direction === 'out'}
                   onSelect={() => setDirection('out')}
-                  label="Went out"
+                  label={t('wentOut')}
                 />
               </div>
               {showsPreview && (
@@ -239,7 +241,7 @@ export function AdjustStockForm({
                     {formatQuantity(projected)}
                   </span>{' '}
                   {unitOfMeasure}
-                  {projected < 0 && ' — more than you have'}
+                  {projected < 0 && ` — ${t('moreThanYouHave')}`}
                 </p>
               )}
             </div>
@@ -247,11 +249,11 @@ export function AdjustStockForm({
         </fieldset>
       ) : (
         <fieldset className="space-y-4" disabled={isPending}>
-          <legend className="sr-only">Counted quantity</legend>
+          <legend className="sr-only">{t('countedQuantity')}</legend>
 
           <div className="space-y-2">
             <Label htmlFor="counted">
-              How many are actually there? <span aria-hidden="true">*</span>
+              {t('howManyActually')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="counted"
@@ -266,8 +268,10 @@ export function AdjustStockForm({
               autoFocus
             />
             <p className="text-xs text-muted-foreground">
-              Recorded as {formatQuantity(quantityOnHand)} {unitOfMeasure}. The
-              difference is logged as a count correction.
+              {t('countedHelp', {
+                recorded: formatQuantity(quantityOnHand),
+                unit: unitOfMeasure
+              })}
             </p>
           </div>
         </fieldset>
@@ -275,11 +279,11 @@ export function AdjustStockForm({
 
       <fieldset className="space-y-2" disabled={isPending}>
         <Label htmlFor="notes">
-          Note{' '}
+          {t('note')}{' '}
           {notesRequired ? (
             <span aria-hidden="true">*</span>
           ) : (
-            <span className="font-normal text-muted-foreground">(optional)</span>
+            <span className="font-normal text-muted-foreground">({t('optional')})</span>
           )}
         </Label>
         <Textarea
@@ -291,29 +295,28 @@ export function AdjustStockForm({
           required={notesRequired}
           placeholder={
             mode === 'recount'
-              ? 'e.g., Monthly count'
-              : 'e.g., Two boxes crushed in transit'
+              ? t('notePlaceholderCount')
+              : t('notePlaceholderMove')
           }
         />
         {notesRequired && (
           <p className="text-xs text-muted-foreground">
-            Required when the reason is &ldquo;Other&rdquo; — otherwise the history
-            will not say what happened.
+            {t('noteRequired')}
           </p>
         )}
       </fieldset>
 
       <div className="flex flex-col gap-2 sm:flex-row-reverse">
         <Button type="submit" disabled={isPending} className="sm:w-auto">
-          {isPending ? 'Saving...' : mode === 'move' ? 'Record change' : 'Correct count'}
+          {isPending ? t('saving') : mode === 'move' ? t('recordChange') : t('correctCount')}
         </Button>
         <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-          <Link href={ROUTES.inventory.list}>Done</Link>
+          <Link href={ROUTES.inventory.list}>{t('done')}</Link>
         </Button>
       </div>
 
       <p className="sr-only" role="status" aria-live="polite">
-        {isPending ? `Saving stock change for ${name}` : ''}
+        {isPending ? t('savingFor', { name }) : ''}
       </p>
     </form>
   );

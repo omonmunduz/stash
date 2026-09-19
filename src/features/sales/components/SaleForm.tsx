@@ -29,6 +29,7 @@
 import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Plus, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -67,6 +68,8 @@ const EMPTY_LINE: SaleLineValues = {
 };
 
 export function SaleForm({ customers, products, defaultCustomerId }: SaleFormProps) {
+  const t = useTranslations('sales.form');
+  const tCommon = useTranslations('common.actions');
   const [customerId, setCustomerId] = useState(defaultCustomerId ?? '');
   const [lines, setLines] = useState<SaleLineValues[]>([{ ...EMPTY_LINE }]);
   const [saleDate, setSaleDate] = useState(todayInputValue);
@@ -166,11 +169,11 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Who is buying</legend>
+        <legend className="text-sm font-medium">{t('sectionWhoBuying')}</legend>
 
         <div className="space-y-2">
           <Label htmlFor="customer">
-            Customer <span aria-hidden="true">*</span>
+            {t('customer')} <span aria-hidden="true">*</span>
           </Label>
           <select
             id="customer"
@@ -179,7 +182,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
             required
             className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="">Choose a customer...</option>
+            <option value="">{t('chooseCustomer')}</option>
             {customers.map((candidate) => (
               <option key={candidate.id} value={candidate.id}>
                 {candidate.business_name
@@ -191,12 +194,12 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
 
           {customer && customer.current_balance > 0 && (
             <p className="text-xs text-muted-foreground">
-              Already owes{' '}
+              {t('alreadyOwes')}{' '}
               <span className="font-medium tabular-nums text-foreground">
                 {formatMoney(customer.current_balance)}
               </span>
               {customer.credit_limit != null && (
-                <> of a {formatMoney(customer.credit_limit)} limit</>
+                <> {t('ofLimit', { limit: formatMoney(customer.credit_limit) })}</>
               )}
             </p>
           )}
@@ -204,7 +207,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
       </fieldset>
 
       <fieldset className="space-y-3" disabled={isPending}>
-        <legend className="text-sm font-medium">What they are taking</legend>
+        <legend className="text-sm font-medium">{t('sectionWhatTaking')}</legend>
 
         <ul className="space-y-3">
           {lines.map((line, index) => (
@@ -214,7 +217,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
             >
               <div className="space-y-1">
                 <Label htmlFor={`product-${index}`} className="text-xs">
-                  Product
+                  {t('product')}
                 </Label>
                 <ProductPicker
                   id={`product-${index}`}
@@ -227,7 +230,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
 
               <div className="space-y-1">
                 <Label htmlFor={`quantity-${index}`} className="text-xs">
-                  Qty
+                  {t('qty')}
                 </Label>
                 <Input
                   id={`quantity-${index}`}
@@ -243,7 +246,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
 
               <div className="space-y-1">
                 <Label htmlFor={`price-${index}`} className="text-xs">
-                  Price
+                  {t('price')}
                 </Label>
                 <Input
                   id={`price-${index}`}
@@ -265,7 +268,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
                 className="justify-self-end"
               >
                 <Trash2 className="size-4 text-destructive" aria-hidden="true" />
-                <span className="sr-only">Remove line {index + 1}</span>
+                <span className="sr-only">{t('removeLine', { index: index + 1 })}</span>
               </Button>
             </li>
           ))}
@@ -273,23 +276,23 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
 
         <Button type="button" variant="outline" size="sm" onClick={addLine}>
           <Plus aria-hidden="true" />
-          Add another product
+          {t('addAnotherProduct')}
         </Button>
       </fieldset>
 
       <div className="flex items-baseline justify-between rounded-lg bg-muted px-4 py-3">
-        <span className="text-sm font-medium">Total</span>
+        <span className="text-sm font-medium">{t('total')}</span>
         <span className="text-xl font-semibold tabular-nums" aria-live="polite">
           {formatMoney(total)}
         </span>
       </div>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">What they paid now</legend>
+        <legend className="text-sm font-medium">{t('sectionWhatPaidNow')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="amount-paid">Paid at the counter</Label>
+            <Label htmlFor="amount-paid">{t('paidAtCounter')}</Label>
             <Input
               id="amount-paid"
               type="number"
@@ -307,20 +310,20 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
                 onClick={() => setAmountPaid(total > 0 ? String(total) : '')}
                 className="text-primary underline-offset-4 hover:underline"
               >
-                Paid in full
+                {t('paidInFull')}
               </button>
               <button
                 type="button"
                 onClick={() => setAmountPaid('')}
                 className="text-primary underline-offset-4 hover:underline"
               >
-                All on credit
+                {t('allOnCredit')}
               </button>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sale-payment-method">How they paid</Label>
+            <Label htmlFor="sale-payment-method">{t('howTheyPaid')}</Label>
             <select
               id="sale-payment-method"
               value={paymentMethod}
@@ -338,11 +341,11 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
 
         {goingOnTab > 0 && customer && (
           <p className="text-sm" aria-live="polite">
-            <span className="text-muted-foreground">Going on the tab: </span>
+            <span className="text-muted-foreground">{t('goingOnTab')}: </span>
             <span className="font-medium tabular-nums">{formatMoney(goingOnTab)}</span>
             <span className="text-muted-foreground">
               {' '}
-              — they will owe {formatMoney(projectedBalance)}
+              — {t('willOwe', { amount: formatMoney(projectedBalance) })}
             </span>
           </p>
         )}
@@ -350,21 +353,22 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
         {overLimit && customer?.credit_limit != null && (
           <Alert>
             <AlertDescription>
-              This puts {customer.business_name ?? customer.name} over their{' '}
-              {formatMoney(customer.credit_limit)} credit limit, at{' '}
-              {formatMoney(projectedBalance)}. The sale will still be recorded —
-              this is a heads-up, not a block.
+              {t('overLimitWarning', {
+                name: customer.business_name ?? customer.name,
+                limit: formatMoney(customer.credit_limit),
+                projected: formatMoney(projectedBalance)
+              })}
             </AlertDescription>
           </Alert>
         )}
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Details</legend>
+        <legend className="text-sm font-medium">{t('sectionDetails')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="sale-date">Date</Label>
+            <Label htmlFor="sale-date">{t('date')}</Label>
             <Input
               id="sale-date"
               type="date"
@@ -374,7 +378,7 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="due-date">Pay by</Label>
+            <Label htmlFor="due-date">{t('payBy')}</Label>
             <Input
               id="due-date"
               type="date"
@@ -382,20 +386,20 @@ export function SaleForm({ customers, products, defaultCustomerId }: SaleFormPro
               onChange={(event) => setDueDate(event.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Optional. Used to flag the sale as overdue.
+              {t('payByHelp')}
             </p>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sale-notes">Note</Label>
+          <Label htmlFor="sale-notes">{t('note')}</Label>
           <Textarea
             id="sale-notes"
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             maxLength={500}
             rows={2}
-            placeholder="Anything worth remembering about this sale."
+            placeholder={t('notePlaceholder')}
           />
         </div>
       </fieldset>

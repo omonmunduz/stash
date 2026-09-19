@@ -22,6 +22,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { ArrowLeft, Receipt, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { MetricCard } from '@/features/dashboard/components/MetricCard';
@@ -55,6 +56,7 @@ export default async function ExpenseReportPage({
   await requireMinimumRole('manager');
 
   const params = await searchParams;
+  const t = await getTranslations('reports.expenses');
   const period = parseExpensePeriod(params.period);
   const from = expensePeriodStart(period);
 
@@ -80,13 +82,13 @@ export default async function ExpenseReportPage({
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.expenses.list}>
           <ArrowLeft aria-hidden="true" />
-          Expenses
+          {t('backToExpenses')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Expense breakdown"
-        description="What you spent it on, and how it sits against what came in."
+        title={t('title')}
+        description={t('description')}
       />
 
       <Suspense fallback={<div className="h-10" />}>
@@ -99,12 +101,12 @@ export default async function ExpenseReportPage({
         </Alert>
       ) : expensesResult.data.length === 0 ? (
         <EmptyState
-          title="Nothing to break down"
-          description={`No expenses recorded ${periodLabel.toLowerCase()}. Try a longer period, or record what you have spent.`}
+          title={t('nothingToBreakdown')}
+          description={t('noExpensesRecorded', { period: periodLabel.toLowerCase() })}
           icon={<Receipt className="size-6" aria-hidden="true" />}
           action={
             <Button asChild variant="outline">
-              <Link href={ROUTES.expenses.new}>Record an expense</Link>
+              <Link href={ROUTES.expenses.new}>{t('recordExpense')}</Link>
             </Button>
           }
         />
@@ -134,7 +136,7 @@ export default async function ExpenseReportPage({
  * looks like earnings but ignores what the goods cost, and they might price
  * against it.
  */
-function InOutSummary({
+async function InOutSummary({
   spent,
   earned,
   periodLabel,
@@ -143,36 +145,37 @@ function InOutSummary({
   earned: number | null;
   periodLabel: string;
 }) {
+  const t = await getTranslations('reports.expenses');
   const difference = earned === null ? null : earned - spent;
 
   return (
     <section aria-label="Money in and out" className="space-y-2">
       <div className="grid gap-3 sm:grid-cols-3">
         <MetricCard
-          label="Money in"
+          label={t('moneyIn')}
           value={earned === null ? null : formatMoney(earned)}
-          detail={`Sales, ${periodLabel.toLowerCase()}`}
+          detail={t('salesPeriod', { period: periodLabel.toLowerCase() })}
           icon={TrendingUp}
           tone="positive"
         />
 
         <MetricCard
-          label="Money out"
+          label={t('moneyOut')}
           value={formatMoney(spent)}
-          detail={`Expenses, ${periodLabel.toLowerCase()}`}
+          detail={t('expensesPeriod', { period: periodLabel.toLowerCase() })}
           icon={TrendingDown}
           tone="warning"
         />
 
         <MetricCard
-          label="Difference"
+          label={t('difference')}
           value={difference === null ? null : formatMoney(difference)}
           detail={
             difference === null
               ? undefined
               : difference < 0
-                ? 'You spent more than you took'
-                : 'Before stock costs'
+                ? t('spentMoreThanTook')
+                : t('beforeStockCosts')
           }
           icon={Wallet}
           tone={difference !== null && difference < 0 ? 'debt' : 'default'}
@@ -180,8 +183,7 @@ function InOutSummary({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        This is not profit. It counts what you invoiced against what you spent, and
-        ignores what the stock itself cost you.
+        {t('notProfitNote')}
       </p>
     </section>
   );

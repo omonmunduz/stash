@@ -1,0 +1,106 @@
+{
+  "title": "Inventory",
+  "description": "Stock levels and supply tracking.",
+  "addProduct": "Add product",
+  "addSupply": "Add supply",
+  "list": {
+    "count": "{count, plural, =1 {1 item} other {# items}}",
+    "needReordering": "{count, plural, =1 {1 needs reordering} other {# need reordering}}",
+    "stockValueAtCost": "Stock value at cost:",
+    "noMatch": {
+      "title": "No matching items",
+      "defaultDescription": "Try adjusting your search or filters.",
+      "lowStockDescription": "No items need reordering right now."
+    },
+    "empty": {
+      "title": "No inventory yet",
+      "description": "Products and supplies you add will appear here."
+    }
+  },
+  "items": {
+    "title": "Supplies",
+    "description": "Track items you use but don't sell.",
+    "newItem": "New item",
+    "list": {
+      "nothingRecorded": "No items yet",
+      "nothingRecordedDescription": "Track supplies and materials you use in your business.",
+      "count": "{count, plural, =1 {1 item} other {# items}}"
+    },
+    "edit": {
+      "backToSupplies": "Supplies",
+      "title": "Edit item",
+      "adjustStock": "Adjust stock"
+    },
+    "new": {
+      "backToSupplies": "Supplies",
+      "title": "Add item",
+      "description": "Something you buy and use, but do not sell."
+    }
+  },
+  "adjust": {
+    "backToStock": "Stock",
+    "products": "Products",
+    "supplies": "Supplies",
+    "onHand": "on hand",
+    "outOfStock": "Out of stock",
+    "lowStock": "Low stock",
+    "worthAtCost": "Worth {value} at cost",
+    "reorderAt": "reorder at {level}",
+    "product": "product",
+    "item": "item",
+    "inactiveAlert": "This {type} is inactive. Stock can still be corrected, but it will not appear when recording a sale.",
+    "recentChanges": "Recent changes"
+  },
+  "table": {
+    "item": "Item",
+    "code": "Code",
+    "inStock": "In stock",
+    "valueAtCost": "Value at cost",
+    "atCost": "at cost",
+    "each": "each",
+    "adjust": "Adjust",
+    "inactive": "Inactive",
+    "reorderAt": "reorder at {level}",
+    "low": "Low",
+    "supply": "Supply"
+  },
+  "filters": {
+    "everything": "Everything",
+    "products": "Products",
+    "supplies": "Supplies",
+    "needsReordering": "Needs reordering",
+    "clear": "Clear",
+    "searchPlaceholder": "Search by name or code",
+    "searchLabel": "Search stock",
+    "filterByKind": "Filter by kind",
+    "updatingResults": "Updating results"
+  },
+  "adjustForm": {
+    "modeLabel": "What kind of change is this?",
+    "stockMoved": "Stock moved",
+    "stockMovedDesc": "A delivery came in, or goods were damaged, lost, or returned.",
+    "iCountedIt": "I counted it",
+    "iCountedItDesc": "Correct the figure to what is physically on the shelf.",
+    "stockMovement": "Stock movement",
+    "why": "Why",
+    "howMuch": "How much",
+    "howMuchHelp": "In {unit}. Enter a positive number.",
+    "direction": "Direction",
+    "cameIn": "Came in",
+    "wentOut": "Went out",
+    "moreThanYouHave": "more than you have",
+    "countedQuantity": "Counted quantity",
+    "howManyActually": "How many are actually there?",
+    "countedHelp": "Recorded as {recorded} {unit}. The difference is logged as a count correction.",
+    "note": "Note",
+    "optional": "optional",
+    "notePlaceholderCount": "e.g., Monthly count",
+    "notePlaceholderMove": "e.g., Two boxes crushed in transit",
+    "noteRequired": "Required when the reason is \"Other\" — otherwise the history will not say what happened.",
+    "saving": "Saving...",
+    "recordChange": "Record change",
+    "correctCount": "Correct count",
+    "done": "Done",
+    "savingFor": "Saving stock change for {name}"
+  }
+}

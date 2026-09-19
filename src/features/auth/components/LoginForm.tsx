@@ -15,6 +15,7 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +24,14 @@ import { signInAction } from '@/app/actions/auth';
 import { ROUTES } from '@/lib/constants/routes';
 
 export function LoginForm() {
+  const t = useTranslations('auth');
+
+  // Debug: log what translations are available
+  console.log('LoginForm - Testing translations:');
+  console.log('t("email"):', t('email'));
+  console.log('t("password"):', t('password'));
+  console.log('t("signInButton"):', t('signInButton'));
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -51,11 +60,11 @@ export function LoginForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('email')}</Label>
         <Input
           id="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder={t('emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isPending}
@@ -66,12 +75,12 @@ export function LoginForm() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t('password')}</Label>
           <Link
             href={ROUTES.auth.resetPassword}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            Forgot password?
+            {t('forgotPassword')}
           </Link>
         </div>
         <Input
@@ -86,13 +95,13 @@ export function LoginForm() {
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Signing in...' : 'Sign in'}
+        {isPending ? t('signingIn') : t('signInButton')}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <Link href={ROUTES.auth.signup} className="font-medium text-primary hover:underline">
-          Sign up
+          {t('signUp')}
         </Link>
       </p>
     </form>

@@ -1,0 +1,75 @@
+{
+  "title": "Продажи",
+  "description": "История продаж и счета.",
+  "newSale": "Новая продажа",
+  "recordSale": "Записать продажу",
+  "list": {
+    "nothingRecorded": "Пока нет продаж",
+    "nothingRecordedDescription": "Записанные вами продажи появятся здесь.",
+    "count": "{count, plural, =1 {1 продажа} few {# продажи} other {# продаж}}",
+    "showOverdue": "Показать просроченные",
+    "showAll": "Показать все",
+    "seeAll": "Смотреть все",
+    "nothingOverdue": {
+      "description": "Все счета оплачены или ожидают оплаты без задержки."
+    }
+  },
+  "detail": {
+    "backToSales": "Продажи",
+    "invoice": "Счёт",
+    "soldTo": "Продано",
+    "saleDate": "Дата продажи",
+    "paymentMethod": "Способ оплаты",
+    "paymentMethods": {
+      "cash": "Наличные",
+      "card": "Карта",
+      "credit": "Кредит"
+    },
+    "lineItems": "Позиции",
+    "product": "Товар",
+    "quantity": "Количество",
+    "price": "Цена",
+    "total": "Итого",
+    "subtotal": "Промежуточный итог",
+    "grandTotal": "Общая сумма"
+  },
+  "new": {
+    "backToSales": "Продажи",
+    "title": "Записать продажу",
+    "description": "Что ушло и что за это заплатили прямо сейчас.",
+    "noCustomers": "Пока нет клиентов",
+    "noCustomersDescription": "Для продажи нужен покупатель. Сначала добавьте клиента.",
+    "addCustomer": "Добавить клиента",
+    "noProducts": "Пока нет товаров",
+    "noProductsDescription": "Для продажи нужен товар. Сначала добавьте товар.",
+    "addProduct": "Добавить товар"
+  },
+  "form": {
+    "sectionWhoBuying": "Кто покупает",
+    "customer": "Клиент",
+    "chooseCustomer": "Выберите клиента...",
+    "alreadyOwes": "Уже должен",
+    "ofLimit": "из лимита {limit}",
+    "sectionWhatTaking": "Что берут",
+    "product": "Товар",
+    "qty": "Кол-во",
+    "price": "Цена",
+    "removeLine": "Удалить строку {index}",
+    "addAnotherProduct": "Добавить ещё товар",
+    "total": "Итого",
+    "sectionWhatPaidNow": "Что заплатили сейчас",
+    "paidAtCounter": "Оплачено на кассе",
+    "paidInFull": "Оплачено полностью",
+    "allOnCredit": "Всё в кредит",
+    "howTheyPaid": "Как оплатили",
+    "goingOnTab": "Идёт в долг",
+    "willOwe": "они будут должны {amount}",
+    "overLimitWarning": "Это выведет {name} за лимит кредита {limit}, до {projected}. Продажа всё равно будет записана — это предупреждение, а не блокировка.",
+    "sectionDetails": "Детали",
+    "date": "Дата",
+    "payBy": "Оплатить до",
+    "payByHelp": "Необязательно. Используется для обозначения просроченной продажи.",
+    "note": "Заметка",
+    "notePlaceholder": "Что-то важное об этой продаже."
+  }
+}

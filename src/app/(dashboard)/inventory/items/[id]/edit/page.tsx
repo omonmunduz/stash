@@ -11,6 +11,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface EditItemPageProps {
 
 export default async function EditItemPage({ params }: EditItemPageProps) {
   const { id } = await params;
+  const t = await getTranslations('inventory.items.edit');
 
   await requireMinimumRole('manager');
 
@@ -45,17 +47,17 @@ export default async function EditItemPage({ params }: EditItemPageProps) {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.inventory.items.list}>
           <ArrowLeft aria-hidden="true" />
-          Supplies
+          {t('backToSupplies')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Edit item"
+        title={t('title')}
         description={item.item_code}
         action={
           <Button asChild variant="outline" size="sm">
             <Link href={ROUTES.inventory.adjust('item', item.id)}>
-              Adjust stock
+              {t('adjustStock')}
             </Link>
           </Button>
         }

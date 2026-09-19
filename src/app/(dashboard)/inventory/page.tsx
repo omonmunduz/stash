@@ -13,6 +13,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Boxes, Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,7 @@ function toKind(value: string | undefined): 'all' | 'products' | 'items' {
 export default async function InventoryPage({ searchParams }: InventoryPageProps) {
   const params = await searchParams;
   const { service, user } = await getInventoryService();
+  const t = await getTranslations('inventory');
 
   const search = params.q?.trim() || undefined;
   const kind = toKind(params.kind);
@@ -69,14 +71,14 @@ export default async function InventoryPage({ searchParams }: InventoryPageProps
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Inventory"
-        description="What is on the shelves, and what is running out."
+        title={t('title')}
+        description={t('description')}
         action={
           canAdjust ? (
             <Button asChild variant="outline">
               <Link href={ROUTES.inventory.items.new}>
                 <Plus aria-hidden="true" />
-                Add supply
+                {t('addSupply')}
               </Link>
             </Button>
           ) : undefined
@@ -99,30 +101,30 @@ export default async function InventoryPage({ searchParams }: InventoryPageProps
       ) : result.data.length === 0 ? (
         hasFilters ? (
           <EmptyState
-            title="Nothing matches those filters"
+            title={t('list.noMatch.title')}
             description={
               lowStockOnly
-                ? 'Nothing is at or below its reorder level. Set a reorder level on a product or supply to be warned before it runs out.'
-                : 'Try a different name or code.'
+                ? t('list.noMatch.lowStockDescription')
+                : t('list.noMatch.defaultDescription')
             }
             icon={<Boxes className="size-6" aria-hidden="true" />}
           />
         ) : (
           <EmptyState
-            title="Nothing is being counted yet"
-            description="Stock is tracked for every product you add, plus any supplies you count separately — packaging, bags, cleaning materials."
+            title={t('list.empty.title')}
+            description={t('list.empty.description')}
             icon={<Boxes className="size-6" aria-hidden="true" />}
             action={
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Button asChild>
                   <Link href={ROUTES.products.new}>
                     <Plus aria-hidden="true" />
-                    Add a product
+                    {t('addProduct')}
                   </Link>
                 </Button>
                 {canAdjust && (
                   <Button asChild variant="outline">
-                    <Link href={ROUTES.inventory.items.new}>Add a supply</Link>
+                    <Link href={ROUTES.inventory.items.new}>{t('addSupply')}</Link>
                   </Button>
                 )}
               </div>
@@ -133,13 +135,13 @@ export default async function InventoryPage({ searchParams }: InventoryPageProps
         <>
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <p className="text-sm text-muted-foreground">
-              {result.data.length} {result.data.length === 1 ? 'line' : 'lines'}
+              {t('list.count', { count: result.data.length })}
               {lowStockCount > 0 && !lowStockOnly && (
-                <> · {lowStockCount} need reordering</>
+                <> · {t('list.needReordering', { count: lowStockCount })}</>
               )}
             </p>
             <p className="text-sm text-muted-foreground">
-              Stock value at cost:{' '}
+              {t('list.stockValueAtCost')}{' '}
               <span className="font-medium tabular-nums text-foreground">
                 {formatMoney(totalValue)}
               </span>

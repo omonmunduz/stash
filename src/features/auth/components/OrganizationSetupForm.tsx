@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +20,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { createOrganizationAction } from '@/app/actions/auth';
 
 export function OrganizationSetupForm() {
+  const t = useTranslations('auth.organizationSetup');
+  const tCommon = useTranslations('common.actions');
   const [organizationName, setOrganizationName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -46,11 +49,11 @@ export function OrganizationSetupForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="organizationName">Business name</Label>
+        <Label htmlFor="organizationName">{t('organizationName')}</Label>
         <Input
           id="organizationName"
           type="text"
-          placeholder="e.g., Ali's Wholesale"
+          placeholder={t('organizationNamePlaceholder')}
           value={organizationName}
           onChange={(e) => setOrganizationName(e.target.value)}
           disabled={isPending}
@@ -65,7 +68,7 @@ export function OrganizationSetupForm() {
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Creating...' : 'Continue'}
+        {isPending ? t('setting') : t('continueButton')}
       </Button>
     </form>
   );

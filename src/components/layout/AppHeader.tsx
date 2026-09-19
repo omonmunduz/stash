@@ -15,17 +15,21 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { LogOut, Menu, X } from 'lucide-react';
 import { SECONDARY_NAV_ITEMS, isNavItemActive } from '@/lib/constants/navigation';
 import { hasRole } from '@/features/auth/roles';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import type { AuthUser } from '@/features/auth/types';
 import { cn } from '@/lib/utils/cn';
 
 export function AppHeader({ user }: { user: AuthUser }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const t = useTranslations('common.nav');
+  const tActions = useTranslations('common.actions');
 
   const items = SECONDARY_NAV_ITEMS.filter(
     (item) => !item.minimumRole || hasRole(user, item.minimumRole)
@@ -38,16 +42,19 @@ export function AppHeader({ user }: { user: AuthUser }) {
           <p className="truncate text-sm font-semibold">{user.organization.name}</p>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-expanded={menuOpen}
-          aria-controls="overflow-menu"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-        >
-          {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="overflow-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </Button>
+        </div>
       </div>
 
       {menuOpen && (
@@ -56,6 +63,7 @@ export function AppHeader({ user }: { user: AuthUser }) {
             {items.map((item) => {
               const Icon = item.icon;
               const active = isNavItemActive(item.href, pathname);
+              const label = t(item.labelKey);
 
               if (!item.available) {
                 return (
@@ -65,7 +73,7 @@ export function AppHeader({ user }: { user: AuthUser }) {
                     className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-muted-foreground/60"
                   >
                     <Icon className="size-4 shrink-0" aria-hidden="true" />
-                    <span className="flex-1">{item.label}</span>
+                    <span className="flex-1">{label}</span>
                     <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase">
                       Soon
                     </span>
@@ -85,7 +93,7 @@ export function AppHeader({ user }: { user: AuthUser }) {
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
-                  {item.label}
+                  {label}
                 </Link>
               );
             })}
@@ -99,7 +107,7 @@ export function AppHeader({ user }: { user: AuthUser }) {
                 className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm hover:bg-accent"
               >
                 <LogOut className="size-4 shrink-0" aria-hidden="true" />
-                Sign out
+                {tActions('signOut')}
               </button>
             </form>
           </div>

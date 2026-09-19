@@ -6,6 +6,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ export const metadata = {
 
 export default async function NewServicePage() {
   await requireMinimumRole('manager');
+  const t = await getTranslations('services.new');
 
   // Load employees for provider assignment
   const { service: employeeService } = await getEmployeeService();
@@ -30,13 +32,13 @@ export default async function NewServicePage() {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.services.list}>
           <ArrowLeft aria-hidden="true" />
-          Services
+          {t('backToServices')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Add service"
-        description="A service your business offers with duration and pricing."
+        title={t('title')}
+        description={t('description')}
       />
 
       <Card>

@@ -12,6 +12,7 @@
 
 import Link from 'next/link';
 import { Plus, Receipt } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ interface SalesPageProps {
 export default async function SalesPage({ searchParams }: SalesPageProps) {
   const params = await searchParams;
   const unpaidOnly = params.unpaid === '1';
+  const t = await getTranslations('sales');
 
   // Both factories resolve the same request-memoized auth state, so these run
   // concurrently instead of the second waiting on the first.
@@ -61,13 +63,13 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Sales"
-        description="What went out, and what is still owed on it."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.sales.new}>
               <Plus aria-hidden="true" />
-              Record sale
+              {t('recordSale')}
             </Link>
           </Button>
         }
@@ -80,25 +82,25 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
       ) : result.data.length === 0 ? (
         unpaidOnly ? (
           <EmptyState
-            title="Nothing overdue"
-            description="Every invoice past its due date has been paid."
+            title={t('list.nothingOverdue.title')}
+            description={t('list.nothingOverdue.description')}
             icon={<Receipt className="size-6" aria-hidden="true" />}
             action={
               <Button asChild variant="outline">
-                <Link href={ROUTES.sales.list}>See all sales</Link>
+                <Link href={ROUTES.sales.list}>{t('list.seeAll')}</Link>
               </Button>
             }
           />
         ) : (
           <EmptyState
-            title="No sales yet"
-            description="Record what leaves the shelf and it will show up here, along with what is still owed on it."
+            title={t('list.empty.title')}
+            description={t('list.empty.description')}
             icon={<Receipt className="size-6" aria-hidden="true" />}
             action={
               <Button asChild>
                 <Link href={ROUTES.sales.new}>
                   <Plus aria-hidden="true" />
-                  Record your first sale
+                  {t('recordFirstSale')}
                 </Link>
               </Button>
             }
@@ -110,7 +112,7 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
             <ListSummary sales={result.data} />
             <Button asChild variant="outline" size="sm">
               <Link href={unpaidOnly ? ROUTES.sales.list : `${ROUTES.sales.list}?unpaid=1`}>
-                {unpaidOnly ? 'Show all sales' : 'Show overdue only'}
+                {unpaidOnly ? t('list.showAll') : t('list.showOverdue')}
               </Link>
             </Button>
           </div>
@@ -129,17 +131,18 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
  * list cannot show an unfiltered total — the same reasoning as the customers
  * page.
  */
-function ListSummary({ sales }: { sales: Array<{ amount_due: number }> }) {
+async function ListSummary({ sales }: { sales: Array<{ amount_due: number }> }) {
+  const t = await getTranslations('sales.list');
   const outstanding = sales.reduce((sum, sale) => sum + Math.max(0, sale.amount_due), 0);
 
   return (
     <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
       <span className="text-muted-foreground">
-        {sales.length} {sales.length === 1 ? 'sale' : 'sales'}
+        {t('count', { count: sales.length })}
       </span>
       {outstanding > 0 && (
         <span>
-          <span className="text-muted-foreground">Still owed: </span>
+          <span className="text-muted-foreground">{t('stillOwed')} </span>
           <span className="font-medium tabular-nums">{formatMoney(outstanding)}</span>
         </span>
       )}

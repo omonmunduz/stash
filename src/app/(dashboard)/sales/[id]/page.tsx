@@ -13,6 +13,7 @@ import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, User } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +66,7 @@ export async function generateMetadata({ params }: SaleDetailPageProps) {
 export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
   const { id } = await params;
   const { result, user } = await loadSale(id);
+  const t = await getTranslations('sales.detail');
 
   // getWithDetails scopes to the caller's organization, so a cross-tenant or
   // deleted id lands here rather than leaking that the record exists.
@@ -92,12 +94,12 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.sales.list}>
           <ArrowLeft aria-hidden="true" />
-          Sales
+          {t('backToSales')}
         </Link>
       </Button>
 
       <PageHeader
-        title={sale.sale_number ?? 'Draft sale'}
+        title={sale.sale_number ?? t('draftSale')}
         description={formatDate(sale.sale_date)}
         action={
           <SaleActions
@@ -113,9 +115,7 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
       {isCancelled && (
         <Alert>
           <AlertDescription>
-            This sale was cancelled. The stock went back on the shelf and the debt
-            came off {customerName}&apos;s tab. It is kept on record rather than
-            deleted, so the invoice number stays accounted for.
+            {t('cancelledAlert', { customerName })}
           </AlertDescription>
         </Alert>
       )}
@@ -123,7 +123,7 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
       <Card>
         <CardHeader className="pb-3">
           <CardDescription>
-            {sale.amount_due > 0 ? 'Still owed on this sale' : 'This sale'}
+            {sale.amount_due > 0 ? t('stillOwed') : t('thisSale')}
           </CardDescription>
           <div className="flex flex-wrap items-center gap-3">
             <span
@@ -136,13 +136,13 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
               {formatMoney(sale.amount_due > 0 ? sale.amount_due : sale.total)}
             </span>
             {isCancelled ? (
-              <Badge variant="secondary">Cancelled</Badge>
+              <Badge variant="secondary">{t('cancelled')}</Badge>
             ) : sale.payment_status === 'paid' ? (
-              <Badge variant="success">Paid</Badge>
+              <Badge variant="success">{t('paid')}</Badge>
             ) : sale.payment_status === 'partial' ? (
-              <Badge variant="warning">Part paid</Badge>
+              <Badge variant="warning">{t('partPaid')}</Badge>
             ) : (
-              <Badge variant="outline">Unpaid</Badge>
+              <Badge variant="outline">{t('unpaid')}</Badge>
             )}
           </div>
         </CardHeader>
@@ -150,16 +150,16 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
         <CardContent className="space-y-4">
           <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
             <div>
-              <dt className="text-muted-foreground">Total</dt>
+              <dt className="text-muted-foreground">{t('total')}</dt>
               <dd className="font-medium tabular-nums">{formatMoney(sale.total)}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">Paid</dt>
+              <dt className="text-muted-foreground">{t('paid')}</dt>
               <dd className="font-medium tabular-nums">{formatMoney(sale.amount_paid)}</dd>
             </div>
             {sale.due_date && (
               <div>
-                <dt className="text-muted-foreground">Pay by</dt>
+                <dt className="text-muted-foreground">{t('payBy')}</dt>
                 <dd className="font-medium">{formatDate(sale.due_date)}</dd>
               </div>
             )}
@@ -188,11 +188,11 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">What was on it</CardTitle>
+          <CardTitle className="text-base">{t('whatWasOnIt')}</CardTitle>
           <CardDescription>
             {canEdit && !isCancelled
-              ? 'Correct a quantity or price, or add a line that was missed.'
-              : 'The products on this sale.'}
+              ? t('whatWasOnItDescriptionEdit')
+              : t('whatWasOnItDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-2 sm:px-0">
@@ -217,10 +217,9 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
       {!isCancelled && sale.amount_due > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Take a payment</CardTitle>
+            <CardTitle className="text-base">{t('takePayment')}</CardTitle>
             <CardDescription>
-              Settles this invoice first, then anything left goes to their other
-              unpaid invoices oldest-first.
+              {t('takePaymentDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -228,7 +227,7 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
               customerId={sale.customer_id}
               currentBalance={sale.amount_due}
               saleId={sale.id}
-              triggerLabel="Record a payment"
+              triggerLabel={t('recordPayment')}
             />
           </CardContent>
         </Card>
@@ -236,15 +235,15 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Payments against this sale</CardTitle>
+          <CardTitle className="text-base">{t('paymentsAgainstSale')}</CardTitle>
           <CardDescription>
-            What each payment put toward this invoice, newest first.
+            {t('paymentsAgainstSaleDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {sale.payments.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Nothing has been paid against this sale yet.
+              {t('noPaymentsYet')}
             </p>
           ) : (
             <ul className="divide-y divide-border text-sm">

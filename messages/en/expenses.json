@@ -1,0 +1,37 @@
+{
+  "title": "Expenses",
+  "description": "Track business expenses and spending.",
+  "breakdown": "Breakdown",
+  "addExpense": "Add expense",
+  "clearFilters": "Clear filters",
+  "recordFirstExpense": "Record first expense",
+  "list": {
+    "nothingRecorded": "No expenses yet",
+    "nothingRecordedDescription": "Record business expenses to track spending and calculate profit.",
+    "totalSpent": "Total spent",
+    "averageExpense": "Average expense",
+    "expenseCount": "Expense count",
+    "matchingFilters": "Matching filters",
+    "expenses": "Expenses",
+    "records": "{count, plural, =1 {1 record} other {# records}}",
+    "biggestCategory": "Biggest category",
+    "categoryDetail": "{amount} ({percent}%)",
+    "noMatch": {
+      "title": "No expenses match",
+      "description": "Try adjusting your filters or search term."
+    },
+    "empty": {
+      "title": "No expenses yet",
+      "description": "Record business expenses to track spending and calculate profit."
+    }
+  },
+  "edit": {
+    "backToExpenses": "Expenses",
+    "title": "Edit expense"
+  },
+  "new": {
+    "backToExpenses": "Expenses",
+    "title": "Record an expense",
+    "description": "Money the business spent. It comes off your profit for the day it was spent."
+  }
+}

@@ -18,6 +18,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Plus, Receipt, TrendingUp, Users, Wallet, PackageX } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { requireActiveUser } from '@/features/auth/guards';
 import { getDashboardMetrics } from '@/features/dashboard/metrics';
@@ -45,12 +46,13 @@ function monthLabel(): string {
 
 export default async function DashboardPage() {
   const user = await requireActiveUser();
+  const t = await getTranslations('dashboard');
 
   return (
     <div className="container mx-auto max-w-5xl p-4 md:p-8">
       <header className="mb-6">
         <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-          Welcome back, {firstName(user.fullName)}
+          {t('welcome', { name: firstName(user.fullName) })}
         </h1>
         <p className="text-sm text-muted-foreground">{user.organization.name}</p>
       </header>
@@ -69,19 +71,18 @@ export default async function DashboardPage() {
 
 async function DashboardContent({ organizationId }: { organizationId: OrganizationId }) {
   const metrics = await getDashboardMetrics(organizationId);
+  const t = await getTranslations('dashboard');
 
   return (
     <div className="space-y-6">
       <section aria-label="Key numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MetricCard
-          label="Owed to you"
+          label={t('metrics.owedToYou')}
           value={metrics.totalReceivable === null ? null : formatMoney(metrics.totalReceivable)}
           detail={
             metrics.customersInDebt === null
               ? undefined
-              : `across ${metrics.customersInDebt} ${
-                  metrics.customersInDebt === 1 ? 'customer' : 'customers'
-                }`
+              : t('metrics.acrossCustomers', { count: metrics.customersInDebt })
           }
           icon={Wallet}
           tone={metrics.totalReceivable && metrics.totalReceivable > 0 ? 'debt' : 'positive'}
@@ -89,32 +90,34 @@ async function DashboardContent({ organizationId }: { organizationId: Organizati
         />
 
         <MetricCard
-          label={`Sales in ${monthLabel()}`}
+          label={t('metrics.salesThisMonth', { month: monthLabel() })}
           value={
             metrics.salesThisMonth === null ? null : formatMoney(metrics.salesThisMonth.total)
           }
           detail={
             metrics.salesThisMonth === null
               ? undefined
-              : `${metrics.salesThisMonth.count} ${
-                  metrics.salesThisMonth.count === 1 ? 'sale' : 'sales'
-                }`
+              : t('metrics.sales', { count: metrics.salesThisMonth.count })
           }
           icon={TrendingUp}
         />
 
         <MetricCard
-          label="Customers"
+          label={t('metrics.customers')}
           value={metrics.customerCount === null ? null : String(metrics.customerCount)}
-          detail="active"
+          detail={t('metrics.active')}
           icon={Users}
           href={ROUTES.customers.list}
         />
 
         <MetricCard
-          label="Out of stock"
+          label={t('metrics.outOfStock')}
           value={metrics.outOfStockCount === null ? null : String(metrics.outOfStockCount)}
-          detail={metrics.outOfStockCount === 0 ? 'everything in stock' : 'products at zero'}
+          detail={
+            metrics.outOfStockCount === 0
+              ? t('metrics.everythingInStock')
+              : t('metrics.productsAtZero')
+          }
           icon={PackageX}
           tone={metrics.outOfStockCount && metrics.outOfStockCount > 0 ? 'warning' : 'default'}
         />
@@ -149,18 +152,20 @@ async function DashboardContent({ organizationId }: { organizationId: Organizati
  * customer action is live. Both stay visible so the layout does not shift when
  * sales lands.
  */
-function QuickActions() {
+async function QuickActions() {
+  const t = await getTranslations('dashboard.quickActions');
+
   return (
     <section aria-label="Quick actions" className="flex flex-wrap gap-2">
       <Button asChild>
         <Link href={ROUTES.customers.new}>
           <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-          New customer
+          {t('newCustomer')}
         </Link>
       </Button>
       <Button variant="outline" disabled>
         <Receipt className="mr-2 h-4 w-4" aria-hidden="true" />
-        Record sale (soon)
+        {t('recordSale')}
       </Button>
     </section>
   );
@@ -174,16 +179,18 @@ function QuickActions() {
  * number they might act on. Real profit reporting comes with the reports feature,
  * which can join sale_items.cost_price.
  */
-function MonthSummary({
+async function MonthSummary({
   sales,
   expenses,
 }: {
   sales: number | null;
   expenses: number | null;
 }) {
+  const t = await getTranslations('dashboard.monthSummary');
+
   const rows = [
-    { label: 'Sales', value: sales, tone: 'text-success' },
-    { label: 'Expenses', value: expenses, tone: 'text-destructive' },
+    { label: t('sales'), value: sales, tone: 'text-success' },
+    { label: t('expenses'), value: expenses, tone: 'text-destructive' },
   ];
 
   return (
@@ -192,7 +199,7 @@ function MonthSummary({
       className="rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       <h2 id="month-summary-heading" className="text-sm font-semibold">
-        {monthLabel()} so far
+        {t('title', { month: monthLabel() })}
       </h2>
       <dl className="mt-3 space-y-2">
         {rows.map((row) => (
@@ -205,7 +212,7 @@ function MonthSummary({
         ))}
       </dl>
       <p className="mt-3 text-xs text-muted-foreground">
-        Money in and out. Profit needs product costs, which comes with reports.
+        {t('profitNote')}
       </p>
     </section>
   );

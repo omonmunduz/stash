@@ -13,6 +13,7 @@
 
 import Link from 'next/link';
 import { Check, Circle, Clock } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils/cn';
@@ -23,36 +24,41 @@ interface SetupChecklistProps {
   hasSales: boolean;
 }
 
-export function SetupChecklist({
+export async function SetupChecklist({
   hasProducts,
   hasCustomers,
   hasSales,
 }: SetupChecklistProps) {
+  const t = await getTranslations('dashboard.setupChecklist');
+
   const steps = [
     {
-      label: 'Add your customers',
-      detail: 'The people who buy from you, with their credit limits.',
+      key: 'customers',
+      label: t('steps.customers.label'),
+      detail: t('steps.customers.detail'),
       done: hasCustomers,
       href: ROUTES.customers.new,
-      cta: 'Add a customer',
+      cta: t('steps.customers.cta'),
       ready: true,
     },
     {
-      label: 'Add your products',
-      detail: 'What you sell, with cost and sale price.',
+      key: 'products',
+      label: t('steps.products.label'),
+      detail: t('steps.products.detail'),
       done: hasProducts,
       href: ROUTES.products.new,
-      cta: 'Add a product',
+      cta: t('steps.products.cta'),
       // Products CRUD is not built yet. Showing the step without a working link
       // is honest about the order of work rather than pointing at a 404.
       ready: false,
     },
     {
-      label: 'Record your first sale',
-      detail: 'Cash or on credit. Balances update themselves.',
+      key: 'sales',
+      label: t('steps.sales.label'),
+      detail: t('steps.sales.detail'),
       done: hasSales,
       href: ROUTES.sales.new,
-      cta: 'Record a sale',
+      cta: t('steps.sales.cta'),
       ready: false,
     },
   ];
@@ -67,16 +73,16 @@ export function SetupChecklist({
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 id="setup-heading" className="text-sm font-semibold">
-          Get set up
+          {t('title')}
         </h2>
         <span className="text-xs tabular-nums text-muted-foreground">
-          {doneCount} of {steps.length}
+          {t('progress', { done: doneCount, total: steps.length })}
         </span>
       </div>
 
       <ol className="mt-3 space-y-3">
         {steps.map((step) => (
-          <li key={step.label} className="flex gap-3">
+          <li key={step.key} className="flex gap-3">
             <span className="mt-0.5 shrink-0" aria-hidden="true">
               {step.done ? (
                 <Check className="h-4 w-4 text-success" />
@@ -111,7 +117,7 @@ export function SetupChecklist({
                     </Link>
                   ) : (
                     <span className="mt-1 inline-block text-xs text-muted-foreground">
-                      Coming soon
+                      {t('comingSoon')}
                     </span>
                   )}
                 </>

@@ -1,0 +1,46 @@
+{
+  "title": "Employees",
+  "description": "Team members and their schedules.",
+  "newEmployee": "New employee",
+  "addEmployee": "Add employee",
+  "list": {
+    "nothingRecorded": "No employees yet",
+    "nothingRecordedDescription": "Add your team members to manage schedules and appointments.",
+    "count": "{count, plural, =1 {1 employee} other {# employees}}"
+  },
+  "detail": {
+    "backToEmployees": "Back to employees",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "about": "About",
+    "workingHours": "Working Hours",
+    "editSchedule": "Edit Schedule",
+    "setSchedule": "Set Schedule",
+    "noSchedule": "No schedule set",
+    "noScheduleDescription": "Set working hours to enable appointment bookings for this employee",
+    "publicBookingLink": "Public Booking Link",
+    "bookingLinkDescription": "Share this link with customers to book appointments with {name}",
+    "replaceSlug": "Replace {organization-slug} with your organization's booking URL"
+  },
+  "edit": {
+    "backToEmployees": "Employees",
+    "title": "Edit employee"
+  },
+  "new": {
+    "backToEmployees": "Employees",
+    "title": "Add employee",
+    "description": "Staff member who will perform services and take appointments."
+  },
+  "schedule": {
+    "backTo": "Back to {name}",
+    "title": "{name}'s Schedule",
+    "description": "Set weekly working hours for appointment availability",
+    "howItWorks": "How schedules work",
+    "step1": "Check the days this employee is available to work",
+    "step2": "Set start and end times for each working day",
+    "step3": "Use \"Copy to all\" to apply times to all checked days",
+    "step4": "Use \"Mon-Fri 9-5\" for a standard business week preset",
+    "step5": "This schedule controls what appointment times are available on the booking page"
+  }
+}

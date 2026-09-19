@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export default async function EditEmployeePage({ params }: EditEmployeePageProps
   await requireMinimumRole('admin');
 
   const { id } = await params;
+  const t = await getTranslations('employees.edit');
   const { service } = await getEmployeeService();
 
   const result = await service.getById(id as EmployeeId);
@@ -51,12 +53,12 @@ export default async function EditEmployeePage({ params }: EditEmployeePageProps
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.employees.list}>
           <ArrowLeft aria-hidden="true" />
-          Employees
+          {t('backToEmployees')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Edit employee"
+        title={t('title')}
         description={result.data.display_name}
       />
 

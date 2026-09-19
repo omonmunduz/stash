@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock, User, Phone, MapPin, DollarSign } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ interface AppointmentDetailPageProps {
 
 export default async function AppointmentDetailPage({ params }: AppointmentDetailPageProps) {
   const { id } = await params;
+  const t = await getTranslations('appointments.detail');
   const { service } = await getAppointmentService();
 
   const result = await service.getWithDetails(id as AppointmentId);
@@ -53,20 +55,20 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={ROUTES.appointments.list}>
           <ArrowLeft aria-hidden="true" />
-          Appointments
+          {t('backToAppointments')}
         </Link>
       </Button>
 
       <PageHeader
-        title="Appointment details"
-        description={`${appointment.service_name} with ${appointment.employee_name}`}
+        title={t('title')}
+        description={t('description', { service: appointment.service_name, employee: appointment.employee_name })}
       />
 
       {/* Status and Actions */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Status</CardTitle>
+            <CardTitle className="text-base">{t('status')}</CardTitle>
             <Badge
               variant={
                 appointment.status === 'confirmed'
@@ -78,7 +80,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
                       : 'secondary'
               }
             >
-              {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+              {t(`statusBadge.${appointment.status}`)}
             </Badge>
           </div>
         </CardHeader>
@@ -90,14 +92,14 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
       {/* Appointment Details */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Details</CardTitle>
+          <CardTitle className="text-base">{t('details')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex items-start gap-3">
               <Calendar className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Date</p>
+                <p className="text-sm font-medium">{t('date')}</p>
                 <p className="text-sm text-muted-foreground">
                   {appointmentDate.toLocaleDateString(undefined, {
                     weekday: 'long',
@@ -112,7 +114,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
             <div className="flex items-start gap-3">
               <Clock className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Time</p>
+                <p className="text-sm font-medium">{t('time')}</p>
                 <p className="text-sm text-muted-foreground">
                   {appointment.start_time.slice(0, 5)} - {appointment.end_time.slice(0, 5)}
                 </p>
@@ -122,7 +124,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
             <div className="flex items-start gap-3">
               <User className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Customer</p>
+                <p className="text-sm font-medium">{t('customer')}</p>
                 <Link
                   href={ROUTES.customers.detail(appointment.customer_id)}
                   className="text-sm text-muted-foreground hover:underline"
@@ -136,7 +138,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
             <div className="flex items-start gap-3">
               <Phone className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Phone</p>
+                <p className="text-sm font-medium">{t('phone')}</p>
                 <p className="text-sm text-muted-foreground">{appointment.customer_phone}</p>
               </div>
             </div>
@@ -144,7 +146,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
             <div className="flex items-start gap-3">
               <MapPin className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Service</p>
+                <p className="text-sm font-medium">{t('service')}</p>
                 <p className="text-sm text-muted-foreground">{appointment.service_name}</p>
               </div>
             </div>
@@ -152,7 +154,7 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
             <div className="flex items-start gap-3">
               <DollarSign className="mt-0.5 size-4 text-muted-foreground" aria-hidden="true" />
               <div>
-                <p className="text-sm font-medium">Price</p>
+                <p className="text-sm font-medium">{t('price')}</p>
                 <p className="text-sm text-muted-foreground">
                   {formatMoney(appointment.service_price)}
                 </p>
@@ -162,15 +164,17 @@ export default async function AppointmentDetailPage({ params }: AppointmentDetai
 
           {appointment.notes && (
             <div className="border-t border-border pt-4">
-              <p className="text-sm font-medium">Notes</p>
+              <p className="text-sm font-medium">{t('notes')}</p>
               <p className="mt-1 text-sm text-muted-foreground">{appointment.notes}</p>
             </div>
           )}
 
           <div className="border-t border-border pt-4">
             <p className="text-xs text-muted-foreground">
-              Booked {appointment.source === 'public_booking' ? 'online' : 'by staff'} on{' '}
-              {new Date(appointment.created_at).toLocaleDateString()}
+              {t('bookedInfo', {
+                source: appointment.source === 'public_booking' ? t('sourceOnline') : t('sourceStaff'),
+                date: new Date(appointment.created_at).toLocaleDateString()
+              })}
             </p>
           </div>
         </CardContent>

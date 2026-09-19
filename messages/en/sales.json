@@ -1,0 +1,75 @@
+{
+  "title": "Sales",
+  "description": "Sales history and invoices.",
+  "newSale": "New sale",
+  "recordSale": "Record a sale",
+  "list": {
+    "nothingRecorded": "No sales yet",
+    "nothingRecordedDescription": "Sales you record appear here.",
+    "count": "{count, plural, =1 {1 sale} other {# sales}}",
+    "showOverdue": "Show overdue",
+    "showAll": "Show all",
+    "seeAll": "See all",
+    "nothingOverdue": {
+      "description": "All invoices are paid or awaiting payment without delay."
+    }
+  },
+  "detail": {
+    "backToSales": "Sales",
+    "invoice": "Invoice",
+    "soldTo": "Sold to",
+    "saleDate": "Sale date",
+    "paymentMethod": "Payment method",
+    "paymentMethods": {
+      "cash": "Cash",
+      "card": "Card",
+      "credit": "Credit"
+    },
+    "lineItems": "Line items",
+    "product": "Product",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "grandTotal": "Grand total"
+  },
+  "new": {
+    "backToSales": "Sales",
+    "title": "Record a sale",
+    "description": "What went out, and what they paid for it now.",
+    "noCustomers": "No customers yet",
+    "noCustomersDescription": "A sale needs someone to sell to. Add a customer first.",
+    "addCustomer": "Add a customer",
+    "noProducts": "No products yet",
+    "noProductsDescription": "A sale needs something to sell. Add a product first.",
+    "addProduct": "Add a product"
+  },
+  "form": {
+    "sectionWhoBuying": "Who is buying",
+    "customer": "Customer",
+    "chooseCustomer": "Choose a customer...",
+    "alreadyOwes": "Already owes",
+    "ofLimit": "of a {limit} limit",
+    "sectionWhatTaking": "What they are taking",
+    "product": "Product",
+    "qty": "Qty",
+    "price": "Price",
+    "removeLine": "Remove line {index}",
+    "addAnotherProduct": "Add another product",
+    "total": "Total",
+    "sectionWhatPaidNow": "What they paid now",
+    "paidAtCounter": "Paid at the counter",
+    "paidInFull": "Paid in full",
+    "allOnCredit": "All on credit",
+    "howTheyPaid": "How they paid",
+    "goingOnTab": "Going on the tab",
+    "willOwe": "they will owe {amount}",
+    "overLimitWarning": "This puts {name} over their {limit} credit limit, at {projected}. The sale will still be recorded — this is a heads-up, not a block.",
+    "sectionDetails": "Details",
+    "date": "Date",
+    "payBy": "Pay by",
+    "payByHelp": "Optional. Used to flag the sale as overdue.",
+    "note": "Note",
+    "notePlaceholder": "Anything worth remembering about this sale."
+  }
+}

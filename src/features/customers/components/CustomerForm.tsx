@@ -20,6 +20,7 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,6 +37,8 @@ interface CustomerFormProps {
 }
 
 export function CustomerForm({ customer }: CustomerFormProps) {
+  const t = useTranslations('customers.form');
+  const tActions = useTranslations('common.actions');
   const isEdit = customer !== undefined;
 
   const [values, setValues] = useState<CustomerFormValues>({
@@ -85,17 +88,17 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Who they are</legend>
+        <legend className="text-sm font-medium">{t('sectionWhoTheyAre')}</legend>
 
         <div className="space-y-2">
           <Label htmlFor="name">
-            Name <span aria-hidden="true">*</span>
+            {t('name')} <span aria-hidden="true">*</span>
           </Label>
           <Input
             id="name"
             value={values.name}
             onChange={set('name')}
-            placeholder="e.g., Ahmed Hassan"
+            placeholder={t('namePlaceholder')}
             required
             minLength={2}
             maxLength={100}
@@ -105,46 +108,46 @@ export function CustomerForm({ customer }: CustomerFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="business_name">Shop or business name</Label>
+          <Label htmlFor="business_name">{t('businessName')}</Label>
           <Input
             id="business_name"
             value={values.business_name}
             onChange={set('business_name')}
-            placeholder="e.g., Ahmed's Grocery"
+            placeholder={t('businessNamePlaceholder')}
             maxLength={100}
           />
           <p className="text-xs text-muted-foreground">
-            Shown instead of their personal name where space is tight.
+            {t('businessNameHelp')}
           </p>
         </div>
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">How to reach them</legend>
+        <legend className="text-sm font-medium">{t('sectionHowToReach')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{t('phone')}</Label>
             <Input
               id="phone"
               type="tel"
               inputMode="tel"
               value={values.phone}
               onChange={set('phone')}
-              placeholder="0700 123 456"
+              placeholder={t('phonePlaceholder')}
               maxLength={30}
               autoComplete="tel"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input
               id="email"
               type="email"
               value={values.email}
               onChange={set('email')}
-              placeholder="name@example.com"
+              placeholder={t('emailPlaceholder')}
               maxLength={255}
               autoComplete="email"
             />
@@ -152,18 +155,18 @@ export function CustomerForm({ customer }: CustomerFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">{t('address')}</Label>
           <Input
             id="address"
             value={values.address}
             onChange={set('address')}
-            placeholder="Street and number"
+            placeholder={t('addressPlaceholder')}
             maxLength={255}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city">City</Label>
+          <Label htmlFor="city">{t('city')}</Label>
           <Input
             id="city"
             value={values.city}
@@ -174,10 +177,10 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Credit terms</legend>
+        <legend className="text-sm font-medium">{t('sectionCreditTerms')}</legend>
 
         <div className="space-y-2">
-          <Label htmlFor="credit_limit">Credit limit</Label>
+          <Label htmlFor="credit_limit">{t('creditLimit')}</Label>
           <Input
             id="credit_limit"
             type="number"
@@ -186,21 +189,20 @@ export function CustomerForm({ customer }: CustomerFormProps) {
             step="0.01"
             value={values.credit_limit}
             onChange={set('credit_limit')}
-            placeholder="Leave blank for no limit"
+            placeholder={t('creditLimitPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">
-            The most this customer may owe at one time. Leave blank to allow any
-            amount — you will still see what they owe.
+            {t('creditLimitHelp')}
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('notes')}</Label>
           <Textarea
             id="notes"
             value={values.notes}
             onChange={set('notes')}
-            placeholder="Anything worth remembering — delivery days, who to ask for, payment habits."
+            placeholder={t('notesPlaceholder')}
             maxLength={1000}
             rows={3}
           />
@@ -211,14 +213,14 @@ export function CustomerForm({ customer }: CustomerFormProps) {
         <Button type="submit" disabled={isPending} className="sm:w-auto">
           {isPending
             ? isEdit
-              ? 'Saving...'
-              : 'Adding...'
+              ? t('saving')
+              : t('adding')
             : isEdit
-              ? 'Save changes'
-              : 'Add customer'}
+              ? t('saveChanges')
+              : t('addCustomerButton')}
         </Button>
         <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{tActions('cancel')}</Link>
         </Button>
       </div>
     </form>

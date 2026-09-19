@@ -10,6 +10,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface EditCustomerPageProps {
 
 export default async function EditCustomerPage({ params }: EditCustomerPageProps) {
   const { id } = await params;
+  const t = await getTranslations('customers.edit');
 
   await requireMinimumRole('manager');
 
@@ -50,7 +52,7 @@ export default async function EditCustomerPage({ params }: EditCustomerPageProps
       </Button>
 
       <PageHeader
-        title="Edit customer"
+        title={t('title')}
         description={customer.customer_code}
       />
 

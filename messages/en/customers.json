@@ -1,0 +1,80 @@
+{
+  "title": "Customers",
+  "description": "Manage your customer base and credit accounts.",
+  "newCustomer": "New customer",
+  "addCustomer": "Add customer",
+  "addFirstCustomer": "Add first customer",
+  "list": {
+    "nothingRecorded": "No customers yet",
+    "nothingRecordedDescription": "Customers you add appear here. Each customer can have a credit limit and purchase on account.",
+    "count": "{count, plural, =1 {1 customer} other {# customers}}",
+    "totalOwed": "Total owed to you",
+    "outstanding": "Outstanding",
+    "across": "{count, plural, =1 {across 1 customer} other {across # customers}}",
+    "noMatch": {
+      "title": "No customers match",
+      "description": "Try adjusting your filters or search term."
+    },
+    "empty": {
+      "title": "No customers yet",
+      "description": "Customers you add appear here. Each customer can have a credit limit and purchase on account."
+    }
+  },
+  "detail": {
+    "backToCustomers": "Customers",
+    "edit": "Edit",
+    "deactivatedAlert": "This customer is deactivated. They cannot make new purchases until reactivated.",
+    "currentlyOwes": "Currently owes",
+    "overLimit": "Over limit",
+    "nearLimit": "Near limit",
+    "settledUp": "Settled up",
+    "inCredit": "In credit",
+    "contact": "Contact",
+    "contactName": "Contact name:",
+    "noPhone": "No phone number",
+    "customerSince": "Customer since {date}",
+    "notes": "Notes",
+    "noNotes": "No notes",
+    "takePayment": "Take a payment",
+    "whatTheyTook": "What they took",
+    "salesDescription": "{canEdit, select, true {Sales on credit, newest first. Correct a quantity or price from the sale detail page.} false {Sales on credit, newest first.} other {Sales on credit, newest first.}}",
+    "historyLoadError": "Failed to load history",
+    "payments": "Payments",
+    "paymentAppliedTo": "Applied to",
+    "paymentsDescription": "Payments received, newest first."
+  },
+  "new": {
+    "backToCustomers": "Customers",
+    "title": "Add customer",
+    "description": "Only a name is required. Everything else can wait."
+  },
+  "edit": {
+    "title": "Edit customer"
+  },
+  "form": {
+    "sectionWhoTheyAre": "Who they are",
+    "name": "Name",
+    "namePlaceholder": "John Doe",
+    "businessName": "Business name",
+    "businessNamePlaceholder": "Acme Corp",
+    "businessNameHelp": "Optional. Use if they buy for a business.",
+    "sectionHowToReach": "How to reach them",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 (555) 123-4567",
+    "email": "Email",
+    "emailPlaceholder": "john@example.com",
+    "address": "Address",
+    "addressPlaceholder": "123 Main St",
+    "city": "City",
+    "sectionCreditTerms": "Credit terms",
+    "creditLimit": "Credit limit",
+    "creditLimitPlaceholder": "1000.00",
+    "creditLimitHelp": "Maximum amount this customer can owe at once. Leave blank for no limit.",
+    "notes": "Notes",
+    "notesPlaceholder": "Internal notes about this customer",
+    "saving": "Saving...",
+    "adding": "Adding...",
+    "saveChanges": "Save changes",
+    "addCustomerButton": "Add customer"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Payments",
+  "description": "Payment history and receipts.",
+  "newPayment": "New payment",
+  "recordAPayment": "Record a payment",
+  "recordPayment": "Record payment",
+  "list": {
+    "nothingRecorded": "No payments yet",
+    "nothingRecordedDescription": "Payments you record appear here.",
+    "count": "{count, plural, =1 {1 payment} other {# payments}}",
+    "empty": {
+      "title": "No payments yet",
+      "description": "Payments you record appear here."
+    }
+  },
+  "new": {
+    "backToPayments": "Payments",
+    "title": "Record a payment",
+    "description": "Money received. It comes off their oldest unpaid invoice first.",
+    "noCustomers": "No customers yet",
+    "noCustomersDescription": "A payment needs someone it came from. Add a customer first.",
+    "addCustomer": "Add a customer"
+  }
+}

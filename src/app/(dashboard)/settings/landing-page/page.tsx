@@ -7,6 +7,7 @@
 
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -23,6 +24,7 @@ export const metadata = {
 
 export default async function LandingPageEditorPage() {
   const user = await requireMinimumRole('owner');
+  const t = await getTranslations('settings.landingPage');
   const supabase = await createClient();
 
   // Load organization
@@ -36,7 +38,7 @@ export default async function LandingPageEditorPage() {
     return (
       <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
         <Alert variant="destructive">
-          <AlertDescription>Failed to load organization data</AlertDescription>
+          <AlertDescription>{t('failedToLoad')}</AlertDescription>
         </Alert>
       </div>
     );
@@ -83,13 +85,13 @@ export default async function LandingPageEditorPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Landing Page"
-        description="Manage your public-facing landing page content and visibility"
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild variant="outline">
             <Link href={landingPageUrl} target="_blank">
               <ExternalLink className="mr-2 h-4 w-4" aria-hidden="true" />
-              Preview Page
+              {t('previewPage')}
             </Link>
           </Button>
         }
@@ -103,7 +105,7 @@ export default async function LandingPageEditorPage() {
         <>
           <Alert>
             <AlertDescription>
-              Your landing page is live at:{' '}
+              {t('liveAt')}{' '}
               <Link
                 href={landingPageUrl}
                 target="_blank"

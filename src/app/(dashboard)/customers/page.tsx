@@ -13,6 +13,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ interface CustomersPageProps {
 export default async function CustomersPage({ searchParams }: CustomersPageProps) {
   const params = await searchParams;
   const { service } = await getCustomerService();
+  const t = await getTranslations('customers');
 
   const search = params.q?.trim() || undefined;
   const debtorsOnly = params.debt === '1';
@@ -50,13 +52,13 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
       <PageHeader
-        title="Customers"
-        description="Everyone who buys from you, and what they owe."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button asChild>
             <Link href={ROUTES.customers.new}>
               <Plus aria-hidden="true" />
-              Add customer
+              {t('addCustomer')}
             </Link>
           </Button>
         }
@@ -79,20 +81,20 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
           {result.data.length === 0 ? (
             hasFilters ? (
               <EmptyState
-                title="No customers match those filters"
-                description="Try a different search, or clear the filters to see everyone."
+                title={t('list.noMatch.title')}
+                description={t('list.noMatch.description')}
                 icon={<Users className="size-6" aria-hidden="true" />}
               />
             ) : (
               <EmptyState
-                title="No customers yet"
-                description="Add the people and shops who buy from you. You can start with just a name and add details later."
+                title={t('list.empty.title')}
+                description={t('list.empty.description')}
                 icon={<Users className="size-6" aria-hidden="true" />}
                 action={
                   <Button asChild>
                     <Link href={ROUTES.customers.new}>
                       <Plus aria-hidden="true" />
-                      Add your first customer
+                      {t('addFirstCustomer')}
                     </Link>
                   </Button>
                 }
@@ -114,9 +116,10 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
  * the number consistent with the table beneath it — a filtered list showing an
  * unfiltered total would read as a bug.
  */
-function ListSummary({ customers }: { customers: Array<{ current_balance: number }> }) {
+async function ListSummary({ customers }: { customers: Array<{ current_balance: number }> }) {
   if (customers.length === 0) return null;
 
+  const t = await getTranslations('customers.list');
   const totalOwed = customers.reduce(
     (sum, customer) => sum + Math.max(0, customer.current_balance),
     0
@@ -126,13 +129,13 @@ function ListSummary({ customers }: { customers: Array<{ current_balance: number
   return (
     <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
       <span className="text-muted-foreground">
-        {customers.length} {customers.length === 1 ? 'customer' : 'customers'}
+        {t('count', { count: customers.length })}
       </span>
       {debtorCount > 0 && (
         <span>
-          <span className="text-muted-foreground">Outstanding: </span>
+          <span className="text-muted-foreground">{t('outstanding')} </span>
           <span className="font-medium tabular-nums">{formatMoney(totalOwed)}</span>
-          <span className="text-muted-foreground"> across {debtorCount}</span>
+          <span className="text-muted-foreground"> {t('across', { count: debtorCount })}</span>
         </span>
       )}
     </div>

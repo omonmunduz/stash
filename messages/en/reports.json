@@ -1,0 +1,18 @@
+{
+  "expenses": {
+    "backToExpenses": "Expenses",
+    "title": "Expense breakdown",
+    "description": "Where the money went, and how it compares to what came in.",
+    "nothingToBreakdown": "Nothing to break down yet",
+    "noExpensesRecorded": "No expenses recorded {period}",
+    "recordExpense": "Record an expense",
+    "moneyIn": "Money in",
+    "moneyOut": "Money out",
+    "difference": "Difference",
+    "salesPeriod": "Sales, {period}",
+    "expensesPeriod": "Expenses, {period}",
+    "spentMoreThanTook": "You spent more than you took",
+    "beforeStockCosts": "Before stock costs",
+    "notProfitNote": "This is not profit. It counts what you invoiced against what you spent, and ignores what the stock itself cost you."
+  }
+}

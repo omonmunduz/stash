@@ -1,29 +1,49 @@
 {
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "products": "Products",
+    "bookNow": "Book Now"
+  },
   "hero": {
+    "exploreServicesAndProducts": "Explore our services and products",
+    "bookAppointmentToday": "Book your appointment today",
+    "discoverProducts": "Discover our products",
+    "bookNow": "Book Now",
+    "viewProducts": "View Products",
     "learnMore": "Learn more",
-    "bookNow": "Book now",
     "seeServices": "See services",
     "browseProducts": "Browse products"
   },
   "services": {
     "title": "Our Services",
-    "subtitle": "Discover what we can do for you"
+    "subtitle": "Discover what we can do for you",
+    "bookNow": "Book Now"
   },
   "products": {
     "title": "Our Products",
     "subtitle": "Browse our selection",
     "per": "/"
   },
+  "cta": {
+    "title": "Ready to get started?",
+    "subtitle": "Book your appointment with {orgName} today",
+    "bookAppointment": "Book an Appointment"
+  },
+  "footer": {
+    "copyright": "© {year} {orgName}. All rights reserved.",
+    "allRightsReserved": "All rights reserved"
+  },
+  "empty": {
+    "title": "Coming soon",
+    "description": "This business is setting up their page. Check back soon!"
+  },
   "booking": {
-    "title": "Ready to book?",
-    "subtitle": "Schedule an appointment with us today",
-    "bookAppointment": "Book an appointment"
+    "title": "Book appointment",
+    "subtitle": "Book your appointment"
   },
   "comingSoon": {
     "title": "Coming soon",
     "description": "This business is setting up their page. Check back soon!"
-  },
-  "footer": {
-    "allRightsReserved": "All rights reserved"
   }
 }

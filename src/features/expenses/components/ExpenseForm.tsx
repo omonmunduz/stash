@@ -19,6 +19,7 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,7 +27,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { createExpenseAction, updateExpenseAction } from '@/app/actions/expenses';
 import type { ExpenseFormValues } from '@/app/actions/expenses';
-import { PAYMENT_METHOD_LABELS } from '@/features/payments/labels';
 import type { PaymentMethod } from '@/features/payments/types';
 import { EXPENSE_CATEGORY_SUGGESTIONS } from '../categories';
 import type { Expense } from '../types';
@@ -38,6 +38,10 @@ interface ExpenseFormProps {
 }
 
 export function ExpenseForm({ expense }: ExpenseFormProps) {
+  const t = useTranslations('expenses.form');
+  const tCommon = useTranslations('common.actions');
+  const tPayments = useTranslations('payments.filters');
+  const tCategories = useTranslations('expenses.categories');
   const isEdit = expense !== undefined;
 
   const [values, setValues] = useState<ExpenseFormValues>({
@@ -51,6 +55,25 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
 
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Build translated category suggestions - map system categories to their translations
+  const categoryMap: Record<string, string> = {
+    'Stock purchase': tCategories('stockPurchase'),
+    'Transport': tCategories('transport'),
+    'Rent': tCategories('rent'),
+    'Salaries': tCategories('salaries'),
+    'Utilities': tCategories('utilities'),
+    'Packaging': tCategories('packaging'),
+    'Airtime and data': tCategories('airtimeAndData'),
+    'Repairs': tCategories('repairs'),
+    'Licenses and fees': tCategories('licensesAndFees'),
+    'Marketing': tCategories('marketing'),
+  };
+
+  const translatedSuggestions = EXPENSE_CATEGORY_SUGGESTIONS.map((category) => ({
+    value: category,
+    label: categoryMap[category] || category,
+  }));
 
   const set =
     (field: keyof ExpenseFormValues) =>
@@ -85,12 +108,12 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">What you spent</legend>
+        <legend className="text-sm font-medium">{t('legendSpent')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="amount">
-              How much <span aria-hidden="true">*</span>
+              {t('howMuch')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="amount"
@@ -108,7 +131,7 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="category">
-              Category <span aria-hidden="true">*</span>
+              {t('category')} <span aria-hidden="true">*</span>
             </Label>
             {/* An input with a datalist, not a select: the list is a set of
                 suggestions, and a business with a cost we did not think of must
@@ -120,14 +143,16 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
               list="expense-categories"
               value={values.category}
               onChange={set('category')}
-              placeholder="e.g., Transport"
+              placeholder={t('categoryPlaceholder')}
               required
               minLength={2}
               maxLength={50}
             />
             <datalist id="expense-categories">
-              {EXPENSE_CATEGORY_SUGGESTIONS.map((category) => (
-                <option key={category} value={category} />
+              {translatedSuggestions.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </datalist>
           </div>
@@ -135,30 +160,30 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="description">
-            What was it for <span aria-hidden="true">*</span>
+            {t('whatFor')} <span aria-hidden="true">*</span>
           </Label>
           <Textarea
             id="description"
             value={values.description}
             onChange={set('description')}
-            placeholder="e.g., Fuel for the delivery run to Kariakoo"
+            placeholder={t('whatForPlaceholder')}
             required
             minLength={3}
             maxLength={500}
             rows={2}
           />
           <p className="text-xs text-muted-foreground">
-            Enough that this still makes sense to you in six months.
+            {t('whatForHelp')}
           </p>
         </div>
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Details</legend>
+        <legend className="text-sm font-medium">{t('legendDetails')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="expense_date">Date</Label>
+            <Label htmlFor="expense_date">{t('date')}</Label>
             <Input
               id="expense_date"
               type="date"
@@ -168,7 +193,7 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="payment_method">How you paid</Label>
+            <Label htmlFor="payment_method">{t('howYouPaid')}</Label>
             {/* Native select, like the other money forms: on a phone this opens
                 the OS picker. */}
             <select
@@ -177,21 +202,21 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
               onChange={set('payment_method')}
               className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map((value) => (
+              {(['cash', 'card', 'bank_transfer', 'check', 'other'] as PaymentMethod[]).map((value) => (
                 <option key={value} value={value}>
-                  {PAYMENT_METHOD_LABELS[value]}
+                  {tPayments(`method.${value}`)}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="vendor">Paid to</Label>
+            <Label htmlFor="vendor">{t('paidTo')}</Label>
             <Input
               id="vendor"
               value={values.vendor}
               onChange={set('vendor')}
-              placeholder="Optional"
+              placeholder={t('optional')}
               maxLength={100}
             />
           </div>
@@ -202,14 +227,14 @@ export function ExpenseForm({ expense }: ExpenseFormProps) {
         <Button type="submit" disabled={isPending} className="sm:w-auto">
           {isPending
             ? isEdit
-              ? 'Saving...'
-              : 'Recording...'
+              ? tCommon('saving')
+              : t('recording')
             : isEdit
-              ? 'Save changes'
-              : 'Record expense'}
+              ? tCommon('saveChanges')
+              : t('recordExpense')}
         </Button>
         <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-          <Link href={ROUTES.expenses.list}>Cancel</Link>
+          <Link href={ROUTES.expenses.list}>{tCommon('cancel')}</Link>
         </Button>
       </div>
     </form>

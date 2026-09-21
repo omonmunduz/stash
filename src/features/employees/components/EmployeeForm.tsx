@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,6 +28,8 @@ interface EmployeeFormProps {
 }
 
 export function EmployeeForm({ employee }: EmployeeFormProps) {
+  const t = useTranslations('employees.form');
+  const tCommon = useTranslations('common.actions');
   const isEdit = employee !== undefined;
 
   const [values, setValues] = useState<EmployeeFormValues>({
@@ -73,64 +76,62 @@ export function EmployeeForm({ employee }: EmployeeFormProps) {
       <fieldset className="space-y-4" disabled={isPending}>
         <div className="space-y-2">
           <Label htmlFor="display_name">
-            Display name <span className="text-destructive">*</span>
+            {t('displayName')} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="display_name"
             value={values.display_name}
             onChange={set('display_name')}
-            placeholder="Jane Smith"
+            placeholder={t('displayNamePlaceholder')}
             required
           />
           <p className="text-xs text-muted-foreground">
-            Name shown to customers in bookings
+            {t('displayNameHelp')}
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="slug">URL slug</Label>
+          <Label htmlFor="slug">{t('slug')}</Label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">/</span>
             <Input
               id="slug"
               value={values.slug}
               onChange={set('slug')}
-              placeholder="jane-smith"
+              placeholder={t('slugPlaceholder')}
               pattern="[a-z0-9\-]+"
             />
           </div>
           <p className="text-xs text-muted-foreground">
-            {isEdit
-              ? 'Changing this breaks existing booking links'
-              : 'Auto-generated from name if left blank'}
+            {isEdit ? t('slugHelpEdit') : t('slugHelpCreate')}
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="bio">{t('bio')}</Label>
           <Textarea
             id="bio"
             value={values.bio}
             onChange={set('bio')}
-            placeholder="Senior stylist with 10 years experience"
+            placeholder={t('bioPlaceholder')}
             rows={3}
           />
           <p className="text-xs text-muted-foreground">
-            Shown on the public booking page
+            {t('bioHelp')}
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="photo_url">Photo URL</Label>
+          <Label htmlFor="photo_url">{t('photoUrl')}</Label>
           <Input
             id="photo_url"
             type="url"
             value={values.photo_url}
             onChange={set('photo_url')}
-            placeholder="https://example.com/photo.jpg"
+            placeholder={t('photoUrlPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">
-            Optional. Shows on booking page and appointment list.
+            {t('photoUrlHelp')}
           </p>
         </div>
 
@@ -145,7 +146,7 @@ export function EmployeeForm({ employee }: EmployeeFormProps) {
                 }
               />
               <Label htmlFor="create_user_account" className="cursor-pointer font-normal">
-                Create user account for this employee
+                {t('createUserAccount')}
               </Label>
             </div>
 
@@ -153,36 +154,36 @@ export function EmployeeForm({ employee }: EmployeeFormProps) {
               <div className="space-y-4 pl-6">
                 <div className="space-y-2">
                   <Label htmlFor="email">
-                    Email <span className="text-destructive">*</span>
+                    {t('email')} <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="email"
                     type="email"
                     value={values.email}
                     onChange={set('email')}
-                    placeholder="employee@example.com"
+                    placeholder={t('emailPlaceholder')}
                     required={values.create_user_account}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Employee will use this email to sign in
+                    {t('emailHelp')}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="password">
-                    Password <span className="text-destructive">*</span>
+                    {t('password')} <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="password"
                     type="password"
                     value={values.password}
                     onChange={set('password')}
-                    placeholder="Minimum 8 characters"
+                    placeholder={t('passwordPlaceholder')}
                     required={values.create_user_account}
                     minLength={8}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Set an initial password for the employee
+                    {t('passwordHelp')}
                   </p>
                 </div>
               </div>
@@ -200,7 +201,7 @@ export function EmployeeForm({ employee }: EmployeeFormProps) {
               }
             />
             <Label htmlFor="is_active" className="cursor-pointer font-normal">
-              Active (can take appointments)
+              {t('active')}
             </Label>
           </div>
         )}
@@ -208,7 +209,7 @@ export function EmployeeForm({ employee }: EmployeeFormProps) {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Saving...' : isEdit ? 'Save changes' : 'Create employee'}
+          {isPending ? tCommon('saving') : isEdit ? tCommon('saveChanges') : t('createEmployee')}
         </Button>
       </div>
     </form>

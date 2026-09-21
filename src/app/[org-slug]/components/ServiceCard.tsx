@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,18 +17,31 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ service, orgSlug }: ServiceCardProps) {
+  const t = useTranslations('landing.services');
+  const locale = useLocale();
+
   const formatDuration = (minutes: number | null) => {
     if (!minutes) return null;
-    if (minutes < 60) return `${minutes} min`;
+
+    if (minutes < 60) {
+      return locale === 'ru' ? `${minutes} мин` : `${minutes} min`;
+    }
+
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    if (remainingMinutes === 0) return `${hours} hr`;
-    return `${hours} hr ${remainingMinutes} min`;
+
+    if (remainingMinutes === 0) {
+      return locale === 'ru' ? `${hours} ч` : `${hours} hr`;
+    }
+
+    return locale === 'ru'
+      ? `${hours} ч ${remainingMinutes} мин`
+      : `${hours} hr ${remainingMinutes} min`;
   };
 
   const formatPrice = (price: number | null) => {
     if (price === null) return null;
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale === 'ru' ? 'ru-RU' : 'en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(price);
@@ -64,7 +80,7 @@ export function ServiceCard({ service, orgSlug }: ServiceCardProps) {
         <Button asChild className="w-full" size="lg">
           <Link href={`/${orgSlug}/book?service=${service.id}`}>
             <Calendar className="mr-2 h-4 w-4" aria-hidden="true" />
-            Book Now
+            {t('bookNow')}
           </Link>
         </Button>
       </div>

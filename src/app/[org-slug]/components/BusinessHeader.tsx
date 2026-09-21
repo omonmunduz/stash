@@ -8,6 +8,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
 
@@ -28,6 +29,8 @@ export function BusinessHeader({
   hasProducts,
   hasBooking,
 }: BusinessHeaderProps) {
+  const t = useTranslations('landing.nav');
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -59,7 +62,7 @@ export function BusinessHeader({
               onClick={() => scrollToSection('hero')}
               className="text-sm font-medium text-white/70 transition-colors hover:text-white"
             >
-              Home
+              {t('home')}
             </button>
 
             {hasServices && (
@@ -67,7 +70,7 @@ export function BusinessHeader({
                 onClick={() => scrollToSection('services')}
                 className="text-sm font-medium text-white/70 transition-colors hover:text-white"
               >
-                Services
+                {t('services')}
               </button>
             )}
 
@@ -76,14 +79,14 @@ export function BusinessHeader({
                 onClick={() => scrollToSection('products')}
                 className="text-sm font-medium text-white/70 transition-colors hover:text-white"
               >
-                Products
+                {t('products')}
               </button>
             )}
 
             {hasBooking && (
               <Button asChild size="sm" className="bg-white text-slate-900 hover:bg-white/90">
                 <Link href={`/${orgSlug}/book`}>
-                  Book Now
+                  {t('bookNow')}
                 </Link>
               </Button>
             )}
@@ -94,7 +97,7 @@ export function BusinessHeader({
             <div className="md:hidden">
               <Button asChild size="sm" className="bg-white text-slate-900 hover:bg-white/90">
                 <Link href={`/${orgSlug}/book`}>
-                  Book Now
+                  {t('bookNow')}
                 </Link>
               </Button>
             </div>
@@ -104,4 +107,3 @@ export function BusinessHeader({
     </header>
   );
 }
-

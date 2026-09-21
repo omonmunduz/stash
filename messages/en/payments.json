@@ -4,6 +4,7 @@
   "newPayment": "New payment",
   "recordAPayment": "Record a payment",
   "recordPayment": "Record payment",
+  "clearFilters": "Clear filters",
   "list": {
     "nothingRecorded": "No payments yet",
     "nothingRecordedDescription": "Payments you record appear here.",
@@ -11,6 +12,10 @@
     "empty": {
       "title": "No payments yet",
       "description": "Payments you record appear here."
+    },
+    "noMatch": {
+      "title": "No payments match",
+      "description": "Try adjusting your filters."
     }
   },
   "new": {
@@ -20,5 +25,47 @@
     "noCustomers": "No customers yet",
     "noCustomersDescription": "A payment needs someone it came from. Add a customer first.",
     "addCustomer": "Add a customer"
+  },
+  "filters": {
+    "periodLabel": "Period",
+    "period": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "all": "Everything"
+    },
+    "methodLabel": "Method",
+    "methodAny": "Any",
+    "method": {
+      "cash": "Cash",
+      "card": "Card",
+      "bank_transfer": "Bank transfer",
+      "check": "Check",
+      "other": "Other"
+    },
+    "clear": "Clear",
+    "updatingResults": "Updating results"
+  },
+  "form": {
+    "recordAPayment": "Record a payment",
+    "legendReceived": "Payment received",
+    "legendForInvoice": "Payment for this invoice",
+    "whoPaid": "Who paid",
+    "chooseCustomer": "Choose a customer...",
+    "owes": "owes {amount}",
+    "owesNothing": "{name} owes nothing right now. This will sit on the account as credit.",
+    "howMuch": "How much",
+    "howTheyPaid": "How they paid",
+    "payingAllOff": "Paying it all off — {amount}",
+    "overpayWarning": "That is {extra} more than the {owed} owed. The extra will sit on the account as credit against their next purchase.",
+    "showDetails": "Change the date, or add a reference or note",
+    "dateReceived": "Date received",
+    "reference": "Reference",
+    "referencePlaceholder": "Check or transfer number",
+    "note": "Note",
+    "recording": "Recording...",
+    "recordedSuccess": "Recorded {number} for {amount}.",
+    "recordedWithCredit": "Recorded {number}. {notice}",
+    "errorChooseCustomer": "Choose who the money came from."
   }
 }

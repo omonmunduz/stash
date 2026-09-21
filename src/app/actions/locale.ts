@@ -10,6 +10,7 @@ export type Locale = 'en' | 'ru';
  * Set the user's locale preference.
  *
  * For authenticated users: saves to user_profiles.locale
+ * For owners: ALSO updates organizations.default_locale (affects public pages)
  * For anonymous visitors: saves to cookie only
  */
 export async function setUserLocale(locale: Locale) {
@@ -27,6 +28,7 @@ export async function setUserLocale(locale: Locale) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
+      // Update user's personal locale
       const { error } = await supabase
         .from('user_profiles')
         .update({ locale })
@@ -34,6 +36,36 @@ export async function setUserLocale(locale: Locale) {
 
       if (error) {
         console.error('Failed to update user locale:', error);
+      }
+
+      // If user is owner, also update organization's public page locale
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('organization_id, role')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.role === 'owner' && profile.organization_id) {
+        const { error: orgError } = await supabase
+          .from('organizations')
+          .update({ default_locale: locale })
+          .eq('id', profile.organization_id);
+
+        if (orgError) {
+          console.error('Failed to update organization locale:', orgError);
+        } else {
+          // Revalidate public landing pages when org locale changes
+          const { data: org } = await supabase
+            .from('organizations')
+            .select('slug')
+            .eq('id', profile.organization_id)
+            .single();
+
+          if (org?.slug) {
+            revalidatePath(`/${org.slug}`, 'page');
+            revalidatePath(`/${org.slug}/book`, 'page');
+          }
+        }
       }
     }
   } catch (error) {

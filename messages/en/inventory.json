@@ -102,5 +102,31 @@
     "correctCount": "Correct count",
     "done": "Done",
     "savingFor": "Saving stock change for {name}"
+  },
+  "itemForm": {
+    "sectionWhatItIs": "What it is",
+    "name": "Name",
+    "namePlaceholder": "e.g., Small carrier bags",
+    "itemCode": "Item code",
+    "itemCodePlaceholder": "Leave blank to generate one",
+    "itemCodeHelp": "Letters, numbers, hyphens.",
+    "category": "Category",
+    "categoryPlaceholder": "e.g., Packaging",
+    "description": "Description",
+    "sectionCostAndStock": "Cost and stock",
+    "costPrice": "Cost price",
+    "costPriceHelp": "What you pay per {unit}.",
+    "boughtBy": "Bought by",
+    "unitPlaceholder": "unit",
+    "unitHelp": "unit, box, roll, pack.",
+    "warnMeBelow": "Warn me below",
+    "noWarning": "No warning",
+    "warnMeBelowHelp": "Flags it on the stock screen. Leave blank for no warning.",
+    "howManyNow": "How many do you have now?",
+    "howManyNowHelp": "Recorded as opening stock. Change it later from the stock screen so the reason is kept.",
+    "saving": "Saving...",
+    "adding": "Adding...",
+    "saveChanges": "Save changes",
+    "addItem": "Add item"
   }
 }

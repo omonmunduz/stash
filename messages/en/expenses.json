@@ -33,5 +33,61 @@
     "backToExpenses": "Expenses",
     "title": "Record an expense",
     "description": "Money the business spent. It comes off your profit for the day it was spent."
+  },
+  "form": {
+    "legendSpent": "What you spent",
+    "howMuch": "How much",
+    "category": "Category",
+    "categoryPlaceholder": "e.g., Transport",
+    "whatFor": "What was it for",
+    "whatForPlaceholder": "e.g., Fuel for the delivery run to Kariakoo",
+    "whatForHelp": "Enough that this still makes sense to you in six months.",
+    "legendDetails": "Details",
+    "date": "Date",
+    "howYouPaid": "How you paid",
+    "paidTo": "Paid to",
+    "optional": "Optional",
+    "recording": "Recording...",
+    "recordExpense": "Record expense"
+  },
+  "categories": {
+    "stockPurchase": "Stock purchase",
+    "transport": "Transport",
+    "rent": "Rent",
+    "salaries": "Salaries",
+    "utilities": "Utilities",
+    "packaging": "Packaging",
+    "airtimeAndData": "Airtime and data",
+    "repairs": "Repairs",
+    "licensesAndFees": "Licenses and fees",
+    "marketing": "Marketing"
+  },
+  "periods": {
+    "month": "This month",
+    "quarter": "Last 3 months",
+    "year": "This year",
+    "all": "Everything"
+  },
+  "filters": {
+    "searchPlaceholder": "Search what it was for, who you paid, or the category",
+    "searchLabel": "Search expenses",
+    "periodLabel": "Period",
+    "categoryLabel": "Category",
+    "methodLabel": "Method",
+    "any": "Any",
+    "clear": "Clear",
+    "updatingResults": "Updating results"
+  },
+  "table": {
+    "reference": "Reference",
+    "date": "Date",
+    "category": "Category",
+    "whatFor": "What for",
+    "method": "Method",
+    "amount": "Amount",
+    "paidTo": "Paid to {vendor}",
+    "editLabel": "Edit {number}",
+    "deleteLabel": "Delete {number}",
+    "deleteConfirm": "Delete {number} — {category}, {amount}?\n\nIt stops counting against your profit. The record stays on file."
   }
 }

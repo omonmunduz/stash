@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 
 export type Locale = 'en' | 'ru';
@@ -11,13 +11,36 @@ export const defaultLocale: Locale = 'en';
  * Determine the locale for this request.
  *
  * Priority:
- * 1. Cookie override (for public pages where visitor chooses language)
- * 2. Authenticated user's locale preference (CRM)
- * 3. Organization's default locale (public pages)
- * 4. Browser Accept-Language header
- * 5. Default to 'en'
+ * 1. Public org pages ([org-slug]) - use organization's default_locale
+ * 2. Cookie override (for dashboard where user chooses language)
+ * 3. Authenticated user's locale preference (CRM)
+ * 4. Default to 'en'
  */
 async function getLocale(): Promise<Locale> {
+  // Check if this is a public org page via custom header set by middleware
+  const headersList = await headers();
+  const orgSlug = headersList.get('x-org-slug');
+
+  // For public org pages, use organization's default_locale
+  if (orgSlug) {
+    try {
+      const supabase = await createClient();
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('default_locale')
+        .eq('slug', orgSlug)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+      if (org?.default_locale && locales.includes(org.default_locale as Locale)) {
+        return org.default_locale as Locale;
+      }
+    } catch (error) {
+      console.error('Error fetching org locale:', error);
+    }
+  }
+
+  // For dashboard/authenticated pages, use cookie or user preference
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value as Locale | undefined;
 

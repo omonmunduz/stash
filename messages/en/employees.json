@@ -42,5 +42,29 @@
     "step3": "Use \"Copy to all\" to apply times to all checked days",
     "step4": "Use \"Mon-Fri 9-5\" for a standard business week preset",
     "step5": "This schedule controls what appointment times are available on the booking page"
+  },
+  "form": {
+    "displayName": "Display name",
+    "displayNamePlaceholder": "Jane Smith",
+    "displayNameHelp": "Name shown to customers in bookings",
+    "slug": "URL slug",
+    "slugPlaceholder": "jane-smith",
+    "slugHelpEdit": "Changing this breaks existing booking links",
+    "slugHelpCreate": "Auto-generated from name if left blank",
+    "bio": "Bio",
+    "bioPlaceholder": "Senior stylist with 10 years experience",
+    "bioHelp": "Shown on the public booking page",
+    "photoUrl": "Photo URL",
+    "photoUrlPlaceholder": "https://example.com/photo.jpg",
+    "photoUrlHelp": "Optional. Shows on booking page and appointment list.",
+    "createUserAccount": "Create user account for this employee",
+    "email": "Email",
+    "emailPlaceholder": "employee@example.com",
+    "emailHelp": "Employee will use this email to sign in",
+    "password": "Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "passwordHelp": "Set an initial password for the employee",
+    "active": "Active (can take appointments)",
+    "createEmployee": "Create employee"
   }
 }

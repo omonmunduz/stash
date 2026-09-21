@@ -13,6 +13,7 @@
  */
 
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { BookingFlow } from '@/features/appointments/components/BookingFlow';
 import type { OrganizationId } from '@/lib/types/common';
@@ -25,6 +26,7 @@ interface BookingPageProps {
 export default async function BookingPage({ params, searchParams }: BookingPageProps) {
   const { 'org-slug': slug } = await params;
   const { employee: employeeSlug } = await searchParams;
+  const t = await getTranslations('landing.booking');
 
   const supabase = await createClient();
 
@@ -79,7 +81,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight">{org.name}</h1>
-          <p className="mt-2 text-muted-foreground">Book your appointment</p>
+          <p className="mt-2 text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         {/* Booking form */}
@@ -97,6 +99,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
 export async function generateMetadata({ params }: BookingPageProps) {
   const { 'org-slug': slug } = await params;
   const supabase = await createClient();
+  const t = await getTranslations('landing.booking');
 
   const { data: org } = await supabase
     .from('organizations')
@@ -106,6 +109,6 @@ export async function generateMetadata({ params }: BookingPageProps) {
     .maybeSingle();
 
   return {
-    title: org ? `Book appointment - ${org.name}` : 'Book appointment',
+    title: org ? `${t('title')} - ${org.name}` : t('title'),
   };
 }

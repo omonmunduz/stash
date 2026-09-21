@@ -13,6 +13,11 @@
     "expensesPeriod": "Expenses, {period}",
     "spentMoreThanTook": "You spent more than you took",
     "beforeStockCosts": "Before stock costs",
-    "notProfitNote": "This is not profit. It counts what you invoiced against what you spent, and ignores what the stock itself cost you."
+    "notProfitNote": "This is not profit. It counts what you invoiced against what you spent, and ignores what the stock itself cost you.",
+    "breakdown": {
+      "heading": "By category",
+      "description": "{count, plural, =1 {One category.} other {# categories, largest first.}}",
+      "expenseCount": "{count, plural, =1 {1 expense} other {# expenses}}"
+    }
   }
 }

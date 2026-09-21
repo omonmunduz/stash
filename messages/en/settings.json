@@ -1,9 +1,20 @@
 {
   "landingPage": {
     "title": "Landing Page",
-    "description": "Manage your public-facing landing page content and visibility",
+    "description": "Customize your public landing page",
     "previewPage": "Preview Page",
-    "failedToLoad": "Failed to load organization data",
-    "liveAt": "Your landing page is live at:"
+    "liveAt": "Your landing page is live at:",
+    "contentTitle": "Landing Page Content",
+    "descriptionField": "Description",
+    "descriptionPlaceholder": "Tell customers about your business",
+    "descriptionHelper": "Shown below your business name on the landing page",
+    "logo": "Logo",
+    "logoHelper": "Optional. Shown next to your business name. JPEG, PNG, or WebP. Max 5MB.",
+    "heroImage": "Hero Image",
+    "heroImageHelper": "Optional. Banner image shown at the top of your landing page. JPEG, PNG, or WebP. Max 5MB.",
+    "servicesTitle": "Services",
+    "noActiveServices": "No active services to display. Add services first.",
+    "productsTitle": "Products",
+    "noActiveProducts": "No active products to display. Add products first."
   }
 }

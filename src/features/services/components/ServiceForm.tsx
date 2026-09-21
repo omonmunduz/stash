@@ -13,6 +13,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +31,8 @@ interface ServiceFormProps {
 }
 
 export function ServiceForm({ service, employees }: ServiceFormProps) {
+  const t = useTranslations('services.form');
+  const tCommon = useTranslations('common.actions');
   const isEdit = service !== undefined;
 
   const [values, setValues] = useState<ServiceFormValues>({
@@ -81,28 +84,28 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Service details</legend>
+        <legend className="text-sm font-medium">{t('legend')}</legend>
 
         <div className="space-y-2">
           <Label htmlFor="name">
-            Name <span className="text-destructive">*</span>
+            {t('name')} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="name"
             value={values.name}
             onChange={set('name')}
-            placeholder="Haircut"
+            placeholder={t('namePlaceholder')}
             required
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('description')}</Label>
           <Textarea
             id="description"
             value={values.description}
             onChange={set('description')}
-            placeholder="Classic cut and style"
+            placeholder={t('descriptionPlaceholder')}
             rows={2}
           />
         </div>
@@ -110,7 +113,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="duration_minutes">
-              Duration (minutes) <span className="text-destructive">*</span>
+              {t('duration')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="duration_minutes"
@@ -126,7 +129,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="price">
-              Price <span className="text-destructive">*</span>
+              {t('price')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="price"
@@ -142,10 +145,10 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>Who can perform this service?</Label>
+          <Label>{t('whoCanPerform')}</Label>
           {employees.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No employees yet. Add employees first to assign them to services.
+              {t('noEmployees')}
             </p>
           ) : (
             <div className="space-y-2 rounded-lg border border-border p-3">
@@ -167,7 +170,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
             </div>
           )}
           <p className="text-xs text-muted-foreground">
-            Customers can book this service with any selected employee
+            {t('providersHelp')}
           </p>
         </div>
 
@@ -181,7 +184,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
               }
             />
             <Label htmlFor="is_active" className="cursor-pointer font-normal">
-              Active (available for booking)
+              {t('active')}
             </Label>
           </div>
         )}
@@ -189,7 +192,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Saving...' : isEdit ? 'Save changes' : 'Create service'}
+          {isPending ? tCommon('saving') : isEdit ? tCommon('saveChanges') : t('createService')}
         </Button>
       </div>
     </form>

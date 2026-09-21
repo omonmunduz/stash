@@ -8,6 +8,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +52,9 @@ interface LandingPageEditorProps {
 }
 
 export function LandingPageEditor({ organization, services, products, logoSignedUrl, heroSignedUrl }: LandingPageEditorProps) {
+  const t = useTranslations('settings.landingPage');
+  const tCommon = useTranslations('common.actions');
+
   const [values, setValues] = useState({
     description: organization.description ?? '',
     logo_url: organization.logo_url ?? '',
@@ -121,7 +125,7 @@ export function LandingPageEditor({ organization, services, products, logoSigned
       {/* Organization Content */}
       <Card>
         <CardHeader>
-          <CardTitle>Landing Page Content</CardTitle>
+          <CardTitle>{t('contentTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -133,40 +137,40 @@ export function LandingPageEditor({ organization, services, products, logoSigned
 
             <fieldset className="space-y-4" disabled={isPending}>
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('descriptionField')}</Label>
                 <Textarea
                   id="description"
                   value={values.description}
                   onChange={set('description')}
-                  placeholder="Tell customers about your business"
+                  placeholder={t('descriptionPlaceholder')}
                   rows={4}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Shown below your business name on the landing page
+                  {t('descriptionHelper')}
                 </p>
               </div>
 
               <ImageUpload
                 id="logo"
-                label="Logo"
+                label={t('logo')}
                 currentImageUrl={logoSignedUrl}
                 onFileSelect={handleLogoSelect}
                 disabled={isPending}
-                helperText="Optional. Shown next to your business name. JPEG, PNG, or WebP. Max 5MB."
+                helperText={t('logoHelper')}
               />
 
               <ImageUpload
                 id="hero_image"
-                label="Hero Image"
+                label={t('heroImage')}
                 currentImageUrl={heroSignedUrl}
                 onFileSelect={handleHeroSelect}
                 disabled={isPending}
-                helperText="Optional. Banner image shown at the top of your landing page. JPEG, PNG, or WebP. Max 5MB."
+                helperText={t('heroImageHelper')}
               />
             </fieldset>
 
             <Button type="submit" disabled={isPending}>
-              {isPending ? 'Saving...' : 'Save Changes'}
+              {isPending ? tCommon('saving') : tCommon('saveChanges')}
             </Button>
           </form>
         </CardContent>
@@ -175,12 +179,12 @@ export function LandingPageEditor({ organization, services, products, logoSigned
       {/* Services Visibility */}
       <Card>
         <CardHeader>
-          <CardTitle>Services</CardTitle>
+          <CardTitle>{t('servicesTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           {activeServices.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No active services to display. Add services first.
+              {t('noActiveServices')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -210,12 +214,12 @@ export function LandingPageEditor({ organization, services, products, logoSigned
       {/* Products Visibility */}
       <Card>
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>{t('productsTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           {activeProducts.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No active products to display. Add products first.
+              {t('noActiveProducts')}
             </p>
           ) : (
             <div className="space-y-3">

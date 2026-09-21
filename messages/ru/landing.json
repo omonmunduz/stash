@@ -1,29 +1,49 @@
 {
+  "nav": {
+    "home": "Главная",
+    "services": "Услуги",
+    "products": "Товары",
+    "bookNow": "Записаться"
+  },
   "hero": {
-    "learnMore": "Узнать больше",
+    "exploreServicesAndProducts": "Ознакомьтесь с нашими услугами и товарами",
+    "bookAppointmentToday": "Запишитесь на приём сегодня",
+    "discoverProducts": "Откройте для себя наши товары",
     "bookNow": "Записаться",
+    "viewProducts": "Посмотреть товары",
+    "learnMore": "Узнать больше",
     "seeServices": "Посмотреть услуги",
     "browseProducts": "Посмотреть товары"
   },
   "services": {
     "title": "Наши услуги",
-    "subtitle": "Узнайте, что мы можем для вас сделать"
+    "subtitle": "Узнайте, что мы можем для вас сделать",
+    "bookNow": "Записаться"
   },
   "products": {
     "title": "Наши товары",
     "subtitle": "Посмотрите наш ассортимент",
     "per": "/"
   },
-  "booking": {
-    "title": "Готовы записаться?",
-    "subtitle": "Запишитесь на приём сегодня",
+  "cta": {
+    "title": "Готовы начать?",
+    "subtitle": "Запишитесь на приём к {orgName} сегодня",
     "bookAppointment": "Записаться на приём"
+  },
+  "footer": {
+    "copyright": "© {year} {orgName}. Все права защищены.",
+    "allRightsReserved": "Все права защищены"
+  },
+  "empty": {
+    "title": "Скоро откроется",
+    "description": "Компания настраивает свою страницу. Загляните позже!"
+  },
+  "booking": {
+    "title": "Запись на приём",
+    "subtitle": "Запишитесь на приём"
   },
   "comingSoon": {
     "title": "Скоро откроется",
     "description": "Компания настраивает свою страницу. Загляните позже!"
-  },
-  "footer": {
-    "allRightsReserved": "Все права защищены"
   }
 }

@@ -37,5 +37,25 @@
     "addService": "Add a service",
     "needEmployees": "You need to add employees before scheduling appointments.",
     "addEmployee": "Add an employee"
+  },
+  "form": {
+    "customer": "Customer",
+    "selectCustomer": "Select a customer",
+    "service": "Service",
+    "selectService": "Select a service",
+    "minutes": "min",
+    "duration": "Duration: {minutes} minutes",
+    "employee": "Employee",
+    "selectEmployee": "Select an employee",
+    "selectServiceFirst": "Select a service first",
+    "noEmployeesAvailable": "No employees available for this service",
+    "noEmployeesAssigned": "No employees are assigned to perform this service. Please assign employees to the service first.",
+    "date": "Date",
+    "startTime": "Start time",
+    "timeSlotHelp": "Choose a time slot that fits the service duration",
+    "notes": "Notes",
+    "notesPlaceholder": "Special requests or additional information",
+    "scheduling": "Scheduling...",
+    "scheduleAppointment": "Schedule appointment"
   }
 }

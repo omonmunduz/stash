@@ -19,16 +19,21 @@
  * sum to 100% of what is on screen rather than of all time.
  */
 
+import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
 import type { ExpenseSummary } from '../types';
 import { formatMoney } from '@/lib/utils/format';
+import { getCategoryLabel } from '../translation-helpers';
 
 interface CategoryBreakdownProps {
   /** Sorted descending by total — summarizeByCategory already does this. */
   summary: ExpenseSummary[];
 }
 
-export function CategoryBreakdown({ summary }: CategoryBreakdownProps) {
+export async function CategoryBreakdown({ summary }: CategoryBreakdownProps) {
+  const t = await getTranslations('reports.expenses.breakdown');
+  const tCategories = await getTranslations('expenses.categories');
+
   if (summary.length === 0) return null;
 
   // Bars are scaled against the largest category, not against the total. Scaling
@@ -40,12 +45,10 @@ export function CategoryBreakdown({ summary }: CategoryBreakdownProps) {
     <section aria-labelledby="breakdown-heading" className="space-y-4">
       <div className="space-y-1">
         <h2 id="breakdown-heading" className="text-lg font-medium">
-          By category
+          {t('heading')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {summary.length === 1
-            ? 'One category.'
-            : `${summary.length} categories, largest first.`}
+          {t('description', { count: summary.length })}
         </p>
       </div>
 
@@ -55,10 +58,10 @@ export function CategoryBreakdown({ summary }: CategoryBreakdownProps) {
             <div className="flex items-baseline justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 <Badge variant="secondary" className="shrink-0">
-                  {row.category}
+                  {getCategoryLabel(row.category, tCategories)}
                 </Badge>
                 <span className="truncate text-xs text-muted-foreground">
-                  {row.count} {row.count === 1 ? 'expense' : 'expenses'}
+                  {t('expenseCount', { count: row.count })}
                 </span>
               </div>
 

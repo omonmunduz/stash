@@ -11,6 +11,7 @@
 'use client';
 
 import { useState, useTransition, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,6 +35,9 @@ interface AppointmentFormProps {
 }
 
 export function AppointmentForm({ customers, services, employees }: AppointmentFormProps) {
+  const t = useTranslations('appointments.form');
+  const tCommon = useTranslations('common.actions');
+
   const [values, setValues] = useState<AppointmentFormValues>({
     customer_id: '',
     service_id: '',
@@ -103,7 +107,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
         {/* Customer selection */}
         <div className="space-y-2">
           <Label htmlFor="customer_id">
-            Customer <span className="text-destructive">*</span>
+            {t('customer')} <span className="text-destructive">*</span>
           </Label>
           <select
             id="customer_id"
@@ -112,7 +116,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
             required
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="">Select a customer</option>
+            <option value="">{t('selectCustomer')}</option>
             {customers.map((customer) => (
               <option key={customer.id} value={customer.id}>
                 {customer.name} ({customer.customer_code})
@@ -124,7 +128,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
         {/* Service selection */}
         <div className="space-y-2">
           <Label htmlFor="service_id">
-            Service <span className="text-destructive">*</span>
+            {t('service')} <span className="text-destructive">*</span>
           </Label>
           <select
             id="service_id"
@@ -133,22 +137,24 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
             required
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="">Select a service</option>
+            <option value="">{t('selectService')}</option>
             {services.map((service) => (
               <option key={service.id} value={service.id}>
-                {service.name} ({service.duration_minutes} min)
+                {service.name} ({service.duration_minutes} {t('minutes')})
               </option>
             ))}
           </select>
           {durationMinutes > 0 && (
-            <p className="text-xs text-muted-foreground">Duration: {durationMinutes} minutes</p>
+            <p className="text-xs text-muted-foreground">
+              {t('duration', { minutes: durationMinutes })}
+            </p>
           )}
         </div>
 
         {/* Employee selection */}
         <div className="space-y-2">
           <Label htmlFor="employee_id">
-            Employee <span className="text-destructive">*</span>
+            {t('employee')} <span className="text-destructive">*</span>
           </Label>
           <select
             id="employee_id"
@@ -160,10 +166,10 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
           >
             <option value="">
               {!values.service_id
-                ? 'Select a service first'
+                ? t('selectServiceFirst')
                 : availableEmployees.length === 0
-                  ? 'No employees available for this service'
-                  : 'Select an employee'}
+                  ? t('noEmployeesAvailable')
+                  : t('selectEmployee')}
             </option>
             {availableEmployees.map((employee) => (
               <option key={employee.id} value={employee.id}>
@@ -173,8 +179,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
           </select>
           {values.service_id && availableEmployees.length === 0 && (
             <p className="text-xs text-destructive">
-              No employees are assigned to perform this service. Please assign employees to the
-              service first.
+              {t('noEmployeesAssigned')}
             </p>
           )}
         </div>
@@ -182,7 +187,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
         {/* Date */}
         <div className="space-y-2">
           <Label htmlFor="appointment_date">
-            Date <span className="text-destructive">*</span>
+            {t('date')} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="appointment_date"
@@ -197,7 +202,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
         {/* Time */}
         <div className="space-y-2">
           <Label htmlFor="start_time">
-            Start time <span className="text-destructive">*</span>
+            {t('startTime')} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="start_time"
@@ -207,18 +212,18 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
             required
           />
           <p className="text-xs text-muted-foreground">
-            Choose a time slot that fits the service duration
+            {t('timeSlotHelp')}
           </p>
         </div>
 
         {/* Notes */}
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('notes')}</Label>
           <Textarea
             id="notes"
             value={values.notes}
             onChange={set('notes')}
-            placeholder="Special requests or additional information"
+            placeholder={t('notesPlaceholder')}
             rows={3}
           />
         </div>
@@ -226,7 +231,7 @@ export function AppointmentForm({ customers, services, employees }: AppointmentF
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Scheduling...' : 'Schedule appointment'}
+          {isPending ? t('scheduling') : t('scheduleAppointment')}
         </Button>
       </div>
     </form>

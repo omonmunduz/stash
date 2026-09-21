@@ -26,16 +26,18 @@
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
-import { PAYMENT_METHOD_LABELS } from '@/features/payments/labels';
+import { SYSTEM_PAYMENT_METHODS, getPaymentMethodLabel } from '@/features/payments/translation-helpers';
 import type { PaymentMethod } from '@/features/payments/types';
 import {
   DEFAULT_EXPENSE_PERIOD,
-  EXPENSE_PERIODS,
   parseExpensePeriod,
+  type ExpensePeriod,
 } from '../categories';
+import { getPeriodLabel, getCategoryLabel } from '../translation-helpers';
 import { cn } from '@/lib/utils/cn';
 
 interface ExpenseFiltersProps {
@@ -44,6 +46,11 @@ interface ExpenseFiltersProps {
 }
 
 export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
+  const t = useTranslations('expenses.filters');
+  const tPeriods = useTranslations('expenses.periods');
+  const tCategories = useTranslations('expenses.categories');
+  const tPayments = useTranslations('payments.filters');
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -56,6 +63,16 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
   const currentSearch = searchParams.get('q') ?? '';
 
   const [search, setSearch] = useState(currentSearch);
+
+  const EXPENSE_PERIODS: ReadonlyArray<{
+    value: ExpensePeriod;
+    label: string;
+  }> = [
+    { value: 'month', label: getPeriodLabel('month', tPeriods) },
+    { value: 'quarter', label: getPeriodLabel('quarter', tPeriods) },
+    { value: 'year', label: getPeriodLabel('year', tPeriods) },
+    { value: 'all', label: getPeriodLabel('all', tPeriods) },
+  ];
 
   /** Rebuild from current params so the filters compose. */
   const buildHref = (changes: Record<string, string | null>) => {
@@ -114,9 +131,9 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search what it was for, who you paid, or the category"
+          placeholder={t('searchPlaceholder')}
           className="pl-9"
-          aria-label="Search expenses"
+          aria-label={t('searchLabel')}
         />
       </div>
 
@@ -124,7 +141,7 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
           picking two would mean the same as picking neither. */}
       <div
         role="radiogroup"
-        aria-label="Period"
+        aria-label={t('periodLabel')}
         className="flex flex-wrap items-center gap-2"
       >
         {EXPENSE_PERIODS.map(({ value, label }) => (
@@ -156,7 +173,7 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
         {categories.length > 0 && (
           <div className="flex items-center gap-2">
             <label htmlFor="category-filter" className="text-sm text-muted-foreground">
-              Category
+              {t('categoryLabel')}
             </label>
             <select
               id="category-filter"
@@ -164,10 +181,10 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
               onChange={(event) => navigate({ category: event.target.value || null })}
               className="h-11 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <option value="">Any</option>
+              <option value="">{t('any')}</option>
               {categories.map((category) => (
                 <option key={category} value={category}>
-                  {category}
+                  {getCategoryLabel(category, tCategories)}
                 </option>
               ))}
             </select>
@@ -176,7 +193,7 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
 
         <div className="flex items-center gap-2">
           <label htmlFor="method-filter" className="text-sm text-muted-foreground">
-            Method
+            {t('methodLabel')}
           </label>
           <select
             id="method-filter"
@@ -184,10 +201,10 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
             onChange={(event) => navigate({ method: event.target.value || null })}
             className="h-11 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <option value="">Any</option>
-            {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map((value) => (
+            <option value="">{t('any')}</option>
+            {SYSTEM_PAYMENT_METHODS.map((value) => (
               <option key={value} value={value}>
-                {PAYMENT_METHOD_LABELS[value]}
+                {getPaymentMethodLabel(value, tPayments)}
               </option>
             ))}
           </select>
@@ -196,13 +213,13 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearAll}>
             <X aria-hidden="true" />
-            Clear
+            {t('clear')}
           </Button>
         )}
 
         {/* Announced because the table updates without a page navigation. */}
         <span className="sr-only" role="status" aria-live="polite">
-          {isPending ? 'Updating results' : ''}
+          {isPending ? t('updatingResults') : ''}
         </span>
       </div>
     </div>

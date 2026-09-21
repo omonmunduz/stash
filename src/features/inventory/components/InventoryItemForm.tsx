@@ -21,6 +21,7 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +41,8 @@ interface InventoryItemFormProps {
 }
 
 export function InventoryItemForm({ item }: InventoryItemFormProps) {
+  const t = useTranslations('inventory.itemForm');
+  const tCommon = useTranslations('common.actions');
   const isEdit = item !== undefined;
 
   const [values, setValues] = useState<InventoryItemFormValues>({
@@ -87,17 +90,17 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
       )}
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">What it is</legend>
+        <legend className="text-sm font-medium">{t('sectionWhatItIs')}</legend>
 
         <div className="space-y-2">
           <Label htmlFor="name">
-            Name <span aria-hidden="true">*</span>
+            {t('name')} <span aria-hidden="true">*</span>
           </Label>
           <Input
             id="name"
             value={values.name}
             onChange={set('name')}
-            placeholder="e.g., Small carrier bags"
+            placeholder={t('namePlaceholder')}
             required
             minLength={2}
             maxLength={100}
@@ -107,33 +110,33 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="item_code">Item code</Label>
+            <Label htmlFor="item_code">{t('itemCode')}</Label>
             <Input
               id="item_code"
               value={values.item_code}
               onChange={set('item_code')}
-              placeholder="Leave blank to generate one"
+              placeholder={t('itemCodePlaceholder')}
               maxLength={50}
             />
             <p className="text-xs text-muted-foreground">
-              Letters, numbers, hyphens.
+              {t('itemCodeHelp')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('category')}</Label>
             <Input
               id="category"
               value={values.category}
               onChange={set('category')}
-              placeholder="e.g., Packaging"
+              placeholder={t('categoryPlaceholder')}
               maxLength={50}
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('description')}</Label>
           <Textarea
             id="description"
             value={values.description}
@@ -145,12 +148,12 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
       </fieldset>
 
       <fieldset className="space-y-4" disabled={isPending}>
-        <legend className="text-sm font-medium">Cost and stock</legend>
+        <legend className="text-sm font-medium">{t('sectionCostAndStock')}</legend>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="cost_price">
-              Cost price <span aria-hidden="true">*</span>
+              {t('costPrice')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="cost_price"
@@ -163,26 +166,26 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
               required
             />
             <p className="text-xs text-muted-foreground">
-              What you pay per {values.unit_of_measure || 'unit'}.
+              {t('costPriceHelp', { unit: values.unit_of_measure || 'unit' })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="unit_of_measure">Bought by</Label>
+            <Label htmlFor="unit_of_measure">{t('boughtBy')}</Label>
             <Input
               id="unit_of_measure"
               value={values.unit_of_measure}
               onChange={set('unit_of_measure')}
-              placeholder="unit"
+              placeholder={t('unitPlaceholder')}
               maxLength={20}
             />
             <p className="text-xs text-muted-foreground">
-              unit, box, roll, pack.
+              {t('unitHelp')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reorder_level">Warn me below</Label>
+            <Label htmlFor="reorder_level">{t('warnMeBelow')}</Label>
             <Input
               id="reorder_level"
               type="number"
@@ -191,17 +194,17 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
               step="0.001"
               value={values.reorder_level}
               onChange={set('reorder_level')}
-              placeholder="No warning"
+              placeholder={t('noWarning')}
             />
             <p className="text-xs text-muted-foreground">
-              Flags it on the stock screen. Leave blank for no warning.
+              {t('warnMeBelowHelp')}
             </p>
           </div>
         </div>
 
         {!isEdit && (
           <div className="space-y-2">
-            <Label htmlFor="initial_quantity">How many do you have now?</Label>
+            <Label htmlFor="initial_quantity">{t('howManyNow')}</Label>
             <Input
               id="initial_quantity"
               type="number"
@@ -213,8 +216,7 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
               placeholder="0"
             />
             <p className="text-xs text-muted-foreground">
-              Recorded as opening stock. Change it later from the stock screen so
-              the reason is kept.
+              {t('howManyNowHelp')}
             </p>
           </div>
         )}
@@ -224,14 +226,14 @@ export function InventoryItemForm({ item }: InventoryItemFormProps) {
         <Button type="submit" disabled={isPending} className="sm:w-auto">
           {isPending
             ? isEdit
-              ? 'Saving...'
-              : 'Adding...'
+              ? t('saving')
+              : t('adding')
             : isEdit
-              ? 'Save changes'
-              : 'Add item'}
+              ? t('saveChanges')
+              : t('addItem')}
         </Button>
         <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-          <Link href={ROUTES.inventory.items.list}>Cancel</Link>
+          <Link href={ROUTES.inventory.items.list}>{tCommon('cancel')}</Link>
         </Button>
       </div>
     </form>

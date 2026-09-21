@@ -7,6 +7,7 @@
  */
 
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSignedUrl } from '@/lib/supabase/storage';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -26,6 +27,7 @@ interface OrgLandingPageProps {
 export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
   const { 'org-slug': slug } = await params;
   const supabase = await createClient();
+  const t = await getTranslations('landing.empty');
 
   // Load organization
   const { data: org, error: orgError } = await supabase
@@ -113,8 +115,8 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
         />
         <div className="container mx-auto px-4 py-24">
           <EmptyState
-            title="Coming soon"
-            description="This business is setting up their page. Check back soon!"
+            title={t('title')}
+            description={t('description')}
             icon={<Store className="size-6" aria-hidden="true" />}
           />
         </div>
@@ -160,7 +162,7 @@ export async function generateMetadata({ params }: OrgLandingPageProps) {
 
   const { data: org } = await supabase
     .from('organizations')
-    .select('name')
+    .select('name, default_locale')
     .eq('slug', slug)
     .is('deleted_at', null)
     .maybeSingle();
@@ -168,5 +170,8 @@ export async function generateMetadata({ params }: OrgLandingPageProps) {
   return {
     title: org ? org.name : 'Business',
     description: org ? `Visit ${org.name}` : 'Business page',
+    other: {
+      'html:lang': org?.default_locale || 'en',
+    },
   };
 }

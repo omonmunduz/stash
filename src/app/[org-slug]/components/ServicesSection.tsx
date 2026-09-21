@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { ServiceCard } from './ServiceCard';
 
 interface Service {
@@ -14,6 +17,8 @@ interface ServicesSectionProps {
 }
 
 export function ServicesSection({ services, orgSlug }: ServicesSectionProps) {
+  const t = useTranslations('landing.services');
+
   if (services.length === 0) {
     return null;
   }
@@ -46,10 +51,10 @@ export function ServicesSection({ services, orgSlug }: ServicesSectionProps) {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
-            Our Services
+            {t('title')}
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-slate-600 md:text-xl">
-            Discover what we can do for you
+            {t('subtitle')}
           </p>
         </div>
 

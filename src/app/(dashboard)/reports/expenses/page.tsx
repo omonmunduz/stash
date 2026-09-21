@@ -31,10 +31,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CategoryBreakdown } from '@/features/expenses/components/CategoryBreakdown';
 import { ExpenseReportPeriods } from '@/features/expenses/components/ExpenseReportPeriods';
 import {
-  EXPENSE_PERIODS,
   expensePeriodStart,
   parseExpensePeriod,
 } from '@/features/expenses/categories';
+import { getPeriodLabel } from '@/features/expenses/translation-helpers';
 import { summarizeByCategory } from '@/features/expenses/business-rules';
 import { getExpenseService } from '@/features/expenses/server';
 import { getSaleService } from '@/features/sales/server';
@@ -57,6 +57,7 @@ export default async function ExpenseReportPage({
 
   const params = await searchParams;
   const t = await getTranslations('reports.expenses');
+  const tPeriods = await getTranslations('expenses.periods');
   const period = parseExpensePeriod(params.period);
   const from = expensePeriodStart(period);
 
@@ -74,8 +75,7 @@ export default async function ExpenseReportPage({
     saleService.revenueForPeriod(from),
   ]);
 
-  const periodLabel =
-    EXPENSE_PERIODS.find((entry) => entry.value === period)?.label ?? '';
+  const periodLabel = getPeriodLabel(period, tPeriods);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6">

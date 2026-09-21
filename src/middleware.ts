@@ -59,6 +59,23 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // Set custom header for public org routes to help with locale resolution
+  const url = request.nextUrl.clone();
+  const pathname = url.pathname;
+  const publicOrgSlugMatch = pathname.match(/^\/([^\/]+)(?:\/book)?$/);
+
+  if (publicOrgSlugMatch) {
+    const slug = publicOrgSlugMatch[1];
+    // Skip known dashboard/auth routes
+    const knownRoutes = ['dashboard', 'customers', 'products', 'sales', 'inventory',
+      'payments', 'expenses', 'services', 'employees', 'appointments', 'reports',
+      'settings', 'login', 'signup', 'onboarding', 'auth'];
+
+    if (!knownRoutes.includes(slug)) {
+      supabaseResponse.headers.set('x-org-slug', slug);
+    }
+  }
+
   // Verify the JWT locally instead of asking the Auth server who this is.
   // This project signs with ES256, so getClaims() checks the signature with
   // WebCrypto against the shared module-scope JWKS cache — no network call on a
@@ -73,9 +90,6 @@ export async function middleware(request: NextRequest) {
   });
 
   const claims = claimsData?.claims ?? null;
-
-  const url = request.nextUrl.clone();
-  const pathname = url.pathname;
 
   // Sign-in / sign-up pages: for users WITHOUT a session.
   const isAuthPage = pathname === '/login' || pathname === '/signup';

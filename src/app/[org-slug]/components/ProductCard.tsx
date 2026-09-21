@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
 
 interface ProductCardProps {
   product: {
@@ -14,9 +17,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const locale = useLocale();
+
   const formatPrice = (price: number | null) => {
     if (price === null) return null;
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale === 'ru' ? 'ru-RU' : 'en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(price);

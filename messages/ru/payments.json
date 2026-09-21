@@ -4,6 +4,29 @@
   "newPayment": "Новый платёж",
   "recordAPayment": "Записать платёж",
   "recordPayment": "Записать платёж",
+  "clearFilters": "Очистить фильтры",
+  "form": {
+    "recordAPayment": "Записать платёж",
+    "legendReceived": "Платёж получен",
+    "legendForInvoice": "Платёж по этому счёту",
+    "whoPaid": "Кто заплатил",
+    "chooseCustomer": "Выберите клиента...",
+    "owes": "должен {amount}",
+    "owesNothing": "{name} ничего не должен сейчас. Это будет записано как кредит на счёте.",
+    "howMuch": "Сколько",
+    "howTheyPaid": "Способ оплаты",
+    "payingAllOff": "Оплата полностью — {amount}",
+    "overpayWarning": "Это на {extra} больше, чем {owed} долга. Лишнее будет записано как кредит для следующей покупки.",
+    "showDetails": "Изменить дату или добавить примечание",
+    "dateReceived": "Дата получения",
+    "reference": "Номер документа",
+    "referencePlaceholder": "Номер чека или перевода",
+    "note": "Примечание",
+    "recording": "Записываю...",
+    "recordedSuccess": "Записан {number} на сумму {amount}.",
+    "recordedWithCredit": "Записан {number}. {notice}",
+    "errorChooseCustomer": "Выберите, от кого получен платёж."
+  },
   "list": {
     "nothingRecorded": "Пока нет платежей",
     "nothingRecordedDescription": "Записанные вами платежи появятся здесь.",
@@ -11,6 +34,10 @@
     "empty": {
       "title": "Пока нет платежей",
       "description": "Записанные вами платежи появятся здесь."
+    },
+    "noMatch": {
+      "title": "Нет совпадающих платежей",
+      "description": "Попробуйте изменить фильтры."
     }
   },
   "new": {
@@ -20,5 +47,25 @@
     "noCustomers": "Пока нет клиентов",
     "noCustomersDescription": "Для платежа нужен отправитель. Сначала добавьте клиента.",
     "addCustomer": "Добавить клиента"
+  },
+  "filters": {
+    "periodLabel": "Период",
+    "period": {
+      "today": "Сегодня",
+      "week": "Эта неделя",
+      "month": "Этот месяц",
+      "all": "Всё"
+    },
+    "methodLabel": "Способ",
+    "methodAny": "Любой",
+    "method": {
+      "cash": "Наличные",
+      "card": "Карта",
+      "bank_transfer": "Банковский перевод",
+      "check": "Чек",
+      "other": "Другое"
+    },
+    "clear": "Очистить",
+    "updatingResults": "Обновление результатов"
   }
 }

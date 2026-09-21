@@ -33,5 +33,61 @@
     "backToExpenses": "Расходы",
     "title": "Записать расход",
     "description": "Деньги, потраченные бизнесом. Это вычитается из прибыли за день совершения расхода."
+  },
+  "form": {
+    "legendSpent": "Что потратили",
+    "howMuch": "Сколько",
+    "category": "Категория",
+    "categoryPlaceholder": "напр., Транспорт",
+    "whatFor": "На что потратили",
+    "whatForPlaceholder": "напр., Бензин для доставки в Кариакоо",
+    "whatForHelp": "Достаточно, чтобы через полгода это было понятно.",
+    "legendDetails": "Подробности",
+    "date": "Дата",
+    "howYouPaid": "Способ оплаты",
+    "paidTo": "Кому заплатили",
+    "optional": "Необязательно",
+    "recording": "Записываю...",
+    "recordExpense": "Записать расход"
+  },
+  "categories": {
+    "stockPurchase": "Закупка товара",
+    "transport": "Транспорт",
+    "rent": "Аренда",
+    "salaries": "Зарплаты",
+    "utilities": "Коммунальные услуги",
+    "packaging": "Упаковка",
+    "airtimeAndData": "Связь и интернет",
+    "repairs": "Ремонт",
+    "licensesAndFees": "Лицензии и сборы",
+    "marketing": "Маркетинг"
+  },
+  "periods": {
+    "month": "В этом месяце",
+    "quarter": "Последние 3 месяца",
+    "year": "В этом году",
+    "all": "Все"
+  },
+  "filters": {
+    "searchPlaceholder": "Поиск по назначению, получателю или категории",
+    "searchLabel": "Поиск расходов",
+    "periodLabel": "Период",
+    "categoryLabel": "Категория",
+    "methodLabel": "Способ",
+    "any": "Любой",
+    "clear": "Очистить",
+    "updatingResults": "Обновление результатов"
+  },
+  "table": {
+    "reference": "Номер",
+    "date": "Дата",
+    "category": "Категория",
+    "whatFor": "Назначение",
+    "method": "Способ",
+    "amount": "Сумма",
+    "paidTo": "Оплачено {vendor}",
+    "editLabel": "Редактировать {number}",
+    "deleteLabel": "Удалить {number}",
+    "deleteConfirm": "Удалить {number} — {category}, {amount}?\n\nПерестанет учитываться в прибыли. Запись останется в системе."
   }
 }

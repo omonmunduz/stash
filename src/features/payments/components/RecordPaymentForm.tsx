@@ -31,6 +31,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { HandCoins } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +42,6 @@ import type { PaymentFormValues } from '@/app/actions/payments';
 import type { PaymentMethod } from '../types';
 import { formatMoney } from '@/lib/utils/format';
 import { cn } from '@/lib/utils/cn';
-import { PAYMENT_METHOD_LABELS } from '../labels';
 
 /** The little this form needs about a customer, when it has to pick one. */
 export interface PaymentFormCustomer {
@@ -89,13 +89,18 @@ export function RecordPaymentForm({
   defaultCustomerId,
   currentBalance = 0,
   saleId,
-  triggerLabel = 'Record a payment',
+  triggerLabel,
   defaultOpen = false,
   redirectTo,
   cancelHref,
 }: RecordPaymentFormProps) {
+  const t = useTranslations('payments.form');
+  const tCommon = useTranslations('common.actions');
+  const tFilters = useTranslations('payments.filters');
   const router = useRouter();
   const isPicking = customers !== undefined;
+
+  const defaultTriggerLabel = triggerLabel ?? t('recordAPayment');
 
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [showDetails, setShowDetails] = useState(false);
@@ -142,7 +147,7 @@ export function RecordPaymentForm({
     setNotice(null);
 
     if (!activeCustomerId) {
-      setError('Choose who the money came from.');
+      setError(t('errorChooseCustomer'));
       return;
     }
 
@@ -180,8 +185,8 @@ export function RecordPaymentForm({
 
       setNotice(
         creditNotice
-          ? `Recorded ${payment.payment_number}. ${creditNotice}`
-          : `Recorded ${payment.payment_number} for ${formatMoney(payment.amount)}.`
+          ? t('recordedWithCredit', { number: payment.payment_number, notice: creditNotice })
+          : t('recordedSuccess', { number: payment.payment_number, amount: formatMoney(payment.amount) })
       );
 
       reset();
@@ -199,7 +204,7 @@ export function RecordPaymentForm({
         )}
         <Button type="button" onClick={() => setIsOpen(true)}>
           <HandCoins aria-hidden="true" />
-          {triggerLabel}
+          {defaultTriggerLabel}
         </Button>
       </div>
     );
@@ -223,13 +228,13 @@ export function RecordPaymentForm({
 
       <fieldset className="space-y-4" disabled={isPending}>
         <legend className="text-sm font-medium">
-          {saleId ? 'Payment for this invoice' : 'Payment received'}
+          {saleId ? t('legendForInvoice') : t('legendReceived')}
         </legend>
 
         {isPicking && (
           <div className="space-y-2">
             <Label htmlFor="payment-customer">
-              Who paid <span aria-hidden="true">*</span>
+              {t('whoPaid')} <span aria-hidden="true">*</span>
             </Label>
             {/* Native select, like SaleForm's customer field: on a phone this opens
                 the OS picker, which beats anything hand-rolled. */}
@@ -240,19 +245,18 @@ export function RecordPaymentForm({
               required
               className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="">Choose a customer...</option>
+              <option value="">{t('chooseCustomer')}</option>
               {customers?.map((candidate) => (
                 <option key={candidate.id} value={candidate.id}>
                   {candidate.business_name ?? candidate.name}
                   {candidate.current_balance > 0 &&
-                    ` — owes ${formatMoney(candidate.current_balance)}`}
+                    ` — ${t('owes', { amount: formatMoney(candidate.current_balance) })}`}
                 </option>
               ))}
             </select>
             {chosen && chosen.current_balance <= 0 && (
               <p className="text-xs text-muted-foreground">
-                {chosen.business_name ?? chosen.name} owes nothing right now. This
-                will sit on the account as credit.
+                {t('owesNothing', { name: chosen.business_name ?? chosen.name })}
               </p>
             )}
           </div>
@@ -261,7 +265,7 @@ export function RecordPaymentForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="payment-amount">
-              How much <span aria-hidden="true">*</span>
+              {t('howMuch')} <span aria-hidden="true">*</span>
             </Label>
             <Input
               id="payment-amount"
@@ -281,22 +285,22 @@ export function RecordPaymentForm({
                 onClick={() => setAmount(String(owed))}
                 className="text-xs text-primary underline-offset-4 hover:underline"
               >
-                Paying it all off — {formatMoney(owed)}
+                {t('payingAllOff', { amount: formatMoney(owed) })}
               </button>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="payment-method">How they paid</Label>
+            <Label htmlFor="payment-method">{t('howTheyPaid')}</Label>
             <select
               id="payment-method"
               value={method}
               onChange={(event) => setMethod(event.target.value as PaymentMethod)}
               className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map((value) => (
+              {(['cash', 'card', 'bank_transfer', 'check', 'other'] as PaymentMethod[]).map((value) => (
                 <option key={value} value={value}>
-                  {PAYMENT_METHOD_LABELS[value]}
+                  {tFilters(`method.${value}`)}
                 </option>
               ))}
             </select>
@@ -306,9 +310,10 @@ export function RecordPaymentForm({
         {overpaying && (
           <Alert>
             <AlertDescription>
-              That is {formatMoney(entered - owed)} more than the {formatMoney(owed)}{' '}
-              owed. The extra will sit on the account as credit against their next
-              purchase.
+              {t('overpayWarning', {
+                extra: formatMoney(entered - owed),
+                owed: formatMoney(owed)
+              })}
             </AlertDescription>
           </Alert>
         )}
@@ -319,13 +324,13 @@ export function RecordPaymentForm({
             onClick={() => setShowDetails(true)}
             className="text-sm text-primary underline-offset-4 hover:underline"
           >
-            Change the date, or add a reference or note
+            {t('showDetails')}
           </button>
         ) : (
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="payment-date">Date received</Label>
+                <Label htmlFor="payment-date">{t('dateReceived')}</Label>
                 <Input
                   id="payment-date"
                   type="date"
@@ -335,19 +340,19 @@ export function RecordPaymentForm({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="payment-reference">Reference</Label>
+                <Label htmlFor="payment-reference">{t('reference')}</Label>
                 <Input
                   id="payment-reference"
                   value={reference}
                   onChange={(event) => setReference(event.target.value)}
                   maxLength={100}
-                  placeholder="Check or transfer number"
+                  placeholder={t('referencePlaceholder')}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="payment-notes">Note</Label>
+              <Label htmlFor="payment-notes">{t('note')}</Label>
               <Textarea
                 id="payment-notes"
                 value={notes}
@@ -362,11 +367,11 @@ export function RecordPaymentForm({
 
       <div className="flex flex-col gap-2 sm:flex-row-reverse">
         <Button type="submit" disabled={isPending} className="sm:w-auto">
-          {isPending ? 'Recording...' : 'Record payment'}
+          {isPending ? t('recording') : t('recordAPayment')}
         </Button>
         {cancelHref ? (
           <Button asChild variant="outline" disabled={isPending} className="sm:w-auto">
-            <Link href={cancelHref}>Cancel</Link>
+            <Link href={cancelHref}>{tCommon('cancel')}</Link>
           </Button>
         ) : (
           <Button
@@ -376,7 +381,7 @@ export function RecordPaymentForm({
             onClick={close}
             className="sm:w-auto"
           >
-            Cancel
+            {tCommon('cancel')}
           </Button>
         )}
       </div>

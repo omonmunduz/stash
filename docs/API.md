@@ -17,7 +17,7 @@ Repository Layer
 Database
 ```
 $env:ANTHROPIC_BASE_URL="https://api.gateyourway.com"
-$env:ANTHROPIC_AUTH_TOKEN="gyw-sk-c72675e55021771408430f9d13722ff663843238bb81cf0093765b9a1e25764d"
+$env:ANTHROPIC_AUTH_TOKEN="gyw-sk-947923c627cf0709694361b7c7d767f7bf90df819db6377821a0bcc540344126"
 $env:ANTHROPIC_MODEL="claude-opus-5"
 
 

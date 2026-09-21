@@ -19,11 +19,13 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { deleteExpenseAction } from '@/app/actions/expenses';
 import { ROUTES } from '@/lib/constants/routes';
 import { formatMoney } from '@/lib/utils/format';
+import { getCategoryLabel } from '../translation-helpers';
 
 /** What these controls need about the expense they act on. */
 export interface EditableExpense {
@@ -40,6 +42,8 @@ interface ExpenseRowActionsProps {
 }
 
 export function ExpenseRowActions({ expense, canEdit }: ExpenseRowActionsProps) {
+  const t = useTranslations('expenses.table');
+  const tCategories = useTranslations('expenses.categories');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -47,8 +51,11 @@ export function ExpenseRowActions({ expense, canEdit }: ExpenseRowActionsProps) 
 
   const remove = () => {
     const confirmed = window.confirm(
-      `Delete ${expense.expense_number} — ${expense.category}, ${formatMoney(expense.amount)}?\n\n` +
-        `It stops counting against your profit. The record stays on file.`
+      t('deleteConfirm', {
+        number: expense.expense_number,
+        category: getCategoryLabel(expense.category, tCategories),
+        amount: formatMoney(expense.amount),
+      })
     );
 
     if (!confirmed) return;
@@ -72,7 +79,7 @@ export function ExpenseRowActions({ expense, canEdit }: ExpenseRowActionsProps) 
         <Button asChild variant="ghost" size="icon" disabled={isPending}>
           <Link href={ROUTES.expenses.edit(expense.id)}>
             <Pencil className="size-4" aria-hidden="true" />
-            <span className="sr-only">Edit {expense.expense_number}</span>
+            <span className="sr-only">{t('editLabel', { number: expense.expense_number })}</span>
           </Link>
         </Button>
         <Button
@@ -83,7 +90,7 @@ export function ExpenseRowActions({ expense, canEdit }: ExpenseRowActionsProps) 
           onClick={remove}
         >
           <Trash2 className="size-4 text-destructive" aria-hidden="true" />
-          <span className="sr-only">Delete {expense.expense_number}</span>
+          <span className="sr-only">{t('deleteLabel', { number: expense.expense_number })}</span>
         </Button>
       </div>
     </div>

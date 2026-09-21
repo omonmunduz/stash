@@ -21,6 +21,7 @@
  * A Server Component: it receives loaded expenses and holds no state.
  */
 
+import { getTranslations, getLocale } from 'next-intl/server';
 import {
   Table,
   TableBody,
@@ -32,8 +33,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ExpenseRowActions } from './ExpenseRowActions';
 import type { Expense } from '../types';
-import { PAYMENT_METHOD_LABELS } from '@/features/payments/labels';
-import { formatMoney, formatDate } from '@/lib/utils/format';
+import { getPaymentMethodLabel } from '@/features/payments/translation-helpers';
+import { getCategoryLabel } from '../translation-helpers';
+import { formatMoney } from '@/lib/utils/format';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -41,7 +43,22 @@ interface ExpenseListProps {
   canEdit: boolean;
 }
 
-export function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
+export async function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
+  const t = await getTranslations('expenses.table');
+  const tCategories = await getTranslations('expenses.categories');
+  const tPayments = await getTranslations('payments.filters');
+  const locale = await getLocale();
+
+  // Locale-aware date formatter
+  const formatDate = (date: Date | string): string => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(d);
+  };
+
   return (
     <>
       {/* Phone layout. */}
@@ -52,7 +69,7 @@ export function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="shrink-0">
-                    {expense.category}
+                    {getCategoryLabel(expense.category, tCategories)}
                   </Badge>
                 </div>
                 <p className="mt-1 truncate text-sm">{expense.description}</p>
@@ -66,14 +83,14 @@ export function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
                   {formatMoney(expense.amount)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {PAYMENT_METHOD_LABELS[expense.payment_method]}
+                  {getPaymentMethodLabel(expense.payment_method, tPayments)}
                 </p>
               </div>
             </div>
 
             {expense.vendor && (
               <p className="mt-1 truncate text-xs text-muted-foreground">
-                Paid to {expense.vendor}
+                {t('paidTo', { vendor: expense.vendor })}
               </p>
             )}
 
@@ -91,12 +108,12 @@ export function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Reference</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>What for</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>{t('reference')}</TableHead>
+              <TableHead>{t('date')}</TableHead>
+              <TableHead>{t('category')}</TableHead>
+              <TableHead>{t('whatFor')}</TableHead>
+              <TableHead>{t('method')}</TableHead>
+              <TableHead className="text-right">{t('amount')}</TableHead>
               {canEdit && <TableHead className="w-px" />}
             </TableRow>
           </TableHeader>
@@ -112,20 +129,22 @@ export function ExpenseList({ expenses, canEdit }: ExpenseListProps) {
                 </TableCell>
 
                 <TableCell className="align-top">
-                  <Badge variant="secondary">{expense.category}</Badge>
+                  <Badge variant="secondary">
+                    {getCategoryLabel(expense.category, tCategories)}
+                  </Badge>
                 </TableCell>
 
                 <TableCell className="align-top text-sm">
                   {expense.description}
                   {expense.vendor && (
                     <span className="block text-xs text-muted-foreground">
-                      Paid to {expense.vendor}
+                      {t('paidTo', { vendor: expense.vendor })}
                     </span>
                   )}
                 </TableCell>
 
                 <TableCell className="align-top text-sm text-muted-foreground">
-                  {PAYMENT_METHOD_LABELS[expense.payment_method]}
+                  {getPaymentMethodLabel(expense.payment_method, tPayments)}
                 </TableCell>
 
                 <TableCell className="align-top text-right font-medium tabular-nums">

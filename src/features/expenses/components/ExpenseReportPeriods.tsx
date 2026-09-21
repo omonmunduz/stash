@@ -18,15 +18,19 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/lib/constants/routes';
 import {
   DEFAULT_EXPENSE_PERIOD,
-  EXPENSE_PERIODS,
   parseExpensePeriod,
+  type ExpensePeriod,
 } from '../categories';
+import { getPeriodLabel } from '../translation-helpers';
 import { cn } from '@/lib/utils/cn';
 
 export function ExpenseReportPeriods() {
+  const t = useTranslations('expenses.periods');
+  const tFilters = useTranslations('expenses.filters');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -34,6 +38,16 @@ export function ExpenseReportPeriods() {
   // Parsed rather than cast so a hand-edited query string cannot leave a chip
   // looking selected while the figures below it describe a different period.
   const currentPeriod = parseExpensePeriod(searchParams.get('period') ?? undefined);
+
+  const EXPENSE_PERIODS: ReadonlyArray<{
+    value: ExpensePeriod;
+    label: string;
+  }> = [
+    { value: 'month', label: getPeriodLabel('month', t) },
+    { value: 'quarter', label: getPeriodLabel('quarter', t) },
+    { value: 'year', label: getPeriodLabel('year', t) },
+    { value: 'all', label: getPeriodLabel('all', t) },
+  ];
 
   const select = (value: string) => {
     // The default is expressed as an absent param, so arriving fresh and
@@ -49,7 +63,7 @@ export function ExpenseReportPeriods() {
   return (
     <div
       role="radiogroup"
-      aria-label="Period"
+      aria-label={tFilters('periodLabel')}
       className="flex flex-wrap items-center gap-2"
     >
       {EXPENSE_PERIODS.map(({ value, label }) => (
@@ -72,7 +86,7 @@ export function ExpenseReportPeriods() {
 
       {/* Announced because the figures update without a page navigation. */}
       <span className="sr-only" role="status" aria-live="polite">
-        {isPending ? 'Updating figures' : ''}
+        {isPending ? tFilters('updatingResults') : ''}
       </span>
     </div>
   );

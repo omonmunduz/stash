@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 
 interface BusinessHeroProps {
@@ -18,15 +21,17 @@ export function BusinessHero({
   hasProducts,
   orgSlug,
 }: BusinessHeroProps) {
+  const t = useTranslations('landing.hero');
+
   const getMessage = () => {
     if (hasServices && hasProducts) {
-      return 'Explore our services and products';
+      return t('exploreServicesAndProducts');
     }
     if (hasServices) {
-      return 'Book your appointment today';
+      return t('bookAppointmentToday');
     }
     if (hasProducts) {
-      return 'Discover our products';
+      return t('discoverProducts');
     }
     return null;
   };
@@ -101,7 +106,7 @@ export function BusinessHero({
                       : ''
                   }`}
                 >
-                  <Link href={`/${orgSlug}/book`}>Book Now</Link>
+                  <Link href={`/${orgSlug}/book`}>{t('bookNow')}</Link>
                 </Button>
               )}
 
@@ -118,7 +123,7 @@ export function BusinessHero({
                         : ''
                   }`}
                 >
-                  <Link href="#products">View Products</Link>
+                  <Link href="#products">{t('viewProducts')}</Link>
                 </Button>
               )}
             </div>

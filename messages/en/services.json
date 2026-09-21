@@ -16,5 +16,19 @@
     "backToServices": "Services",
     "title": "Add service",
     "description": "A service your business offers with duration and pricing."
+  },
+  "form": {
+    "legend": "Service details",
+    "name": "Name",
+    "namePlaceholder": "Haircut",
+    "description": "Description",
+    "descriptionPlaceholder": "Classic cut and style",
+    "duration": "Duration (minutes)",
+    "price": "Price",
+    "whoCanPerform": "Who can perform this service?",
+    "noEmployees": "No employees yet. Add employees first to assign them to services.",
+    "providersHelp": "Customers can book this service with any selected employee",
+    "active": "Active (available for booking)",
+    "createService": "Create service"
   }
 }

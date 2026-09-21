@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { ProductCard } from './ProductCard';
 
 interface Product {
@@ -16,6 +19,8 @@ interface ProductsSectionProps {
 }
 
 export function ProductsSection({ products, orgSlug }: ProductsSectionProps) {
+  const t = useTranslations('landing.products');
+
   if (products.length === 0) {
     return null;
   }
@@ -33,10 +38,10 @@ export function ProductsSection({ products, orgSlug }: ProductsSectionProps) {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
-            Our Products
+            {t('title')}
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-slate-600 md:text-xl">
-            Browse our selection
+            {t('subtitle')}
           </p>
         </div>
 

@@ -29,14 +29,14 @@ import { ExpenseList } from '@/features/expenses/components/ExpenseList';
 import { ExpenseFilters } from '@/features/expenses/components/ExpenseFilters';
 import {
   DEFAULT_EXPENSE_PERIOD,
-  EXPENSE_PERIODS,
   expensePeriodStart,
   parseExpensePeriod,
 } from '@/features/expenses/categories';
+import { getPeriodLabel, getCategoryLabel } from '@/features/expenses/translation-helpers';
 import { summarizeByCategory } from '@/features/expenses/business-rules';
 import { getExpenseService } from '@/features/expenses/server';
 import { hasRole } from '@/features/auth/roles';
-import { PAYMENT_METHOD_LABELS } from '@/features/payments/labels';
+import { SYSTEM_PAYMENT_METHODS } from '@/features/payments/translation-helpers';
 import type { PaymentMethod } from '@/features/payments/types';
 import type { Expense } from '@/features/expenses/types';
 import { ROUTES } from '@/lib/constants/routes';
@@ -58,6 +58,7 @@ interface ExpensesPageProps {
 export default async function ExpensesPage({ searchParams }: ExpensesPageProps) {
   const params = await searchParams;
   const t = await getTranslations('expenses');
+  const tPeriods = await getTranslations('expenses.periods');
 
   const period = parseExpensePeriod(params.period);
   const category = params.category?.trim() || undefined;
@@ -97,8 +98,7 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
     method !== undefined ||
     search !== undefined;
 
-  const periodLabel =
-    EXPENSE_PERIODS.find((entry) => entry.value === period)?.label ?? '';
+  const periodLabel = getPeriodLabel(period, tPeriods);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
@@ -203,6 +203,7 @@ async function PeriodSummary({
   isFiltered: boolean;
 }) {
   const t = await getTranslations('expenses.list');
+  const tCategories = await getTranslations('expenses.categories');
   const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const breakdown = summarizeByCategory(expenses);
   const biggest = breakdown[0];
@@ -229,7 +230,7 @@ async function PeriodSummary({
 
       <MetricCard
         label={t('biggestCategory')}
-        value={biggest ? biggest.category : '—'}
+        value={biggest ? getCategoryLabel(biggest.category, tCategories) : '—'}
         detail={
           biggest
             ? t('categoryDetail', {
@@ -247,12 +248,12 @@ async function PeriodSummary({
 /**
  * Narrow ?method= to a real payment method.
  *
- * Keyed off the labels record so adding a method to the enum needs no change
+ * Keyed off the system methods array so adding a method to the enum needs no change
  * here, and an unrecognised value falls through to no filter rather than an empty
  * page.
  */
 function parseMethod(value: string | undefined): PaymentMethod | undefined {
-  return value && value in PAYMENT_METHOD_LABELS
+  return value && SYSTEM_PAYMENT_METHODS.includes(value as PaymentMethod)
     ? (value as PaymentMethod)
     : undefined;
 }

@@ -1,36 +1,21 @@
-/**
- * PAYMENT FILTERS
- *
- * State lives in the URL, like CustomerFilters and InventoryFilters, so a filtered
- * day book survives a refresh and the page stays a Server Component doing the query.
- *
- * The period control is a set of presets rather than two date inputs. The question
- * behind this screen is "how much came in today" or "what did I take this month" —
- * assembling a date range to ask that is work the app should be doing. Presets also
- * mean one tap instead of two pickers on a phone.
- *
- * No search box: the service has no search over receipt numbers, and looking up one
- * specific receipt is a thing you do from the customer's page, where you know whose
- * it was.
- */
-
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
-import { PAYMENT_METHOD_LABELS } from '../labels';
 import type { PaymentMethod } from '../types';
 import {
   DEFAULT_PAYMENT_PERIOD,
-  PAYMENT_PERIODS,
+  PAYMENT_PERIOD_VALUES,
   parsePaymentPeriod,
 } from '../periods';
 import { cn } from '@/lib/utils/cn';
 
 export function PaymentFilters() {
+  const t = useTranslations('payments.filters');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -70,10 +55,10 @@ export function PaymentFilters() {
           picking two would mean the same as picking neither. */}
       <div
         role="radiogroup"
-        aria-label="Period"
+        aria-label={t('periodLabel')}
         className="flex flex-wrap items-center gap-2"
       >
-        {PAYMENT_PERIODS.map(({ value, label }) => (
+        {PAYMENT_PERIOD_VALUES.map((value) => (
           <button
             key={value}
             type="button"
@@ -91,14 +76,14 @@ export function PaymentFilters() {
                 : 'border-border bg-background hover:bg-accent'
             )}
           >
-            {label}
+            {t(`period.${value}`)}
           </button>
         ))}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <label htmlFor="method-filter" className="text-sm text-muted-foreground">
-          Method
+          {t('methodLabel')}
         </label>
         <select
           id="method-filter"
@@ -106,10 +91,10 @@ export function PaymentFilters() {
           onChange={(event) => navigate({ method: event.target.value || null })}
           className="h-11 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <option value="">Any</option>
-          {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map((value) => (
+          <option value="">{t('methodAny')}</option>
+          {(['cash', 'card', 'bank_transfer', 'check', 'other'] as PaymentMethod[]).map((value) => (
             <option key={value} value={value}>
-              {PAYMENT_METHOD_LABELS[value]}
+              {t(`method.${value}`)}
             </option>
           ))}
         </select>
@@ -125,13 +110,13 @@ export function PaymentFilters() {
             }
           >
             <X aria-hidden="true" />
-            Clear
+            {t('clear')}
           </Button>
         )}
 
         {/* Announced because the table updates without a page navigation. */}
         <span className="sr-only" role="status" aria-live="polite">
-          {isPending ? 'Updating results' : ''}
+          {isPending ? t('updatingResults') : ''}
         </span>
       </div>
     </div>

@@ -21,14 +21,15 @@ export type PaymentPeriod = 'today' | 'week' | 'month' | 'all';
 /** The default: a month is long enough to be useful, short enough to scan. */
 export const DEFAULT_PAYMENT_PERIOD: PaymentPeriod = 'month';
 
-export const PAYMENT_PERIODS: ReadonlyArray<{
-  value: PaymentPeriod;
-  label: string;
-}> = [
-  { value: 'today', label: 'Today' },
-  { value: 'week', label: 'This week' },
-  { value: 'month', label: 'This month' },
-  { value: 'all', label: 'Everything' },
+/**
+ * Payment period values - labels are now translated in the component.
+ * These are just the enum values for type safety.
+ */
+export const PAYMENT_PERIOD_VALUES: ReadonlyArray<PaymentPeriod> = [
+  'today',
+  'week',
+  'month',
+  'all',
 ];
 
 /**

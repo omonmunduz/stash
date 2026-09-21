@@ -1,0 +1,192 @@
+{
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "login": "Log in",
+    "signup": "Sign up",
+    "dashboard": "Go to dashboard"
+  },
+  "home": {
+    "hero": {
+      "title": "Manage your service business in one system",
+      "subtitle": "CRM for salons, barbershops, clinics and small shops. Customers, bookings, inventory and payments — all in one place.",
+      "ctaPrimary": "Try free",
+      "ctaSecondary": "See how it works"
+    },
+    "problem": {
+      "title": "Tired of notebooks and messengers?",
+      "description": "Keeping track of appointments in a notebook, inventory in Excel, and payments in your head creates chaos. Stash brings everything together.",
+      "before": "Before",
+      "beforeItems": ["Paper notebooks", "Excel spreadsheets", "WhatsApp for bookings", "Mental math for balances"],
+      "after": "With Stash",
+      "afterItems": ["One system", "Everything tracked", "Online bookings", "Automatic calculations"]
+    },
+    "features": {
+      "title": "Everything you need to run your business",
+      "subtitle": "From bookings to inventory — all the tools in one place",
+      "services": {
+        "title": "Services & Products",
+        "description": "Create your service menu with prices and durations. Add products with stock tracking and low-stock alerts."
+      },
+      "customers": {
+        "title": "Customer Database",
+        "description": "Store customer contacts, booking history, and visit notes. Know your clients better."
+      },
+      "appointments": {
+        "title": "Online Bookings",
+        "description": "Customers book through your public page. See your schedule, manage appointments, send reminders."
+      },
+      "employees": {
+        "title": "Staff Management",
+        "description": "Add employees with roles and working hours. Each employee gets their own booking page."
+      },
+      "payments": {
+        "title": "Client Tab System",
+        "description": "Track what each client owes. Record purchases and payments. Always know who owes what."
+      },
+      "inventory": {
+        "title": "Inventory Control",
+        "description": "Track materials and products. Get alerts when stock is low. Never run out unexpectedly."
+      },
+      "expenses": {
+        "title": "Expense Tracking",
+        "description": "Record business expenses. See reports by category and period. Keep finances organized."
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "View sales, expenses, and profitability. Make data-driven decisions."
+      }
+    },
+    "publicPage": {
+      "title": "Your business gets a public page automatically",
+      "description": "Every business in Stash gets its own public page where customers can see your services, products, and staff — and book appointments online.",
+      "features": ["Your services and prices", "Your products", "Staff with photos", "Online booking", "Mobile-friendly"],
+      "example": "See example"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": {
+        "title": "Sign up and add your business",
+        "description": "Create an account in 2 minutes. Add your business name and details."
+      },
+      "step2": {
+        "title": "Add services, products, and staff",
+        "description": "Create your service menu, upload products, and add employees with their schedules."
+      },
+      "step3": {
+        "title": "Share your booking page",
+        "description": "Send your unique link to customers. They book online — you manage appointments in your dashboard."
+      },
+      "step4": {
+        "title": "Manage bookings and payments",
+        "description": "Track appointments, record sales, manage client tabs. Everything in one place."
+      }
+    },
+    "whoFor": {
+      "title": "Who is Stash for?",
+      "salons": "Beauty salons & barbershops",
+      "clinics": "Clinics & wellness centers",
+      "shops": "Small retail shops",
+      "services": "Service businesses"
+    },
+    "cta": {
+      "title": "Ready to get organized?",
+      "subtitle": "Join small businesses using Stash to manage their work.",
+      "button": "Start free"
+    }
+  },
+  "footer": {
+    "product": "Product",
+    "company": "Company",
+    "support": "Support",
+    "legal": "Legal",
+    "copyright": "© {year} Stash. All rights reserved."
+  },
+  "pricing": {
+    "title": "Simple, transparent pricing",
+    "subtitle": "Start free, upgrade when you grow",
+    "popular": "Most popular",
+    "startFree": "Start free",
+    "getStarted": "Get started",
+    "comparison": {
+      "title": "Compare plans",
+      "feature": "Feature",
+      "free": "Free",
+      "pro": "Pro"
+    },
+    "faq": {
+      "title": "Pricing FAQ",
+      "q1": "Can I start with the free plan?",
+      "a1": "Yes! The free plan is perfect for getting started. You can upgrade anytime as your business grows.",
+      "q2": "What payment methods do you accept?",
+      "a2": "We accept bank cards and online payments. Payment details are provided after signup.",
+      "q3": "Can I cancel anytime?",
+      "a3": "Yes, you can cancel your subscription at any time. Your data remains accessible for 30 days after cancellation.",
+      "q4": "Is there a long-term contract?",
+      "a4": "No contracts. Pay monthly and cancel whenever you want."
+    }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know about Stash",
+    "q1": {
+      "question": "What is Stash?",
+      "answer": "Stash is a CRM system for small service businesses like salons, barbershops, clinics, and shops. It helps you manage customers, bookings, inventory, and payments in one place."
+    },
+    "q2": {
+      "question": "Who is Stash for?",
+      "answer": "Stash is designed for beauty salons, barbershops, wellness clinics, small retail shops, and any service-based business that needs to manage appointments and customer relationships."
+    },
+    "q3": {
+      "question": "How do I get started?",
+      "answer": "Sign up for a free account, add your business details, create your services and products, and invite your staff. Your public booking page is generated automatically."
+    },
+    "q4": {
+      "question": "Do my customers need an account to book?",
+      "answer": "No. Customers can book appointments through your public page without creating an account. They just need to provide their name and phone number."
+    },
+    "q5": {
+      "question": "How does the client tab system work?",
+      "answer": "The client tab lets you track what each customer owes. Record purchases and services, accept payments, and always see the current balance for each client."
+    },
+    "q6": {
+      "question": "Can I add multiple employees?",
+      "answer": "Yes. The free plan includes 1 employee. The Pro plan supports unlimited employees, each with their own schedule and booking page."
+    },
+    "q7": {
+      "question": "Where is my data stored?",
+      "answer": "Your data is stored securely in the cloud with daily backups. We use industry-standard encryption to protect your information."
+    },
+    "q8": {
+      "question": "Can I use Stash on my phone?",
+      "answer": "Yes. Stash works in any web browser on your phone, tablet, or computer. No app download needed."
+    },
+    "q9": {
+      "question": "What languages are supported?",
+      "answer": "Stash is available in Russian and English. You can switch languages in your dashboard settings."
+    },
+    "q10": {
+      "question": "How do I cancel my subscription?",
+      "answer": "You can cancel anytime from your account settings. Your data remains accessible for 30 days after cancellation."
+    }
+  },
+  "contact": {
+    "title": "Get in touch",
+    "subtitle": "Have questions? We're here to help.",
+    "email": "Email",
+    "telegram": "Telegram",
+    "whatsapp": "WhatsApp"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated",
+    "placeholder": "Legal content placeholder - requires review before launch"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated",
+    "placeholder": "Legal content placeholder - requires review before launch"
+  }
+}

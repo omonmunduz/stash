@@ -66,14 +66,48 @@ export async function middleware(request: NextRequest) {
 
   if (publicOrgSlugMatch) {
     const slug = publicOrgSlugMatch[1];
-    // Skip known dashboard/auth routes
+    // Skip known dashboard/auth/marketing routes
     const knownRoutes = ['dashboard', 'customers', 'products', 'sales', 'inventory',
       'payments', 'expenses', 'services', 'employees', 'appointments', 'reports',
-      'settings', 'login', 'signup', 'onboarding', 'auth'];
+      'settings', 'login', 'signup', 'onboarding', 'auth', 'product', 'pricing',
+      'faq', 'contact', 'privacy', 'terms', 'about'];
 
     if (!knownRoutes.includes(slug)) {
       supabaseResponse.headers.set('x-org-slug', slug);
     }
+  }
+
+  // =========================================================================
+  // GEO-BASED LANGUAGE DETECTION (for marketing site)
+  // =========================================================================
+  // Check for explicit language override via query param (?lang=ru or ?lang=en)
+  const langParam = url.searchParams.get('lang');
+  if (langParam === 'ru' || langParam === 'en') {
+    supabaseResponse.cookies.set('SITE_LANG', langParam, {
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      path: '/',
+      sameSite: 'lax',
+    });
+  }
+
+  // Set language cookie based on geo if not already set
+  const siteLangCookie = request.cookies.get('SITE_LANG');
+  if (!siteLangCookie && !langParam) {
+    // Read country from Vercel or Cloudflare headers
+    const country = request.headers.get('x-vercel-ip-country') ||
+                    request.headers.get('cf-ipcountry') ||
+                    null;
+
+    // RU, KG, KZ, UZ → Russian; everything else → English
+    // If country unknown (local dev, VPN) → default to Russian
+    const isRussianRegion = !country || ['RU', 'KG', 'KZ', 'UZ'].includes(country);
+    const detectedLang = isRussianRegion ? 'ru' : 'en';
+
+    supabaseResponse.cookies.set('SITE_LANG', detectedLang, {
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      path: '/',
+      sameSite: 'lax',
+    });
   }
 
   // Verify the JWT locally instead of asking the Auth server who this is.
@@ -118,15 +152,21 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // Root has no page — send visitors somewhere real rather than a 404.
-  if (pathname === '/') {
-    url.pathname = !isSignedIn
-      ? ROUTES.auth.login
-      : hasOrgClaim
-        ? ROUTES.dashboard.home
-        : ROUTES.onboarding.setup;
-    return NextResponse.redirect(url);
+  // Marketing routes are publicly accessible (no auth required)
+  const isMarketingRoute = pathname === '/' ||
+    pathname.startsWith('/product') ||
+    pathname.startsWith('/pricing') ||
+    pathname.startsWith('/faq') ||
+    pathname.startsWith('/contact') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/about');
+
+  if (isMarketingRoute) {
+    return supabaseResponse;
   }
+
+  // Root redirect removed - now serves marketing home
 
   // --- No session ---
   if (!isSignedIn) {

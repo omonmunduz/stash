@@ -175,3 +175,33 @@ export async function requireMinimumRole(minimumRole: UserRole): Promise<AuthUse
 
   return user;
 }
+
+/**
+ * Requires super admin role (platform administrator).
+ *
+ * Super admins have access to:
+ * - All organizations' billing data
+ * - Ability to manually mark invoices paid
+ * - Ability to grant/extend subscriptions
+ * - Ability to suspend/reactivate accounts
+ *
+ * This is a hard requirement - redirects to home if not super admin.
+ */
+export async function requireSuperAdmin(): Promise<AuthUser> {
+  const user = await requireActiveUser();
+
+  if (user.role !== 'super_admin') {
+    // Redirect to dashboard instead of showing error
+    // Super admin routes should not be discoverable by regular users
+    redirect(ROUTES.dashboard.home);
+  }
+
+  return user;
+}
+
+/**
+ * Checks if user is super admin (soft check, returns boolean)
+ */
+export function isSuperAdmin(user: AuthUser): boolean {
+  return user.role === 'super_admin';
+}

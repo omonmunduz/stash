@@ -15,9 +15,12 @@ import type { UserId, OrganizationId, Timestamps } from '@/lib/types/common';
 
 /**
  * User role hierarchy
- * owner > admin > manager > employee
+ * super_admin > owner > admin > manager > employee
+ *
+ * Note: super_admin is a platform-level role for system administrators.
+ * Regular organization roles are: owner > admin > manager > employee
  */
-export type UserRole = 'owner' | 'admin' | 'manager' | 'employee';
+export type UserRole = 'super_admin' | 'owner' | 'admin' | 'manager' | 'employee';
 
 /**
  * Complete User entity (user_profiles table)

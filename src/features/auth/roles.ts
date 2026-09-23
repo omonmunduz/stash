@@ -20,8 +20,12 @@ import type { UserRole } from '@/features/users/types';
 /**
  * Roles are ranked, not a set: "manager or above" is the common requirement, and
  * a numeric level expresses it without enumerating every role at each call site.
+ *
+ * super_admin is deliberately kept separate from the org hierarchy - it's a
+ * platform-level role, not an organization role.
  */
 export const ROLE_LEVEL: Record<UserRole, number> = {
+  super_admin: 10, // Platform admin, above all org roles
   owner: 4,
   admin: 3,
   manager: 2,

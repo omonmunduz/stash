@@ -21,6 +21,7 @@ import {
 type ActionResult = { success: false; error: string } | { success: true };
 
 export interface LandingPageFormValues {
+  landing_page_title: string;
   description: string;
   logo_url: string;
   hero_image_url: string;
@@ -42,6 +43,7 @@ export async function updateLandingPageAction(
   const supabase = await createClient();
 
   // Extract values from FormData
+  const landingPageTitle = formData.get('landing_page_title') as string;
   const description = formData.get('description') as string;
   const logoUrl = formData.get('logo_url') as string;
   const heroImageUrl = formData.get('hero_image_url') as string;

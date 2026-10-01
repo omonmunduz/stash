@@ -34,6 +34,7 @@ interface LandingPageEditorProps {
     description: string | null;
     logo_url: string | null;
     hero_image_url: string | null;
+    landing_page_title: string | null;
   };
   services: Array<{
     id: ServiceId;
@@ -56,6 +57,7 @@ export function LandingPageEditor({ organization, services, products, logoSigned
   const tCommon = useTranslations('common.actions');
 
   const [values, setValues] = useState({
+    landing_page_title: organization.landing_page_title ?? '',
     description: organization.description ?? '',
     logo_url: organization.logo_url ?? '',
     hero_image_url: organization.hero_image_url ?? '',
@@ -87,6 +89,7 @@ export function LandingPageEditor({ organization, services, products, logoSigned
     startTransition(async () => {
       // Create FormData to handle file uploads
       const formData = new FormData();
+      formData.append('landing_page_title', values.landing_page_title);
       formData.append('description', values.description);
       formData.append('logo_url', values.logo_url);
       formData.append('hero_image_url', values.hero_image_url);
@@ -136,6 +139,19 @@ export function LandingPageEditor({ organization, services, products, logoSigned
             )}
 
             <fieldset className="space-y-4" disabled={isPending}>
+              <div className="space-y-2">
+                <Label htmlFor="landing_page_title">{t('titleField')}</Label>
+                <Input
+                  id="landing_page_title"
+                  value={values.landing_page_title}
+                  onChange={set('landing_page_title')}
+                  placeholder={organization.name}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t('titleHelper')}
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="description">{t('descriptionField')}</Label>
                 <Textarea

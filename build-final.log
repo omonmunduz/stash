@@ -1,0 +1,36 @@
+
+> stash@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.21
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · staleTimes
+     · serverActions
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/features/billing/service.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4mC:\Users\user\Desktop\stash\src\features\billing\service.ts[0m:305:1]
+ [2m302[0m |     details: { previous_status: subscription.data.status },
+ [2m303[0m |     note,
+ [2m304[0m |   });
+ [2m305[0m | }
+     : [35;1m^[0m
+ [2m306[0m | 
+ [2m307[0m | /**
+ [2m308[0m |  * Grant subscription (admin action - gives free subscription)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/features/billing/service.ts
+./src/features/admin/service.ts
+./src/app/(admin)/admin/page.tsx
+
+
+> Build failed because of webpack errors

@@ -125,6 +125,7 @@ export default async function LandingPageEditorPage() {
               description: org.description,
               logo_url: org.logo_url,
               hero_image_url: org.hero_image_url,
+              landing_page_title: null,
             }}
             services={servicesResult.data}
             products={products ?? []}

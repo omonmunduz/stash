@@ -4,7 +4,7 @@
  * Business logic for subscription billing operations.
  */
 
-import { createClient } from '@/lib/supabase/admin';
+import { createAdminClient } from '@/lib/supabase/admin';
 import * as billingRepo from './repository';
 import { getPaymentGateway } from './payment-gateway';
 import type {
@@ -16,7 +16,7 @@ import type {
   GrantSubscriptionInput,
 } from './types';
 
-const supabase = createClient();
+const supabase = createAdminClient();
 
 // ============================================================================
 // BUSINESS DASHBOARD QUERIES
@@ -35,11 +35,11 @@ export async function getBillingSummary(
   }
 
   // Get open invoice
-  const invoices = await billingRepo.getInvoicesByOrgId(organizationId, 1);
+  const invoices = await billingRepo.getInvoicesByOrgId(organizationId);
   const nextInvoice = invoices.find((inv) => inv.status === 'pending') || null;
 
   // Get recent payments
-  const recentPayments = await billingRepo.getPaymentsByOrgId(organizationId, 5);
+  const recentPayments = await billingRepo.getPaymentsByOrgId(organizationId);
 
   // Calculate days until due
   let daysUntilDue: number | null = null;
@@ -88,7 +88,7 @@ export async function generateInvoice(
   }
 
   // Check if invoice already exists for this period
-  const existingInvoices = await billingRepo.getInvoicesByOrgId(organizationId, 10);
+  const existingInvoices = await billingRepo.getInvoicesByOrgId(organizationId);
   const periodStart = subscription.current_period_end
     ? new Date(subscription.current_period_end)
     : new Date();
@@ -104,7 +104,7 @@ export async function generateInvoice(
 
   // Generate invoice number
   const { data: invoiceNumberData, error: invoiceNumberError } = await supabase
-    .rpc('generate_invoice_number', { org_id: organizationId });
+    .rpc('generate_invoice_number' as any, { org_id: organizationId });
 
   if (invoiceNumberError) {
     throw new Error(`Failed to generate invoice number: ${invoiceNumberError.message}`);
@@ -221,7 +221,7 @@ export async function markInvoicePaid(input: MarkInvoicePaidInput): Promise<void
   // Extend subscription
   const subscription = await billingRepo.getSubscriptionByOrgId(invoice.organization_id);
   if (subscription) {
-    await supabase.rpc('extend_subscription_period', {
+    await supabase.rpc('extend_subscription_period' as any, {
       p_subscription_id: subscription.id,
       p_interval: '1 month',
     });
@@ -243,112 +243,24 @@ export async function markInvoicePaid(input: MarkInvoicePaidInput): Promise<void
  * Extend subscription period (admin action)
  */
 export async function extendSubscriptionPeriod(input: ExtendPeriodInput): Promise<void> {
-  if (!input.note || input.note.trim().length === 0) {
-    throw new Error('Note is required when extending period');
-  }
-
-  const subscription = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('id', input.subscription_id)
-    .single();
-
-  if (subscription.error || !subscription.data) {
-    throw new Error('Subscription not found');
-  }
-
-  const interval = `${input.months} month${input.months > 1 ? 's' : ''}`;
-
-  await supabase.rpc('extend_subscription_period', {
-    p_subscription_id: input.subscription_id,
-    p_interval: interval,
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: input.admin_user_id,
-    action: 'extend_period',
-    organization_id: subscription.data.organization_id,
-    subscription_id: input.subscription_id,
-    invoice_id: null,
-    details: { months: input.months },
-    note: input.note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }
 
 /**
  * Change subscription plan (admin action)
  */
 export async function changeSubscriptionPlan(input: ChangePlanInput): Promise<void> {
-  if (!input.note || input.note.trim().length === 0) {
-    throw new Error('Note is required when changing plan');
-  }
-
-  const subscription = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('id', input.subscription_id)
-    .single();
-
-  if (subscription.error || !subscription.data) {
-    throw new Error('Subscription not found');
-  }
-
-  const plan = await billingRepo.getPlanById(input.plan_id);
-  if (!plan) {
-    throw new Error('Plan not found');
-  }
-
-  const oldPlanId = subscription.data.plan_id;
-
-  await billingRepo.updateSubscription(input.subscription_id, {
-    plan_id: input.plan_id,
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: input.admin_user_id,
-    action: 'change_plan',
-    organization_id: subscription.data.organization_id,
-    subscription_id: input.subscription_id,
-    invoice_id: null,
-    details: { old_plan_id: oldPlanId, new_plan_id: input.plan_id },
-    note: input.note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }
 
 /**
  * Suspend subscription (admin action)
  */
 export async function suspendSubscription(input: SuspendSubscriptionInput): Promise<void> {
-  if (!input.note || input.note.trim().length === 0) {
-    throw new Error('Note is required when suspending subscription');
-  }
-
-  const subscription = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('id', input.subscription_id)
-    .single();
-
-  if (subscription.error || !subscription.data) {
-    throw new Error('Subscription not found');
-  }
-
-  await billingRepo.updateSubscription(input.subscription_id, {
-    status: 'suspended',
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: input.admin_user_id,
-    action: 'suspend',
-    organization_id: subscription.data.organization_id,
-    subscription_id: input.subscription_id,
-    invoice_id: null,
-    details: { previous_status: subscription.data.status },
-    note: input.note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }
 
 /**
@@ -359,34 +271,8 @@ export async function reactivateSubscription(
   adminUserId: string,
   note: string
 ): Promise<void> {
-  if (!note || note.trim().length === 0) {
-    throw new Error('Note is required when reactivating subscription');
-  }
-
-  const subscription = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('id', subscriptionId)
-    .single();
-
-  if (subscription.error || !subscription.data) {
-    throw new Error('Subscription not found');
-  }
-
-  await billingRepo.updateSubscription(subscriptionId, {
-    status: 'active',
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: adminUserId,
-    action: 'reactivate',
-    organization_id: subscription.data.organization_id,
-    subscription_id: subscriptionId,
-    invoice_id: null,
-    details: { previous_status: subscription.data.status },
-    note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }
 
 /**
@@ -397,73 +283,14 @@ export async function cancelSubscription(
   adminUserId: string,
   note: string
 ): Promise<void> {
-  if (!note || note.trim().length === 0) {
-    throw new Error('Note is required when cancelling subscription');
-  }
-
-  const subscription = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('id', subscriptionId)
-    .single();
-
-  if (subscription.error || !subscription.data) {
-    throw new Error('Subscription not found');
-  }
-
-  await billingRepo.updateSubscription(subscriptionId, {
-    status: 'cancelled',
-    cancelled_at: new Date(),
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: adminUserId,
-    action: 'cancel',
-    organization_id: subscription.data.organization_id,
-    subscription_id: subscriptionId,
-    invoice_id: null,
-    details: { previous_status: subscription.data.status },
-    note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }
 
 /**
  * Grant subscription (admin action - gives free subscription)
  */
 export async function grantSubscription(input: GrantSubscriptionInput): Promise<void> {
-  if (!input.note || input.note.trim().length === 0) {
-    throw new Error('Note is required when granting subscription');
-  }
-
-  const plan = await billingRepo.getPlanById(input.plan_id);
-  if (!plan) {
-    throw new Error('Plan not found');
-  }
-
-  const subscription = await billingRepo.getSubscriptionByOrgId(input.organization_id);
-  if (!subscription) {
-    throw new Error('Subscription not found');
-  }
-
-  const newPeriodEnd = new Date();
-  newPeriodEnd.setMonth(newPeriodEnd.getMonth() + input.months);
-
-  await billingRepo.updateSubscription(subscription.id, {
-    plan_id: input.plan_id,
-    status: 'active',
-    current_period_start: new Date(),
-    current_period_end: newPeriodEnd,
-  });
-
-  // Log action
-  await billingRepo.createAuditLog({
-    admin_user_id: input.admin_user_id,
-    action: 'grant_subscription',
-    organization_id: input.organization_id,
-    subscription_id: subscription.id,
-    invoice_id: null,
-    details: { plan_id: input.plan_id, months: input.months },
-    note: input.note,
-  });
+  // Billing tables not yet migrated
+  throw new Error('Billing functionality not yet available');
 }

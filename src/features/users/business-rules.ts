@@ -13,6 +13,7 @@ import type { Result } from '@/lib/types/common';
  * Higher number = more permissions
  */
 const ROLE_HIERARCHY: Record<UserRole, number> = {
+  super_admin: 5,
   owner: 4,
   admin: 3,
   manager: 2,
@@ -224,6 +225,7 @@ export function getDisplayName(user: User): string {
  */
 export function getRoleDisplayName(role: UserRole): string {
   const names: Record<UserRole, string> = {
+    super_admin: 'Super Admin',
     owner: 'Owner',
     admin: 'Administrator',
     manager: 'Manager',
@@ -237,6 +239,7 @@ export function getRoleDisplayName(role: UserRole): string {
  */
 export function getRoleDescription(role: UserRole): string {
   const descriptions: Record<UserRole, string> = {
+    super_admin: 'Platform administrator with access to all organizations and system settings.',
     owner: 'Full access to all features and settings. Can manage billing and organization.',
     admin: 'Full operational access. Can manage users and all business data.',
     manager: 'Can manage products, customers, sales, and expenses. Can view all reports.',

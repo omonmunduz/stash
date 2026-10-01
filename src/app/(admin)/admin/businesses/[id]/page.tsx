@@ -20,13 +20,13 @@ import { WebhookEventList } from '@/features/admin/components/WebhookEventList';
 import { AuditLogList } from '@/features/admin/components/AuditLogList';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function OrganizationDetailPage({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const detail = await getOrganizationDetail(id);
@@ -63,7 +63,7 @@ export default async function OrganizationDetailPage({ params }: PageProps) {
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Created</span>
                 <span className="text-sm font-medium">
-                  {new Date(organization.created_at).toLocaleDateString()}
+                  {organization.created_at ? new Date(organization.created_at).toLocaleDateString() : 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -72,7 +72,13 @@ export default async function OrganizationDetailPage({ params }: PageProps) {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Status</span>
-                <span className="text-sm font-medium">{organization.subscription_status}</span>
+                <span className="text-sm font-medium">
+                  {subscription ? (
+                    <BillingStatusBadge status={subscription.status} />
+                  ) : (
+                    <Badge variant="outline">No Subscription</Badge>
+                  )}
+                </span>
               </div>
             </CardContent>
           </Card>

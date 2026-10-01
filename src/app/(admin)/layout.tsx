@@ -20,11 +20,11 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   // Enforce super_admin role
-  await requireSuperAdmin();
+  const user = await requireSuperAdmin();
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader user={user} />
       <main className="container mx-auto py-6">
         <div className="mb-6 border-b pb-4">
           <h1 className="text-2xl font-bold text-destructive">

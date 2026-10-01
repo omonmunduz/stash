@@ -19,21 +19,22 @@ export const metadata = {
 };
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     status?: string;
     search?: string;
     page?: string;
-  };
+  }>;
 }
 
 export default async function AdminDashboardPage({ searchParams }: PageProps) {
-  const page = parseInt(searchParams.page || '1', 10);
+  const params = await searchParams;
+  const page = parseInt(params.page || '1', 10);
   const summary = await getDashboardSummary();
 
   const { data: organizations, total } = await getOrganizationsBilling(
     {
-      status: searchParams.status as any,
-      search: searchParams.search,
+      status: params.status as any,
+      search: params.search,
     },
     page,
     100

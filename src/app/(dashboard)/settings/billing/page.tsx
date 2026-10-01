@@ -11,7 +11,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { requireAuth } from '@/features/auth/guards';
+import { requireActiveUser } from '@/features/auth/guards';
 import { getBillingSummary } from '@/features/billing/service';
 import { BillingStatusBadge } from '@/features/billing/components/BillingStatusBadge';
 import { PaymentQRCode } from '@/features/billing/components/PaymentQRCode';
@@ -25,10 +25,10 @@ export const metadata = {
 };
 
 export default async function BillingPage() {
-  const user = await requireAuth();
+  const user = await requireActiveUser();
 
   // Get billing summary
-  const billingSummary = await getBillingSummary(user.organization_id);
+  const billingSummary = await getBillingSummary(user.organizationId);
 
   if (!billingSummary) {
     return (
@@ -162,7 +162,7 @@ export default async function BillingPage() {
       <PaymentHistory payments={recentPayments} />
 
       {/* Invoice History */}
-      <InvoiceHistory organizationId={user.organization_id} />
+      <InvoiceHistory organizationId={user.organizationId} />
     </div>
   );
 }

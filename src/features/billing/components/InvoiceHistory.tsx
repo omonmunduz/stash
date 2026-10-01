@@ -13,7 +13,7 @@ interface InvoiceHistoryProps {
 }
 
 export async function InvoiceHistory({ organizationId }: InvoiceHistoryProps) {
-  const invoices = await getInvoicesByOrgId(organizationId, 20);
+  const invoices = await getInvoicesByOrgId(organizationId);
 
   if (invoices.length === 0) {
     return (

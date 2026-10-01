@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 
 interface BusinessHeroProps {
   orgName: string;
+  landingPageTitle: string | null;
   description: string | null;
   heroImageUrl: string | null;
   hasServices: boolean;
@@ -15,6 +16,7 @@ interface BusinessHeroProps {
 
 export function BusinessHero({
   orgName,
+  landingPageTitle,
   description,
   heroImageUrl,
   hasServices,
@@ -49,9 +51,9 @@ export function BusinessHero({
             </p>
 
             <h1 className="mb-6 font-serif text-5xl font-bold leading-tight tracking-tight text-salon-dark md:text-6xl lg:text-7xl">
-              {orgName.split(' ').slice(0, -1).join(' ')}{' '}
+              {(landingPageTitle || orgName).split(' ').slice(0, -1).join(' ')}{' '}
               <span className="italic text-salon-rose">
-                {orgName.split(' ').slice(-1)[0]}
+                {(landingPageTitle || orgName).split(' ').slice(-1)[0]}
               </span>
             </h1>
 

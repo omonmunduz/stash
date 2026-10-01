@@ -5,6 +5,8 @@
     "previewPage": "Preview Page",
     "liveAt": "Your landing page is live at:",
     "contentTitle": "Landing Page Content",
+    "titleField": "Page Title",
+    "titleHelper": "Custom title shown on your landing page. Leave empty to use your business name.",
     "descriptionField": "Description",
     "descriptionPlaceholder": "Tell customers about your business",
     "descriptionHelper": "Shown below your business name on the landing page",

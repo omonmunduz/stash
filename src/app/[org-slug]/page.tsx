@@ -138,6 +138,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
 
       <BusinessHero
         orgName={org.name}
+        landingPageTitle={null}
         description={org.description}
         heroImageUrl={heroSignedUrl}
         hasServices={hasServices}

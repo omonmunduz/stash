@@ -1,0 +1,26 @@
+
+> stash@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.21
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · staleTimes
+     · serverActions
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.4s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/features/billing/service.ts:224:24
+Type error: Argument of type '"extend_subscription_period"' is not assignable to parameter of type '"adjust_inventory" | "book_appointment" | "create_sale_with_items" | "current_organization_id" | "current_user_role" | "find_or_create_customer_by_phone" | "fn_assert_can_edit_sale" | ... 17 more ... | "void_sale"'.
+
+[0m [90m 222 |[39m   [36mconst[39m subscription [33m=[39m [36mawait[39m billingRepo[33m.[39mgetSubscriptionByOrgId(invoice[33m.[39morganization_id)[33m;[39m
+ [90m 223 |[39m   [36mif[39m (subscription) {
+[31m[1m>[22m[39m[90m 224 |[39m     [36mawait[39m supabase[33m.[39mrpc([32m'extend_subscription_period'[39m[33m,[39m {
+ [90m     |[39m                        [31m[1m^[22m[39m
+ [90m 225 |[39m       p_subscription_id[33m:[39m subscription[33m.[39mid[33m,[39m
+ [90m 226 |[39m       p_interval[33m:[39m [32m'1 month'[39m[33m,[39m
+ [90m 227 |[39m     })[33m;[39m[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -19,7 +19,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/admin';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getPaymentGateway } from '@/features/billing/payment-gateway';
 import * as billingRepo from '@/features/billing/repository';
 
@@ -185,7 +185,7 @@ async function processSuccessfulPayment(
   payload: FinikWebhookPayload,
   webhookEventId: string
 ): Promise<void> {
-  const supabase = createClient();
+  const supabase = createAdminClient();
 
   try {
     // Start transaction-like operations
@@ -215,7 +215,7 @@ async function processSuccessfulPayment(
 
     if (subscription) {
       // Use database function to extend period
-      await supabase.rpc('extend_subscription_period', {
+      await supabase.rpc('extend_subscription_period' as any, {
         p_subscription_id: subscription.id,
         p_interval: '1 month',
       });

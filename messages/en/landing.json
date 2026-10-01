@@ -6,6 +6,7 @@
     "bookNow": "Book Now"
   },
   "hero": {
+    "home": "Welcome",
     "exploreServicesAndProducts": "Explore our services and products",
     "bookAppointmentToday": "Book your appointment today",
     "discoverProducts": "Discover our products",
@@ -16,13 +17,13 @@
     "browseProducts": "Browse products"
   },
   "services": {
-    "title": "Our Services",
-    "subtitle": "Discover what we can do for you",
+    "title": "Services",
+    "subtitle": "Popular Treatments",
     "bookNow": "Book Now"
   },
   "products": {
-    "title": "Our Products",
-    "subtitle": "Browse our selection",
+    "title": "Products",
+    "subtitle": "Shop Our Collection",
     "per": "/"
   },
   "cta": {

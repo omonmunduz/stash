@@ -43,6 +43,15 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Beauty salon palette */
+    --salon-cream: 32 25% 96%;
+    --salon-blush: 15 40% 88%;
+    --salon-rose: 15 35% 55%;
+    --salon-primary: 15 25% 48%;
+    --salon-dark: 20 20% 15%;
+    --salon-text-muted: 20 10% 50%;
+    --salon-border: 30 20% 90%;
   }
 
   .dark {

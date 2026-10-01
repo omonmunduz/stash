@@ -28,9 +28,9 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-lg hover:border-slate-300">
-      {product.imageSignedUrl && (
-        <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+    <article className="group flex flex-col overflow-hidden rounded-3xl border border-salon-border bg-white shadow-sm transition-all hover:shadow-xl">
+      {product.imageSignedUrl ? (
+        <div className="relative aspect-video w-full overflow-hidden bg-salon-cream">
           <Image
             src={product.imageSignedUrl}
             alt={product.name}
@@ -39,15 +39,17 @@ export function ProductCard({ product }: ProductCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
+      ) : (
+        <div className="aspect-video w-full bg-gradient-to-br from-salon-blush to-salon-cream" />
       )}
 
       <div className="flex flex-1 flex-col p-6 lg:p-8">
-        <h3 className="mb-3 text-2xl font-semibold tracking-tight text-slate-900">
+        <h3 className="mb-3 font-serif text-2xl font-semibold tracking-tight text-salon-dark">
           {product.name}
         </h3>
 
         {product.description && (
-          <p className="mb-6 flex-1 text-base leading-relaxed text-slate-600 line-clamp-3">
+          <p className="mb-6 flex-1 text-base leading-relaxed text-salon-text-muted line-clamp-3">
             {product.description}
           </p>
         )}
@@ -55,11 +57,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto space-y-3">
           {product.sale_price !== null && (
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-slate-900">
+              <span className="font-serif text-3xl font-bold text-salon-dark">
                 {formatPrice(product.sale_price)}
               </span>
               {product.unit_of_measure && (
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-salon-text-muted">
                   / {product.unit_of_measure}
                 </span>
               )}

@@ -104,7 +104,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
   // Empty state when no content
   if (!hasContent) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-salon-cream">
         <BusinessHeader
           orgName={org.name}
           orgSlug={slug}
@@ -126,7 +126,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-salon-cream">
       <BusinessHeader
         orgName={org.name}
         orgSlug={slug}

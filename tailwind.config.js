@@ -55,6 +55,15 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        salon: {
+          cream: 'hsl(var(--salon-cream))',
+          blush: 'hsl(var(--salon-blush))',
+          rose: 'hsl(var(--salon-rose))',
+          primary: 'hsl(var(--salon-primary))',
+          dark: 'hsl(var(--salon-dark))',
+          'text-muted': 'hsl(var(--salon-text-muted))',
+          border: 'hsl(var(--salon-border))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -63,6 +72,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
       },
       keyframes: {
         'accordion-down': {

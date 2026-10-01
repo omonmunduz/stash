@@ -23,46 +23,21 @@ export function ServicesSection({ services, orgSlug }: ServicesSectionProps) {
     return null;
   }
 
-  // Layout logic based on number of services
-  const getGridClasses = () => {
-    if (services.length === 1) {
-      return 'flex justify-center';
-    }
-    if (services.length === 2) {
-      return 'grid gap-8 md:grid-cols-2 lg:max-w-4xl';
-    }
-    // 3+ services: horizontal stack
-    return 'flex flex-wrap justify-center gap-8';
-  };
-
-  const getCardClasses = () => {
-    if (services.length === 1) {
-      return 'w-full max-w-md';
-    }
-    if (services.length === 2) {
-      return '';
-    }
-    // 3+ services: fixed width cards
-    return 'w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)]';
-  };
-
   return (
-    <section id="services" className="scroll-mt-16 bg-white py-20 md:py-28 lg:py-32">
+    <section id="services" className="scroll-mt-20 bg-white py-20 md:py-28 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-salon-text-muted">
             {t('title')}
-          </h2>
-          <p className="mx-auto max-w-2xl text-lg text-slate-600 md:text-xl">
-            {t('subtitle')}
           </p>
+          <h2 className="mb-4 font-serif text-4xl font-bold tracking-tight text-salon-dark md:text-5xl">
+            {t('subtitle')}
+          </h2>
         </div>
 
-        <div className={`mx-auto max-w-7xl ${getGridClasses()}`}>
+        <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {services.map((service) => (
-            <div key={service.id} className={getCardClasses()}>
-              <ServiceCard service={service} orgSlug={orgSlug} />
-            </div>
+            <ServiceCard key={service.id} service={service} orgSlug={orgSlug} />
           ))}
         </div>
       </div>

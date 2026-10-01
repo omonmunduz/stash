@@ -10,7 +10,6 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
 
 interface BusinessHeaderProps {
   orgName: string;
@@ -39,28 +38,28 @@ export function BusinessHeader({
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-salon-border bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo and Name */}
           <div className="flex items-center gap-3">
             {logoUrl && (
               <img
                 src={logoUrl}
                 alt=""
-                className="h-10 w-10 rounded-lg object-cover"
+                className="h-12 w-12 rounded-2xl object-cover shadow-sm"
               />
             )}
-            <span className="text-lg font-semibold tracking-tight text-white">
+            <span className="font-serif text-xl font-semibold tracking-tight text-salon-dark">
               {orgName}
             </span>
           </div>
 
           {/* Navigation */}
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-8 md:flex">
             <button
               onClick={() => scrollToSection('hero')}
-              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+              className="text-sm font-medium uppercase tracking-wide text-salon-text-muted transition-colors hover:text-salon-primary"
             >
               {t('home')}
             </button>
@@ -68,7 +67,7 @@ export function BusinessHeader({
             {hasServices && (
               <button
                 onClick={() => scrollToSection('services')}
-                className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+                className="text-sm font-medium uppercase tracking-wide text-salon-text-muted transition-colors hover:text-salon-primary"
               >
                 {t('services')}
               </button>
@@ -77,14 +76,17 @@ export function BusinessHeader({
             {hasProducts && (
               <button
                 onClick={() => scrollToSection('products')}
-                className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+                className="text-sm font-medium uppercase tracking-wide text-salon-text-muted transition-colors hover:text-salon-primary"
               >
                 {t('products')}
               </button>
             )}
 
             {hasBooking && (
-              <Button asChild size="sm" className="bg-white text-slate-900 hover:bg-white/90">
+              <Button
+                asChild
+                className="rounded-full bg-salon-primary px-8 text-white shadow-sm hover:bg-salon-rose"
+              >
                 <Link href={`/${orgSlug}/book`}>
                   {t('bookNow')}
                 </Link>
@@ -95,7 +97,11 @@ export function BusinessHeader({
           {/* Mobile CTA */}
           {hasBooking && (
             <div className="md:hidden">
-              <Button asChild size="sm" className="bg-white text-slate-900 hover:bg-white/90">
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full bg-salon-primary px-6 text-white shadow-sm hover:bg-salon-rose"
+              >
                 <Link href={`/${orgSlug}/book`}>
                   {t('bookNow')}
                 </Link>

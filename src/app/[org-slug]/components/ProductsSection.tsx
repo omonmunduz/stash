@@ -34,15 +34,15 @@ export function ProductsSection({ products, orgSlug }: ProductsSectionProps) {
     : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
 
   return (
-    <section id="products" className="scroll-mt-16 bg-slate-50 py-20 md:py-28 lg:py-32">
+    <section id="products" className="scroll-mt-20 bg-salon-blush py-20 md:py-28 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-salon-text-muted">
             {t('title')}
-          </h2>
-          <p className="mx-auto max-w-2xl text-lg text-slate-600 md:text-xl">
-            {t('subtitle')}
           </p>
+          <h2 className="mb-4 font-serif text-4xl font-bold tracking-tight text-salon-dark md:text-5xl">
+            {t('subtitle')}
+          </h2>
         </div>
 
         <div className={`mx-auto grid max-w-7xl gap-8 ${gridCols}`}>

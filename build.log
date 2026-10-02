@@ -9,7 +9,9 @@
      · serverActions
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 6.2s
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (106kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (254kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled successfully in 12.9s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/42) ...
@@ -43,7 +45,7 @@ Route (app)                                 Size  First Load JS
 ├ ƒ /customers/new                         135 B         129 kB
 ├ ƒ /dashboard                             181 B         106 kB
 ├ ƒ /employees                             181 B         106 kB
-├ ƒ /employees/[id]                      3.23 kB         116 kB
+├ ƒ /employees/[id]                      3.21 kB         116 kB
 ├ ƒ /employees/[id]/edit                   141 B         135 kB
 ├ ƒ /employees/[id]/schedule             2.24 kB         122 kB
 ├ ƒ /employees/new                         141 B         135 kB
@@ -69,13 +71,13 @@ Route (app)                                 Size  First Load JS
 ├ ƒ /reports/expenses                    1.89 kB         127 kB
 ├ ƒ /sales                                 181 B         106 kB
 ├ ƒ /sales/[id]                          1.12 kB         136 kB
-├ ƒ /sales/new                           6.67 kB         131 kB
+├ ƒ /sales/new                           6.69 kB         131 kB
 ├ ƒ /services                              181 B         106 kB
 ├ ƒ /services/[id]/edit                    140 B         135 kB
 ├ ƒ /services/new                          140 B         135 kB
 ├ ƒ /settings/billing                    3.16 kB         118 kB
-├ ƒ /settings/landing-page                4.2 kB         142 kB
-├ ƒ /signup                              4.25 kB         129 kB
+├ ƒ /settings/landing-page               4.19 kB         142 kB
+├ ƒ /signup                              4.26 kB         129 kB
 └ ƒ /terms                               1.51 kB         116 kB
 + First Load JS shared by all             103 kB
   ├ chunks/1255-94b42e590c85ade4.js      46.3 kB

@@ -551,41 +551,59 @@ export type Database = {
       organizations: {
         Row: {
           created_at: string | null
+          current_period_end: string | null
           default_locale: string | null
           deleted_at: string | null
           description: string | null
+          grace_days: number | null
           hero_image_url: string | null
           id: string
+          landing_page_title: string | null
           logo_url: string | null
           name: string
           settings: Json | null
           slug: string
+          subscription_status: string | null
+          subscription_tier: string | null
+          trial_ends_at: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          current_period_end?: string | null
           default_locale?: string | null
           deleted_at?: string | null
           description?: string | null
+          grace_days?: number | null
           hero_image_url?: string | null
           id?: string
+          landing_page_title?: string | null
           logo_url?: string | null
           name: string
           settings?: Json | null
           slug: string
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          current_period_end?: string | null
           default_locale?: string | null
           deleted_at?: string | null
           description?: string | null
+          grace_days?: number | null
           hero_image_url?: string | null
           id?: string
+          landing_page_title?: string | null
           logo_url?: string | null
           name?: string
           settings?: Json | null
           slug?: string
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -1385,7 +1403,7 @@ export type Database = {
       payment_method: "cash" | "card" | "bank_transfer" | "check" | "other"
       payment_status: "unpaid" | "partial" | "paid"
       sale_status: "draft" | "completed" | "cancelled"
-      user_role: "owner" | "admin" | "manager" | "employee"
+      user_role: "owner" | "admin" | "manager" | "employee" | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1524,7 +1542,7 @@ export const Constants = {
       payment_method: ["cash", "card", "bank_transfer", "check", "other"],
       payment_status: ["unpaid", "partial", "paid"],
       sale_status: ["draft", "completed", "cancelled"],
-      user_role: ["owner", "admin", "manager", "employee"],
+      user_role: ["owner", "admin", "manager", "employee", "super_admin"],
     },
   },
 } as const

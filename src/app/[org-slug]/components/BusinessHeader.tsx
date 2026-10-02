@@ -41,7 +41,7 @@ export function BusinessHeader({
     <header className="sticky top-0 z-50 w-full border-b border-salon-border bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
-          {/* Logo and Name */}
+          {/* Logo */}
           <div className="flex items-center gap-3">
             {logoUrl && (
               <img
@@ -50,9 +50,6 @@ export function BusinessHeader({
                 className="h-12 w-12 rounded-2xl object-cover shadow-sm"
               />
             )}
-            <span className="font-serif text-xl font-semibold tracking-tight text-salon-dark">
-              {orgName}
-            </span>
           </div>
 
           {/* Navigation */}

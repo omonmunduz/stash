@@ -32,7 +32,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
   // Load organization
   const { data: org, error: orgError } = await supabase
     .from('organizations')
-    .select('id, name, slug, description, logo_url, hero_image_url')
+    .select('id, name, slug, description, logo_url, hero_image_url, landing_page_title')
     .eq('slug', slug)
     .is('deleted_at', null)
     .maybeSingle();
@@ -138,7 +138,7 @@ export default async function OrgLandingPage({ params }: OrgLandingPageProps) {
 
       <BusinessHero
         orgName={org.name}
-        landingPageTitle={null}
+        landingPageTitle={org.landing_page_title}
         description={org.description}
         heroImageUrl={heroSignedUrl}
         hasServices={hasServices}

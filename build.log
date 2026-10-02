@@ -9,18 +9,81 @@
      · serverActions
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 6.4s
+ ✓ Compiled successfully in 6.2s
    Linting and checking validity of types ...
-Failed to compile.
+   Collecting page data ...
+   Generating static pages (0/42) ...
+   Generating static pages (10/42) 
+   Generating static pages (20/42) 
+   Generating static pages (31/42) 
+ ✓ Generating static pages (42/42)
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-./src/features/billing/service.ts:224:24
-Type error: Argument of type '"extend_subscription_period"' is not assignable to parameter of type '"adjust_inventory" | "book_appointment" | "create_sale_with_items" | "current_organization_id" | "current_user_role" | "find_or_create_customer_by_phone" | "fn_assert_can_edit_sale" | ... 17 more ... | "void_sale"'.
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    7.37 kB         137 kB
+├ ƒ /_not-found                            996 B         104 kB
+├ ƒ /[org-slug]                          4.96 kB         135 kB
+├ ƒ /[org-slug]/book                     5.57 kB         115 kB
+├ ƒ /admin                                 169 B         106 kB
+├ ƒ /admin/businesses/[id]               2.45 kB         115 kB
+├ ƒ /api/booking/available-slots           154 B         103 kB
+├ ƒ /api/booking/book                      154 B         103 kB
+├ ƒ /api/webhooks/finik                    154 B         103 kB
+├ ƒ /appointments                         4.2 kB         117 kB
+├ ƒ /appointments/[id]                    3.6 kB         116 kB
+├ ƒ /appointments/new                    3.89 kB         129 kB
+├ ƒ /auth/callback                         154 B         103 kB
+├ ƒ /auth/logout                           154 B         103 kB
+├ ƒ /book/[slug]                           154 B         103 kB
+├ ƒ /contact                             2.85 kB         117 kB
+├ ƒ /customers                           3.86 kB         117 kB
+├ ƒ /customers/[id]                      4.18 kB         139 kB
+├ ƒ /customers/[id]/edit                   136 B         129 kB
+├ ƒ /customers/new                         135 B         129 kB
+├ ƒ /dashboard                             181 B         106 kB
+├ ƒ /employees                             181 B         106 kB
+├ ƒ /employees/[id]                      3.23 kB         116 kB
+├ ƒ /employees/[id]/edit                   141 B         135 kB
+├ ƒ /employees/[id]/schedule             2.24 kB         122 kB
+├ ƒ /employees/new                         141 B         135 kB
+├ ƒ /expenses                            2.44 kB         131 kB
+├ ƒ /expenses/[id]/edit                    135 B         130 kB
+├ ƒ /expenses/new                          135 B         130 kB
+├ ƒ /faq                                 1.85 kB         116 kB
+├ ƒ /inventory                           4.06 kB         129 kB
+├ ƒ /inventory/adjust/[kind]/[id]        5.54 kB         130 kB
+├ ƒ /inventory/items                       181 B         106 kB
+├ ƒ /inventory/items/[id]/edit             135 B         129 kB
+├ ƒ /inventory/items/new                   135 B         129 kB
+├ ƒ /login                               4.06 kB         129 kB
+├ ƒ /onboarding/preferences              4.49 kB         114 kB
+├ ƒ /onboarding/setup                    3.25 kB         125 kB
+├ ƒ /payments                            3.05 kB         132 kB
+├ ƒ /payments/new                        3.06 kB         131 kB
+├ ƒ /pricing                             3.27 kB         121 kB
+├ ƒ /privacy                             1.49 kB         116 kB
+├ ƒ /products                              181 B         106 kB
+├ ƒ /products/[id]/edit                    138 B         137 kB
+├ ƒ /products/new                          137 B         137 kB
+├ ƒ /reports/expenses                    1.89 kB         127 kB
+├ ƒ /sales                                 181 B         106 kB
+├ ƒ /sales/[id]                          1.12 kB         136 kB
+├ ƒ /sales/new                           6.67 kB         131 kB
+├ ƒ /services                              181 B         106 kB
+├ ƒ /services/[id]/edit                    140 B         135 kB
+├ ƒ /services/new                          140 B         135 kB
+├ ƒ /settings/billing                    3.16 kB         118 kB
+├ ƒ /settings/landing-page                4.2 kB         142 kB
+├ ƒ /signup                              4.25 kB         129 kB
+└ ƒ /terms                               1.51 kB         116 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/1255-94b42e590c85ade4.js      46.3 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js  54.2 kB
+  └ other shared chunks (total)             2 kB
 
-[0m [90m 222 |[39m   [36mconst[39m subscription [33m=[39m [36mawait[39m billingRepo[33m.[39mgetSubscriptionByOrgId(invoice[33m.[39morganization_id)[33m;[39m
- [90m 223 |[39m   [36mif[39m (subscription) {
-[31m[1m>[22m[39m[90m 224 |[39m     [36mawait[39m supabase[33m.[39mrpc([32m'extend_subscription_period'[39m[33m,[39m {
- [90m     |[39m                        [31m[1m^[22m[39m
- [90m 225 |[39m       p_subscription_id[33m:[39m subscription[33m.[39mid[33m,[39m
- [90m 226 |[39m       p_interval[33m:[39m [32m'1 month'[39m[33m,[39m
- [90m 227 |[39m     })[33m;[39m[0m
-Next.js build worker exited with code: 1 and signal: null
+
+ƒ Middleware                             92.4 kB
+
+ƒ  (Dynamic)  server-rendered on demand
+

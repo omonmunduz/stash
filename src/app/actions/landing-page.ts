@@ -99,10 +99,11 @@ export async function updateLandingPageAction(
   const { error } = await supabase
     .from('organizations')
     .update({
+      landing_page_title: landingPageTitle.trim() || null,
       description: description.trim() || null,
       logo_url: finalLogoUrl,
       hero_image_url: finalHeroImageUrl,
-    })
+    } as any)
     .eq('id', organizationId);
 
   if (error) {

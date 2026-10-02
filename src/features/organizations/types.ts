@@ -52,6 +52,12 @@ export interface Organization extends Timestamps {
   name: string;
   slug: string;
 
+  // Landing page customization
+  landing_page_title: string | null;
+  description: string | null;
+  logo_url: string | null;
+  hero_image_url: string | null;
+
   // Subscription fields (Phase 2)
   subscription_tier: SubscriptionTier;
   subscription_status: SubscriptionStatus;

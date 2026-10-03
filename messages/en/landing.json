@@ -26,6 +26,10 @@
     "subtitle": "Shop Our Collection",
     "per": "/"
   },
+  "productDetails": {
+    "backToProducts": "Back to products",
+    "availableAt": "Available at"
+  },
   "cta": {
     "title": "Ready to get started?",
     "subtitle": "Book your appointment with {orgName} today",

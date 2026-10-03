@@ -26,6 +26,10 @@
     "subtitle": "Наша коллекция",
     "per": "/"
   },
+  "productDetails": {
+    "backToProducts": "Назад к товарам",
+    "availableAt": "Доступно в"
+  },
   "cta": {
     "title": "Готовы начать?",
     "subtitle": "Запишитесь на приём к {orgName} сегодня",

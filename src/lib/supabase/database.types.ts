@@ -1069,6 +1069,7 @@ export type Database = {
           description: string | null
           duration_minutes: number
           id: string
+          image_url: string | null
           is_active: boolean | null
           name: string
           organization_id: string
@@ -1082,6 +1083,7 @@ export type Database = {
           description?: string | null
           duration_minutes: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name: string
           organization_id: string
@@ -1095,6 +1097,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name?: string
           organization_id?: string

@@ -16,6 +16,7 @@ import { ServiceForm } from '@/features/services/components/ServiceForm';
 import { getServiceService } from '@/features/services/server';
 import { getEmployeeService } from '@/features/employees/server';
 import { requireMinimumRole } from '@/features/auth/guards';
+import { getSignedUrl } from '@/lib/supabase/storage';
 import { ROUTES } from '@/lib/constants/routes';
 import type { ServiceId } from '@/features/services/types';
 
@@ -53,6 +54,15 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
     );
   }
 
+  // Get signed URL for existing image if present
+  let imageUrl: string | null = null;
+  if (result.data.image_url) {
+    const signedUrlResult = await getSignedUrl('service-images', result.data.image_url);
+    if (signedUrlResult.success) {
+      imageUrl = signedUrlResult.data.signedUrl;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6">
       <Button asChild variant="ghost" size="sm" className="-ml-2">
@@ -72,6 +82,7 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
           <ServiceForm
             service={result.data}
             employees={employeesResult.success ? employeesResult.data : []}
+            currentImageUrl={imageUrl}
           />
         </CardContent>
       </Card>

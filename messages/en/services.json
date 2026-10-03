@@ -25,6 +25,8 @@
     "descriptionPlaceholder": "Classic cut and style",
     "duration": "Duration (minutes)",
     "price": "Price",
+    "image": "Service image",
+    "imageHelp": "Optional photo of the service. Max 5MB (JPEG, PNG, or WebP)",
     "whoCanPerform": "Who can perform this service?",
     "noEmployees": "No employees yet. Add employees first to assign them to services.",
     "providersHelp": "Customers can book this service with any selected employee",

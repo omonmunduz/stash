@@ -26,7 +26,7 @@ type ServiceUpdate = Database['public']['Tables']['services']['Update'];
 
 const SERVICE_COLUMNS = `
   id, organization_id, name, description, duration_minutes,
-  price, is_active, visible_on_landing_page, deleted_at, created_at, updated_at
+  price, image_url, is_active, visible_on_landing_page, deleted_at, created_at, updated_at
 `;
 
 export interface ServiceRepository {
@@ -147,6 +147,7 @@ export class SupabaseServiceRepository implements ServiceRepository {
         description: input.description ?? null,
         duration_minutes: input.duration_minutes,
         price: input.price,
+        image_url: input.image_url ?? null,
       })
       .select(SERVICE_COLUMNS)
       .single();
@@ -237,6 +238,7 @@ function mapService(row: ServiceRow): Service {
     description: row.description,
     duration_minutes: row.duration_minutes,
     price: row.price,
+    image_url: row.image_url,
     is_active: row.is_active,
     visible_on_landing_page: row.visible_on_landing_page ?? true,
     deleted_at: row.deleted_at ? new Date(row.deleted_at) : null,

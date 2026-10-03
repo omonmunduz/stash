@@ -16,6 +16,7 @@ export interface Service {
   description: string | null;
   duration_minutes: number;
   price: number;
+  image_url: string | null;
   is_active: boolean | null;
   visible_on_landing_page: boolean | null;
   deleted_at: Date | null;
@@ -36,6 +37,7 @@ export interface CreateServiceInput {
   description?: string;
   duration_minutes: number;
   price: number;
+  image_url?: string;
   provider_employee_ids?: EmployeeId[]; // Which employees offer this service
 }
 
@@ -44,6 +46,7 @@ export interface UpdateServiceInput {
   description?: string;
   duration_minutes?: number;
   price?: number;
+  image_url?: string;
   is_active?: boolean;
 }
 

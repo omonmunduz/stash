@@ -6,6 +6,7 @@
  * - Description
  * - Duration in minutes (required)
  * - Price (required)
+ * - Image upload (optional)
  * - Which employees can perform this service (multi-select)
  * - Active status
  */
@@ -20,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ImageUpload } from '@/components/shared/ImageUpload';
 import { createServiceAction, updateServiceAction } from '@/app/actions/services';
 import type { ServiceFormValues } from '@/app/actions/services';
 import type { ServiceWithProviders } from '../types';
@@ -28,9 +30,10 @@ import type { EmployeeLookup } from '@/features/employees/types';
 interface ServiceFormProps {
   service?: ServiceWithProviders;
   employees: EmployeeLookup[];
+  currentImageUrl?: string | null;
 }
 
-export function ServiceForm({ service, employees }: ServiceFormProps) {
+export function ServiceForm({ service, employees, currentImageUrl }: ServiceFormProps) {
   const t = useTranslations('services.form');
   const tCommon = useTranslations('common.actions');
   const isEdit = service !== undefined;
@@ -44,6 +47,7 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
     is_active: service?.is_active ?? true,
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -67,9 +71,22 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
     setError(null);
 
     startTransition(async () => {
+      // Use FormData to send both form fields and the image file
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('description', values.description);
+      formData.append('duration_minutes', values.duration_minutes);
+      formData.append('price', values.price);
+      formData.append('provider_employee_ids', JSON.stringify(values.provider_employee_ids));
+      formData.append('is_active', String(values.is_active));
+
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
       const result = isEdit
-        ? await updateServiceAction(service.id, values)
-        : await createServiceAction(values);
+        ? await updateServiceAction(service.id, formData)
+        : await createServiceAction(formData);
 
       if (!result.success) setError(result.error);
     });
@@ -143,6 +160,15 @@ export function ServiceForm({ service, employees }: ServiceFormProps) {
             />
           </div>
         </div>
+
+        <ImageUpload
+          id="service-image"
+          label={t('image')}
+          currentImageUrl={currentImageUrl}
+          onFileSelect={setImageFile}
+          disabled={isPending}
+          helperText={t('imageHelp')}
+        />
 
         <div className="space-y-2">
           <Label>{t('whoCanPerform')}</Label>

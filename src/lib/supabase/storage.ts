@@ -127,3 +127,16 @@ export function generateOrgImagePath(
   const ext = getFileExtension(file);
   return `${organizationId}/${type}${ext}`;
 }
+
+/**
+ * Generate a storage path for a service image.
+ * Format: {org_id}/{service_id}.{ext}
+ */
+export function generateServiceImagePath(
+  organizationId: string,
+  serviceId: string,
+  file: File
+): string {
+  const ext = getFileExtension(file);
+  return `${organizationId}/${serviceId}${ext}`;
+}
